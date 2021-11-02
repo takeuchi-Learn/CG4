@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\DirectXGame.exe</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\BasicPS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\BasicVS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\SpritePS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\SpriteVS.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>
