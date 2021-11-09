@@ -4,16 +4,16 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-Input::Input(WNDCLASSEX w, HWND hwnd) {
-	init(w, hwnd);
+Input::Input(HINSTANCE hInstance, HWND hwnd) {
+	init(hInstance, hwnd);
 }
 
-void Input::init(WNDCLASSEX w, HWND hwnd) {
+void Input::init(HINSTANCE hInstance, HWND hwnd) {
 
 	HRESULT result;
 
 	result = DirectInput8Create(
-		w.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput, nullptr);
+		hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput, nullptr);
 
 	result = dinput->CreateDevice(GUID_SysKeyboard, &devkeyboard, NULL);
 

@@ -1436,7 +1436,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 入力初期化
 	//Input* input = new Input(winapi->getW(), winapi->getHwnd());
-	std::unique_ptr<Input> input(new Input(winapi->getW(), winapi->getHwnd()));
+	std::unique_ptr<Input> input(new Input(winapi->getW().hInstance, winapi->getHwnd()));
 #pragma endregion 入力初期化
 
 

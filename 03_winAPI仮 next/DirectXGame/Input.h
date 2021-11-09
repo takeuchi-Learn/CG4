@@ -19,9 +19,9 @@ private:
 	ComPtr<IDirectInput8> dinput;
 
 public:
-	Input(WNDCLASSEX w, HWND hwnd);
+	Input(HINSTANCE hInstance, HWND hwnd);
 
-	void init(WNDCLASSEX w, HWND hwnd);
+	void init(HINSTANCE hInstance, HWND hwnd);
 	void updateHitState();
 
 	bool hitKey(BYTE keyCode);
