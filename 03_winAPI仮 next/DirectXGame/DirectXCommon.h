@@ -21,6 +21,8 @@ class DirectXCommon {
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence;
 	UINT64 fenceVal = 0;
 
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer;
+
 	WinAPI* winapi = nullptr;
 
 	void initDevice();
@@ -29,6 +31,11 @@ class DirectXCommon {
 	void initRTV();
 	void initDepthBuffer();
 	void initFence();
+
+	// 全画面クリア
+	void ClearRenderTarget();
+	// 深度バッファクリア
+	void ClearDepthBuffer();
 
 public:
 	DirectXCommon(WinAPI* winapi);

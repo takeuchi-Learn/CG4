@@ -150,7 +150,6 @@ void DirectXCommon::initRTV() {
 void DirectXCommon::initDepthBuffer() {
 	HRESULT result;
 
-	ComPtr<ID3D12Resource> depthBuffer;
 	// 深度バッファリソース設定
 	CD3DX12_RESOURCE_DESC depthResDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_D32_FLOAT,
@@ -194,6 +193,24 @@ void DirectXCommon::initFence() {
 	result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 }
 
+void DirectXCommon::ClearRenderTarget() {
+	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
+
+	// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeaps->GetCPUDescriptorHandleForHeapStart(), bbIndex, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+
+	// 全画面クリア			R		G	B		A
+	float clearColor[] = { 0.1f, 0.25f, 0.5f, 0.0f }; // 青っぽい色
+	cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+}
+
+void DirectXCommon::ClearDepthBuffer() {
+	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
+	// 深度バッファのクリア
+	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+}
+
 DirectXCommon::DirectXCommon(WinAPI* winapi) {
 	assert(winapi);
 	this->winapi = winapi;
@@ -230,10 +247,10 @@ void DirectXCommon::startDraw() {
 		);
 	cmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
 
-	// ３．画面クリア		R		G	B		A(透明度)
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 0.0f }; // 青っぽい色
-	cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
-	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	// 全画面クリア
+	ClearRenderTarget();
+	// 深度バッファクリア
+	ClearDepthBuffer();
 
 	// ビューポート領域の設定
 	cmdList->RSSetViewports(1, &CD3DX12_VIEWPORT(0.0f, 0.0f, WinAPI::window_width, WinAPI::window_height));
