@@ -384,7 +384,9 @@ void SpriteTransferVertexBuffer(const Sprite& sprite, const SpriteCommon& sprite
 }
 
 // スプライト生成
-Sprite SpriteCreate(ID3D12Device* dev, int window_width, int window_height, UINT texNumber, const SpriteCommon& spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f }, bool isFlipX = false, bool isFlipY = false) {
+Sprite SpriteCreate(ID3D12Device* dev, int window_width, int window_height,
+	UINT texNumber, const SpriteCommon& spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f },
+	bool isFlipX = false, bool isFlipY = false) {
 	HRESULT result = S_FALSE;
 
 	// 新しいスプライトを作る
