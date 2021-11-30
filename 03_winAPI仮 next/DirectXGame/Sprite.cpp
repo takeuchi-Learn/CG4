@@ -14,8 +14,8 @@ using namespace Microsoft::WRL;
 
 // スプライト用パイプライン生成
 Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev,
-	const wchar_t* vsPath = L"Resources/Shaders/SpriteVS.hlsl",
-	const wchar_t* psPath = L"Resources/Shaders/SpritePS.hlsl") {
+	const wchar_t* vsPath,
+	const wchar_t* psPath) {
 	HRESULT result;
 
 	ComPtr<ID3DBlob> vsBlob = nullptr; // 頂点シェーダオブジェクト
