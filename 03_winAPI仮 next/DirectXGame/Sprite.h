@@ -64,7 +64,9 @@ public:
 
 public:
 	// スプライト用パイプライン生成
-	PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device* dev);
+	PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device* dev,
+		const wchar_t* vsPath = L"Resources/Shaders/SpriteVS.hlsl",
+		const wchar_t* psPath = L"Resources/Shaders/SpritePS.hlsl");
 
 	// スプライト共通データ生成
 	SpriteCommon SpriteCommonCreate(ID3D12Device* dev, int window_width, int window_height);

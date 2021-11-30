@@ -13,7 +13,9 @@ using namespace Microsoft::WRL;
 #include <DirectXTex.h>
 
 // スプライト用パイプライン生成
-Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev) {
+Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev,
+	const wchar_t* vsPath = L"Resources/Shaders/SpriteVS.hlsl",
+	const wchar_t* psPath = L"Resources/Shaders/SpritePS.hlsl") {
 	HRESULT result;
 
 	ComPtr<ID3DBlob> vsBlob = nullptr; // 頂点シェーダオブジェクト
@@ -22,7 +24,7 @@ Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev) {
 
 	// 頂点シェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/Shaders/SpriteVS.hlsl",  // シェーダファイル名
+		vsPath,  // シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "vs_5_0", // エントリーポイント名、シェーダーモデル指定
@@ -46,7 +48,7 @@ Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev) {
 
 	// ピクセルシェーダの読み込みとコンパイル
 	result = D3DCompileFromFile(
-		L"Resources/Shaders/SpritePS.hlsl",   // シェーダファイル名
+		psPath,   // シェーダファイル名
 		nullptr,
 		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
 		"main", "ps_5_0", // エントリーポイント名、シェーダーモデル指定
