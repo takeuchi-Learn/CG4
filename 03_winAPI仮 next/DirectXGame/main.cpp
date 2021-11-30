@@ -1145,6 +1145,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (int i = 0; i < _countof(object3ds); i++) {
 		// 初期化
 		InitializeObject3d(&object3ds[i], i, dxCom->getDev(), basicDescHeap.Get());
+		object3ds[i].scale = { 0.5f, 0.5f, 0.5f };
 
 		// ここから↓は親子構造のサンプル
 		// 先頭以外なら
@@ -1160,27 +1161,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//}
 	}
 
-	object3ds[0].scale = { 0.5f, 0.5f, 0.5f };
-	object3ds[1].scale = { 0.5f, 0.5f, 0.5f };
 
 
 
+	// --------------------
+	// スプライト共通
+	// --------------------
 
-	// スプライト
-	SpriteCommon spriteCommon;
+	SpriteCommon spriteCommon = SpriteCommonCreate(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height);
+
+	// スプライト共通テクスチャ読み込み
+	enum TEX_NUM { TEX1, HOUSE };
+	SpriteCommonLoadTexture(spriteCommon, TEX_NUM::TEX1, L"Resources/texture.png", dxCom->getDev());
+	SpriteCommonLoadTexture(spriteCommon, TEX_NUM::HOUSE, L"Resources/house.png", dxCom->getDev());
+
+	// --------------------
+	// スプライト個別
+	// --------------------
+
 	const int SPRITES_NUM = 1;
 	Sprite sprites[SPRITES_NUM];
 
-	// スプライト共通データ生成
-	spriteCommon = SpriteCommonCreate(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height);
-	// スプライト共通テクスチャ読み込み
-	SpriteCommonLoadTexture(spriteCommon, 0, L"Resources/texture.png", dxCom->getDev());
-	SpriteCommonLoadTexture(spriteCommon, 1, L"Resources/house.png", dxCom->getDev());
-
 	// スプライトの生成
 	for (int i = 0; i < _countof(sprites); i++) {
-		int texNumber = rand() % 2;
-		sprites[i] = SpriteCreate(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height, texNumber, spriteCommon, { 0,0 }, false, false);
+		sprites[i] = SpriteCreate(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height, TEX_NUM::HOUSE, spriteCommon, { 0,0 }, false, false);
 
 		// スプライトの座標変更
 		sprites[i].position.x = 1280 / 2;
@@ -1198,7 +1202,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		SpriteTransferVertexBuffer(sprites[i], spriteCommon);
 	}
 
+
+
+	// --------------------
 	// デバッグテキスト
+	// --------------------
+
 	DebugText debugText;
 
 	// デバッグテキスト用のテクスチャ番号を指定
@@ -1208,12 +1217,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// デバッグテキスト初期化
 	debugText.Initialize(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height, debugTextTexNumber, spriteCommon);
 
+
+
+	// --------------------
+	// 3Dオブジェクトのテクスチャ
+	// --------------------
+
 	// WICテクスチャのロード
 	TexMetadata metadata{};
 	ScratchImage scratchImg{};
 
 	result = LoadFromWICFile(
-		L"Resources/house.png",   //「Resources」フォルダの「texture.png」
+		L"Resources/red.png",   //「Resources」フォルダの「texture.png」
 		WIC_FLAGS_NONE,
 		&metadata, scratchImg);
 
@@ -1265,13 +1280,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion 描画初期化処理
 
 #pragma region 入力初期化
-	//Input* input = new Input(winapi->getW(), winapi->getHwnd());
+
 	std::unique_ptr<Input> input(new Input(winapi->getW().hInstance, winapi->getHwnd()));
+
 #pragma endregion 入力初期化
 
 
 #pragma region ループ前定義宣言
+
 	int counter = 0; // アニメーションの経過時間カウンター
+
 #pragma endregion
 
 	// ゲームループ
@@ -1375,7 +1393,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		// マップを解除
 		vertBuff->Unmap(0, nullptr);
-		
+
 #pragma endregion DirectX毎フレーム処理
 
 #pragma region グラフィックスコマンド
@@ -1386,7 +1404,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		dxCom->getCmdList()->SetPipelineState(object3dPipelineSet.pipelinestate.Get());
 		dxCom->getCmdList()->SetGraphicsRootSignature(object3dPipelineSet.rootsignature.Get());
 
-		
+
 		//cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		dxCom->getCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -1412,7 +1430,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion グラフィックスコマンド
 
 	}
-	//delete input;
 
 #pragma region 音関連終了処理(クラス化してデストラクタで行う方がよい)
 	// XAudio2解放
@@ -1420,9 +1437,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 音声データ解放
 	SoundUnload(&soundData1);
 #pragma endregion
-
-	//WindowsAPI後始末
-	//delete winapi;
 
 	return 0;
 }

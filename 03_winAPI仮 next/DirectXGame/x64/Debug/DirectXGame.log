@@ -1,3 +1,2 @@
-﻿  Sprite.cpp
-  LINK : 前回のインクリメンタル リンクで C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\DirectXGame.exe が見つからなかったか、ビルドされませんでした。フル リンクを行います。
+﻿  main.cpp
   DirectXGame.vcxproj -> C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\DirectXGame.exe
