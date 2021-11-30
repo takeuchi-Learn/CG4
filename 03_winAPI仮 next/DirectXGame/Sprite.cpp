@@ -239,7 +239,7 @@ void Sprite::SpriteCommonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber,
 }
 
 // スプライト単体頂点バッファの転送
-void Sprite::SpriteTransferVertexBuffer(const SpriteData& sprite, const SpriteCommon& spriteCommon) {
+void Sprite::SpriteTransferVertexBuffer(const SpriteCommon& spriteCommon) {
 	HRESULT result = S_FALSE;
 
 	// 頂点データ
@@ -254,17 +254,17 @@ void Sprite::SpriteTransferVertexBuffer(const SpriteData& sprite, const SpriteCo
 	// 左下、左上、右下、右上
 	enum { LB, LT, RB, RT };
 
-	float left = (0.0f - sprite.anchorpoint.x) * sprite.size.x;
-	float right = (1.0f - sprite.anchorpoint.x) * sprite.size.x;
-	float top = (0.0f - sprite.anchorpoint.y) * sprite.size.y;
-	float bottom = (1.0f - sprite.anchorpoint.y) * sprite.size.y;
+	float left = (0.0f - anchorpoint.x) * size.x;
+	float right = (1.0f - anchorpoint.x) * size.x;
+	float top = (0.0f - anchorpoint.y) * size.y;
+	float bottom = (1.0f - anchorpoint.y) * size.y;
 
-	if (sprite.isFlipX) {// 左右入れ替え
+	if (isFlipX) {// 左右入れ替え
 		left = -left;
 		right = -right;
 	}
 
-	if (sprite.isFlipY) {// 左右入れ替え
+	if (isFlipY) {// 左右入れ替え
 		top = -top;
 		bottom = -bottom;
 	}
@@ -275,14 +275,14 @@ void Sprite::SpriteTransferVertexBuffer(const SpriteData& sprite, const SpriteCo
 	vertices[RT].pos = { right, top,    0.0f }; // 右上
 
 	// 指定番号の画像が読み込み済みなら
-	if (spriteCommon.texBuff[sprite.texNumber]) {
+	if (spriteCommon.texBuff[texNumber]) {
 		// テクスチャ情報取得
-		D3D12_RESOURCE_DESC resDesc = spriteCommon.texBuff[sprite.texNumber]->GetDesc();
+		D3D12_RESOURCE_DESC resDesc = spriteCommon.texBuff[texNumber]->GetDesc();
 
-		float tex_left = sprite.texLeftTop.x / resDesc.Width;
-		float tex_right = (sprite.texLeftTop.x + sprite.texSize.x) / resDesc.Width;
-		float tex_top = sprite.texLeftTop.y / resDesc.Height;
-		float tex_bottom = (sprite.texLeftTop.y + sprite.texSize.y) / resDesc.Height;
+		float tex_left = texLeftTop.x / resDesc.Width;
+		float tex_right = (texLeftTop.x + texSize.x) / resDesc.Width;
+		float tex_top = texLeftTop.y / resDesc.Height;
+		float tex_bottom = (texLeftTop.y + texSize.y) / resDesc.Height;
 
 		vertices[LB].uv = { tex_left,   tex_bottom }; // 左下
 		vertices[LT].uv = { tex_left,   tex_top }; // 左上
@@ -292,41 +292,38 @@ void Sprite::SpriteTransferVertexBuffer(const SpriteData& sprite, const SpriteCo
 
 	// 頂点バッファへのデータ転送
 	VertexPosUv* vertMap = nullptr;
-	result = sprite.vertBuff->Map(0, nullptr, (void**)&vertMap);
+	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
 	memcpy(vertMap, vertices, sizeof(vertices));
-	sprite.vertBuff->Unmap(0, nullptr);
+	vertBuff->Unmap(0, nullptr);
 }
 
 // スプライト生成
-Sprite::SpriteData Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int window_height,
+void Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int window_height,
 	UINT texNumber, const SpriteCommon& spriteCommon, XMFLOAT2 anchorpoint,
 	bool isFlipX, bool isFlipY) {
 	HRESULT result = S_FALSE;
 
-	// 新しいスプライトを作る
-	SpriteData sprite{};
-
 	// テクスチャ番号をコピー
-	sprite.texNumber = texNumber;
+	texNumber = texNumber;
 
 	// アンカーポイントをコピー
-	sprite.anchorpoint = anchorpoint;
+	anchorpoint = anchorpoint;
 
 	// 反転フラグをコピー
-	sprite.isFlipX = isFlipX;
-	sprite.isFlipY = isFlipY;
+	isFlipX = isFlipX;
+	isFlipY = isFlipY;
 
 	// 頂点データ
 	VertexPosUv vertices[4];
 
 	// 指定番号の画像が読み込み済みなら
-	if (spriteCommon.texBuff[sprite.texNumber]) {
+	if (spriteCommon.texBuff[texNumber]) {
 		// テクスチャ情報取得
-		D3D12_RESOURCE_DESC resDesc = spriteCommon.texBuff[sprite.texNumber]->GetDesc();
+		D3D12_RESOURCE_DESC resDesc = spriteCommon.texBuff[texNumber]->GetDesc();
 
 		// スプライトの大きさを画像の解像度に合わせる
-		sprite.size = { (float)resDesc.Width, (float)resDesc.Height };
-		sprite.texSize = { (float)resDesc.Width, (float)resDesc.Height };
+		size = { (float)resDesc.Width, (float)resDesc.Height };
+		texSize = { (float)resDesc.Width, (float)resDesc.Height };
 	}
 
 	// 頂点バッファ生成
@@ -335,15 +332,15 @@ Sprite::SpriteData Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer(sizeof(vertices)),
 		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&sprite.vertBuff));
+		IID_PPV_ARGS(&vertBuff));
 
 	// 頂点バッファデータ転送
-	SpriteTransferVertexBuffer(sprite, spriteCommon);
+	SpriteTransferVertexBuffer(spriteCommon);
 
 	// 頂点バッファビューの作成
-	sprite.vbView.BufferLocation = sprite.vertBuff->GetGPUVirtualAddress();
-	sprite.vbView.SizeInBytes = sizeof(vertices);
-	sprite.vbView.StrideInBytes = sizeof(vertices[0]);
+	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
+	vbView.SizeInBytes = sizeof(vertices);
+	vbView.StrideInBytes = sizeof(vertices[0]);
 
 	// 定数バッファの生成
 	result = dev->CreateCommittedResource(
@@ -351,18 +348,16 @@ Sprite::SpriteData Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff) & ~0xff),
 		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-		IID_PPV_ARGS(&sprite.constBuff));
+		IID_PPV_ARGS(&constBuff));
 
 	// 定数バッファにデータ転送
 	ConstBufferData* constMap = nullptr;
-	result = sprite.constBuff->Map(0, nullptr, (void**)&constMap);
+	result = constBuff->Map(0, nullptr, (void**)&constMap);
 	constMap->color = XMFLOAT4(1, 1, 1, 1); // 色指定（RGBA）
 	constMap->mat = XMMatrixOrthographicOffCenterLH(
 		0.0f, (float)window_width, (float)window_height, 0.0f, 0.0f, 1.0f);   // 平行投影行列の合成    
-	sprite.constBuff->Unmap(0, nullptr);
+	constBuff->Unmap(0, nullptr);
 
-	// 初期化した、新しいスプライトを返す
-	return sprite;
 }
 
 // スプライト共通グラフィックコマンドのセット
@@ -380,39 +375,39 @@ void Sprite::SpriteCommonBeginDraw(const SpriteCommon& spriteCommon, ID3D12Graph
 }
 
 // スプライト単体更新
-void Sprite::SpriteUpdate(SpriteData& sprite, const SpriteCommon& spriteCommon) {
+void Sprite::SpriteUpdate(const SpriteCommon& spriteCommon) {
 	// ワールド行列の更新
-	sprite.matWorld = XMMatrixIdentity();
+	matWorld = XMMatrixIdentity();
 	// Z軸回転
-	sprite.matWorld *= XMMatrixRotationZ(XMConvertToRadians(sprite.rotation));
+	matWorld *= XMMatrixRotationZ(XMConvertToRadians(rotation));
 	// 平行移動
-	sprite.matWorld *= XMMatrixTranslation(sprite.position.x, sprite.position.y, sprite.position.z);
+	matWorld *= XMMatrixTranslation(position.x, position.y, position.z);
 
 	// 定数バッファの転送
 	ConstBufferData* constMap = nullptr;
-	HRESULT result = sprite.constBuff->Map(0, nullptr, (void**)&constMap);
-	constMap->mat = sprite.matWorld * spriteCommon.matProjection;
-	constMap->color = sprite.color;
-	sprite.constBuff->Unmap(0, nullptr);
+	HRESULT result = constBuff->Map(0, nullptr, (void**)&constMap);
+	constMap->mat = matWorld * spriteCommon.matProjection;
+	constMap->color = color;
+	constBuff->Unmap(0, nullptr);
 }
 
 // スプライト単体描画
-void Sprite::SpriteDraw(const SpriteData& sprite, ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev) {
-	if (sprite.isInvisible) {
+void Sprite::SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev) {
+	if (isInvisible) {
 		return;
 	}
 
 	// 頂点バッファをセット
-	cmdList->IASetVertexBuffers(0, 1, &sprite.vbView);
+	cmdList->IASetVertexBuffers(0, 1, &vbView);
 
 	// 定数バッファをセット
-	cmdList->SetGraphicsRootConstantBufferView(0, sprite.constBuff->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
 
 	// シェーダリソースビューをセット
 	cmdList->SetGraphicsRootDescriptorTable(1,
 		CD3DX12_GPU_DESCRIPTOR_HANDLE(
 			spriteCommon.descHeap->GetGPUDescriptorHandleForHeapStart(),
-			sprite.texNumber,
+			texNumber,
 			dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
 
 	// ポリゴンの描画（4頂点で四角形）

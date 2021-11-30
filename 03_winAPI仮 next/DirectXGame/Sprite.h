@@ -29,7 +29,6 @@ public:
 	};
 
 	// スプライト1枚分のデータ
-	struct SpriteData {
 		//頂点バッファ;
 		ComPtr<ID3D12Resource> vertBuff;
 		//頂点バッファビュー;
@@ -60,9 +59,12 @@ public:
 		XMFLOAT2 texSize = { 100, 100 };
 		// 非表示
 		bool isInvisible = false;
-	};
 
 public:
+	// --------------------
+	// 共通
+	// --------------------
+
 	// スプライト用パイプライン生成
 	PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device* dev,
 		const wchar_t* vsPath = L"Resources/Shaders/SpriteVS.hlsl",
@@ -74,21 +76,25 @@ public:
 	// スプライト共通テクスチャ読み込み
 	void SpriteCommonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber, const wchar_t* filename, ID3D12Device* dev);
 
-	// スプライト単体頂点バッファの転送
-	void SpriteTransferVertexBuffer(const SpriteData& sprite, const SpriteCommon& spriteCommon);
-
-	// スプライト生成
-	SpriteData SpriteCreate(ID3D12Device* dev, int window_width, int window_height,
-		UINT texNumber, const SpriteCommon& spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f },
-		bool isFlipX = false, bool isFlipY = false);
-
 	// スプライト共通グラフィックコマンドのセット
 	void SpriteCommonBeginDraw(const SpriteCommon& spriteCommon, ID3D12GraphicsCommandList* cmdList);
 
+	// --------------------
+	// 共通
+	// --------------------
+
+	// スプライト単体頂点バッファの転送
+	void SpriteTransferVertexBuffer(const SpriteCommon& spriteCommon);
+
+	// スプライト生成
+	void SpriteCreate(ID3D12Device* dev, int window_width, int window_height,
+		UINT texNumber, const SpriteCommon& spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f },
+		bool isFlipX = false, bool isFlipY = false);
+
 	// スプライト単体更新
-	void SpriteUpdate(SpriteData& sprite, const SpriteCommon& spriteCommon);
+	void SpriteUpdate(const SpriteCommon& spriteCommon);
 
 	// スプライト単体描画
-	void SpriteDraw(const SpriteData& sprite, ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev);
+	void SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev);
 };
 
