@@ -29,6 +29,8 @@ using namespace Microsoft::WRL;
 
 #include "Sprite.h"
 
+#include "DebugText.h"
+
 #pragma region 2D3D共通
 // 定数バッファ用データ構造体
 struct ConstBufferData {
@@ -43,84 +45,6 @@ struct PipelineSet {
 	// ルートシグネチャ
 	ComPtr<ID3D12RootSignature> rootsignature;
 };
-#pragma endregion
-
-#pragma region 文字表示
-	// デバッグ文字列クラスの定義
-	class DebugText {
-	public: // 定数の宣言    
-		static const int maxCharCount = 256;    // 最大文字数
-		static const int fontWidth = 9;         // フォント画像内1文字分の横幅
-		static const int fontHeight = 18;       // フォント画像内1文字分の縦幅
-		static const int fontLineCount = 14;    // フォント画像内1行分の文字数
-
-	public: // メンバ関数
-		void Initialize(ID3D12Device* dev, int window_width, int window_height, UINT texnumber, const Sprite::SpriteCommon& spriteCommon);
-
-		void Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, float x, float y, float scale = 1.0f);
-
-		void DrawAll(ID3D12GraphicsCommandList* cmdList, const Sprite::SpriteCommon& spriteCommon, ID3D12Device* dev);
-
-	private: // メンバ変数     
-		// スプライトデータの配列
-		Sprite sprites[maxCharCount];
-		// スプライトデータ配列の添え字番号
-		int spriteIndex = 0;
-	};
-
-	void DebugText::Initialize(ID3D12Device* dev, int window_width, int window_height, UINT texnumber, const Sprite::SpriteCommon& spriteCommon) {
-		// 全てのスプライトデータについて
-		for (int i = 0; i < _countof(sprites); i++) {
-			// スプライトを生成する
-			sprites[i].SpriteCreate(dev, window_width, window_height, texnumber, spriteCommon, { 0,0 });
-		}
-	}
-
-	void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, float x, float y, float scale) {
-		// 全ての文字について
-		for (int i = 0; i < text.size(); i++) {
-			// 最大文字数超過
-			if (spriteIndex >= maxCharCount) {
-				break;
-			}
-
-			// 1文字取り出す(※ASCIIコードでしか成り立たない)
-			const unsigned char& character = text[i];
-
-			// ASCIIコードの2段分飛ばした番号を計算
-			int fontIndex = character - 32;
-			if (character >= 0x7f) {
-				fontIndex = 0;
-			}
-
-			int fontIndexY = fontIndex / fontLineCount;
-			int fontIndexX = fontIndex % fontLineCount;
-
-			// 座標計算
-			sprites[spriteIndex].position = { x + fontWidth * scale * i, y, 0 };
-			sprites[spriteIndex].texLeftTop = { (float)fontIndexX * fontWidth, (float)fontIndexY * fontHeight };
-			sprites[spriteIndex].texSize = { fontWidth, fontHeight };
-			sprites[spriteIndex].size = { fontWidth * scale, fontHeight * scale };
-			// 頂点バッファ転送
-			sprites[spriteIndex].SpriteTransferVertexBuffer(spriteCommon);
-			// 更新
-			sprites[spriteIndex].SpriteUpdate(spriteCommon);
-
-			// 文字を１つ進める
-			spriteIndex++;
-		}
-	}
-
-	// まとめて描画
-	void DebugText::DrawAll(ID3D12GraphicsCommandList* cmdList, const Sprite::SpriteCommon& spriteCommon, ID3D12Device* dev) {
-		// 全ての文字のスプライトについて
-		for (int i = 0; i < spriteIndex; i++) {
-			// スプライト描画
-			sprites[i].SpriteDraw(cmdList, spriteCommon, dev);
-		}
-
-		spriteIndex = 0;
-	}
 #pragma endregion
 
 #pragma region 3Dオブジェクト宣言
