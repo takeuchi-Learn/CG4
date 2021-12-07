@@ -27,25 +27,11 @@ using namespace Microsoft::WRL;
 
 #include "DirectXCommon.h"
 
+#include "ObjCommon.h"
+
 #include "Sprite.h"
 
 #include "DebugText.h"
-
-#pragma region 2D3D共通
-// 定数バッファ用データ構造体
-struct ConstBufferData {
-	XMFLOAT4 color; // 色 (RGBA)
-	XMMATRIX mat;   // ３Ｄ変換行列
-};
-
-// パイプラインセット
-struct PipelineSet {
-	// パイプラインステートオブジェクト
-	ComPtr<ID3D12PipelineState> pipelinestate;
-	// ルートシグネチャ
-	ComPtr<ID3D12RootSignature> rootsignature;
-};
-#pragma endregion
 
 #pragma region 3Dオブジェクト宣言
 
@@ -71,7 +57,7 @@ struct Object3d {
 };
 
 // 3Dオブジェクト用パイプライン生成
-PipelineSet Object3dCreateGraphicsPipeline(ID3D12Device* dev) {
+ObjCommon::PipelineSet Object3dCreateGraphicsPipeline(ID3D12Device* dev) {
 	HRESULT result;
 
 	ComPtr<ID3DBlob> vsBlob = nullptr; // 頂点シェーダオブジェクト
@@ -181,7 +167,7 @@ PipelineSet Object3dCreateGraphicsPipeline(ID3D12Device* dev) {
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
 	// パイプラインとルートシグネチャのセット
-	PipelineSet pipelineSet;
+	ObjCommon::PipelineSet pipelineSet;
 
 	// ルートシグネチャの生成
 	// ルートシグネチャの設定
@@ -211,7 +197,7 @@ void InitializeObject3d(Object3d* object, int index, ID3D12Device* dev, ID3D12De
 	result = dev->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),   // アップロード可能
 		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff) & ~0xff),
+		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ObjCommon::ConstBufferData) + 0xff) & ~0xff),
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&object->constBuff));
@@ -241,7 +227,7 @@ void UpdateObject3d(Object3d* object, XMMATRIX& matView, XMMATRIX& matProjection
 	}
 
 	// 定数バッファへデータ転送
-	ConstBufferData* constMap = nullptr;
+	ObjCommon::ConstBufferData* constMap = nullptr;
 	if (SUCCEEDED(object->constBuff->Map(0, nullptr, (void**)&constMap))) {
 		constMap->color = XMFLOAT4(1, 1, 1, 1); // RGBA
 		constMap->mat = object->matWorld * matView * matProjection;
@@ -737,7 +723,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	);
 
 	// 3Dオブジェクト用パイプライン生成
-	PipelineSet object3dPipelineSet = Object3dCreateGraphicsPipeline(dxCom->getDev());
+	ObjCommon::PipelineSet object3dPipelineSet = Object3dCreateGraphicsPipeline(dxCom->getDev());
 
 #pragma endregion 描画初期化処理
 
