@@ -238,6 +238,22 @@ void Sprite::SpriteCommonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber,
 	);
 }
 
+// スプライト共通グラフィックコマンドのセット
+void Sprite::SpriteCommonBeginDraw(const SpriteCommon& spriteCommon, ID3D12GraphicsCommandList* cmdList) {
+	// パイプラインステートの設定
+	cmdList->SetPipelineState(spriteCommon.pipelineSet.pipelinestate.Get());
+	// ルートシグネチャの設定
+	cmdList->SetGraphicsRootSignature(spriteCommon.pipelineSet.rootsignature.Get());
+	// プリミティブ形状を設定
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	// テクスチャ用デスクリプタヒープの設定
+	ID3D12DescriptorHeap* ppHeaps[] = { spriteCommon.descHeap.Get() };
+	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+}
+
+
+
 // スプライト単体頂点バッファの転送
 void Sprite::SpriteTransferVertexBuffer(const SpriteCommon& spriteCommon) {
 	HRESULT result = S_FALSE;
@@ -304,14 +320,14 @@ void Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int window_height
 	HRESULT result = S_FALSE;
 
 	// テクスチャ番号をコピー
-	texNumber = texNumber;
+	this->texNumber = texNumber;
 
 	// アンカーポイントをコピー
-	anchorpoint = anchorpoint;
+	this->anchorpoint = anchorpoint;
 
 	// 反転フラグをコピー
-	isFlipX = isFlipX;
-	isFlipY = isFlipY;
+	this->isFlipX = isFlipX;
+	this->isFlipY = isFlipY;
 
 	// 頂点データ
 	VertexPosUv vertices[4];
@@ -360,20 +376,6 @@ void Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int window_height
 
 }
 
-// スプライト共通グラフィックコマンドのセット
-void Sprite::SpriteCommonBeginDraw(const SpriteCommon& spriteCommon, ID3D12GraphicsCommandList* cmdList) {
-	// パイプラインステートの設定
-	cmdList->SetPipelineState(spriteCommon.pipelineSet.pipelinestate.Get());
-	// ルートシグネチャの設定
-	cmdList->SetGraphicsRootSignature(spriteCommon.pipelineSet.rootsignature.Get());
-	// プリミティブ形状を設定
-	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-	// テクスチャ用デスクリプタヒープの設定
-	ID3D12DescriptorHeap* ppHeaps[] = { spriteCommon.descHeap.Get() };
-	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-}
-
 // スプライト単体更新
 void Sprite::SpriteUpdate(const SpriteCommon& spriteCommon) {
 	// ワールド行列の更新
@@ -412,4 +414,10 @@ void Sprite::SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& 
 
 	// ポリゴンの描画（4頂点で四角形）
 	cmdList->DrawInstanced(4, 1, 0, 0);
+}
+
+// 更新と描画を同時に行う
+void Sprite::SpriteDrawWithUpdate(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev) {
+	SpriteUpdate(spriteCommon);
+	SpriteDraw(cmdList, spriteCommon, dev);
 }
