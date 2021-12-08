@@ -1,14 +1,18 @@
 ﻿#include <Windows.h>
+
 #include <d3d12.h>
 #pragma comment(lib, "d3d12.lib")
+
 #include <dxgi1_6.h>
 #pragma comment(lib, "dxgi.lib")
+
 #include <d3dx12.h>
 
 #include <vector>
 #include <string>
 #include <fstream>
 #include <DirectXMath.h>
+
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -435,11 +439,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Vertex vertices[DIV + 1 + 1] = {};
 
-	vertices[0].pos.x = radius * sinf(XM_2PI * 0 / DIV); vertices[0].pos.y = radius * cosf(XM_2PI * 0 / DIV); vertices[0].pos.z = 0.0f;
-	vertices[1].pos.x = radius * sinf(XM_2PI * 1 / DIV); vertices[1].pos.y = radius * cosf(XM_2PI * 1 / DIV); vertices[1].pos.z = 0.0f;
-	vertices[2].pos.x = radius * sinf(XM_2PI * 2 / DIV); vertices[2].pos.y = radius * cosf(XM_2PI * 2 / DIV); vertices[2].pos.z = 0.0f;
-	vertices[3].pos = { 0,0,0 };
-	vertices[4].pos = { 0,0,-topHeight };
+	for (UINT i = 0; i < DIV; i++) {
+		vertices[i].pos.x = radius * sinf(XM_2PI * i / DIV);
+		vertices[i].pos.y = radius * cosf(XM_2PI * i / DIV);
+		vertices[i].pos.z = 0.0f;
+	}
+
+	vertices[DIV].pos = { 0,0,0 };
+	vertices[DIV + 1].pos = { 0,0,-topHeight };
 
 	// インデックスデータ
 	unsigned short indices[3 * DIV * 2];
@@ -736,7 +743,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region ループ前定義宣言
 
-	int counter = 0; // アニメーションの経過時間カウンター
+	int animFrameCount = 0; // アニメーションの経過時間カウンター
 
 #pragma endregion
 
@@ -750,13 +757,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		if (input->hitKey(DIK_ESCAPE)) break;	//ESCで終了
 
 		const int cycle = 540; // 繰り返しの周期
-		counter++;
-		counter %= cycle; // 周期を超えたら0に戻る
-		float scale = (float)counter / cycle; // [0,1]の数値
+		animFrameCount++;
+		animFrameCount %= cycle; // 周期を超えたら0に戻る
+		float scale = (float)animFrameCount / cycle; // [0,1]の数値
 
 		//const int cycle = 60; // 繰り返しの周期
-		//counter++;
-		//float scale = sinf(XM_2PI * (float)counter / cycle); // [-1,+1]の数値
+		//animFrameCount++;
+		//float scale = sinf(XM_2PI * (float)animFrameCount / cycle); // [-1,+1]の数値
 		//scale += 1.0f; // [0,+2]の数値
 		//scale /= 2.0f; // [0,+1]の数値
 		scale *= 360.0f;
@@ -764,7 +771,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		object3ds[0].rotation = { 0, 0, scale };
 		object3ds[1].rotation = { 0, 0, -scale };
 
-		float offset = sinf(XM_2PI * (float)counter / cycle);
+		float offset = sinf(XM_2PI * (float)animFrameCount / cycle);
 		offset *= 10.0f;
 		object3ds[0].position = { offset, 0, 0 };
 		object3ds[1].position = { -offset, 0, 0 };
