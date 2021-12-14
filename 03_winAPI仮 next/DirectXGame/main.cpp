@@ -1029,14 +1029,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		dxCom->startDraw();
 
 		// ４．描画コマンドここから
-		// パイプラインステートとルートシグネチャの設定
-		dxCom->getCmdList()->SetPipelineState(object3dPipelineSet.pipelinestate.Get());
-		dxCom->getCmdList()->SetGraphicsRootSignature(object3dPipelineSet.rootsignature.Get());
 
-
-		//cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		dxCom->getCmdList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+		Object3dCommonBeginDraw(dxCom->getCmdList(), object3dPipelineSet.pipelinestate.Get(), object3dPipelineSet.rootsignature.Get());
 
 		for (int i = 0; i < _countof(object3ds); i++) {
 			DrawObject3d(&object3ds[i],
