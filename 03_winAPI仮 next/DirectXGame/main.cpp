@@ -40,6 +40,10 @@ using namespace Microsoft::WRL;
 #include <sstream>
 #include <fstream>
 
+#include "Model.h"
+#include "Object3d.h"
+#include <memory>
+
 #pragma region 3Dオブジェクト関係
 
 const unsigned int constantBufferNum = 128; // 定数バッファの最大数
@@ -179,7 +183,7 @@ ObjCommon::PipelineSet Object3dCreateGraphicsPipeline(ID3D12Device* dev,
 }
 
 // 3Dオブジェクト型
-struct Object3d {
+struct Object3dOld {
 	// 定数バッファ
 	ComPtr<ID3D12Resource> constBuff;
 	// アフィン変換情報
@@ -189,11 +193,11 @@ struct Object3d {
 	// ワールド変換行列
 	XMMATRIX matWorld;
 	// 親オブジェクトへのポインタ
-	Object3d* parent = nullptr;
+	Object3dOld* parent = nullptr;
 };
 
 // 3Dオブジェクト初期化
-void InitializeObject3d(Object3d* object, ID3D12Device* dev, ID3D12DescriptorHeap* descHeap) {
+void InitializeObject3d(Object3dOld* object, ID3D12Device* dev, ID3D12DescriptorHeap* descHeap) {
 	HRESULT result;
 
 	// 定数バッファの生成
@@ -206,7 +210,7 @@ void InitializeObject3d(Object3d* object, ID3D12Device* dev, ID3D12DescriptorHea
 		IID_PPV_ARGS(&object->constBuff));
 }
 
-void UpdateObject3d(Object3d* object, XMMATRIX& matView, XMMATRIX& matProjection) {
+void UpdateObject3d(Object3dOld* object, XMMATRIX& matView, XMMATRIX& matProjection) {
 	XMMATRIX matScale, matRot, matTrans;
 
 	// スケール、回転、平行移動行列の計算
@@ -238,7 +242,7 @@ void UpdateObject3d(Object3d* object, XMMATRIX& matView, XMMATRIX& matProjection
 	}
 }
 
-void DrawObject3d(Object3d* object, ID3D12GraphicsCommandList* cmdList, ID3D12Device* dev, ID3D12DescriptorHeap* descHeap,
+void DrawObject3d(Object3dOld* object, ID3D12GraphicsCommandList* cmdList, ID3D12Device* dev, ID3D12DescriptorHeap* descHeap,
 	D3D12_VERTEX_BUFFER_VIEW& vbView, D3D12_INDEX_BUFFER_VIEW& ibView, std::vector<unsigned short>& indices) {
 	// デスクリプタヒープの配列
 	ID3D12DescriptorHeap* ppHeaps[] = { descHeap };
@@ -762,7 +766,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 3Dオブジェクトの数
 	const int OBJECT_NUM = 2;
 
-	Object3d object3ds[OBJECT_NUM];
+	Object3dOld object3ds[OBJECT_NUM];
 
 	// 配列内の全オブジェクトに対して
 	for (int i = 0; i < _countof(object3ds); i++) {
@@ -913,6 +917,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int animFrameCount = 0; // アニメーションの経過時間カウンター
 
+	std::unique_ptr<Model> model(new Model(dxCom->getDev(),
+		L"Resources/model/model.obj", L"Resources/model/tex.png",
+		WinAPI::window_width, WinAPI::window_height, Object3d::constantBufferNum));
+
+	std::unique_ptr<Object3d> obj3d(new Object3d(dxCom->getDev(), model.get()));
+	const float obj3dScale = 10.f;
+	obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
+	obj3d->position = { 0, 0, obj3dScale };
+
 #pragma endregion
 
 	// ゲームループ
@@ -981,6 +994,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		for (int i = 0; i < _countof(object3ds); i++) {
 			UpdateObject3d(&object3ds[i], matView, matProjection);
 		}
+		obj3d->update(matView);
 
 
 
@@ -1040,6 +1054,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				indices
 			);
 		}
+
+		obj3d->draw(dxCom->getCmdList(), dxCom->getDev());
 
 		// スプライト共通コマンド
 		Sprite::SpriteCommonBeginDraw(spriteCommon, dxCom->getCmdList());
