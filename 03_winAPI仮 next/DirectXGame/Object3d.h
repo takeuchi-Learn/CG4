@@ -53,8 +53,8 @@ public:
 	//3Dオブジェクト用パイプライン生成
 	// シェーダーモデル指定は "*s_5_0"
 	static Object3d::PipelineSet Object3dCreateGraphicsPipeline(ID3D12Device* dev,
-		const wchar_t* vsShaderPath = L"Resources/Shader/BasicVS.hlsl",
-		const wchar_t* psShaderPath = L"Resources/Shader/BasicPS.hlsl");
+		const wchar_t* vsShaderPath = L"Resources/Shaders/BasicVS.hlsl",
+		const wchar_t* psShaderPath = L"Resources/Shaders/BasicPS.hlsl");
 
 	// --------------------
 	// (動的)メンバ
