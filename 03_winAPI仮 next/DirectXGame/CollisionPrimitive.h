@@ -20,3 +20,13 @@ struct Plane {
 	float distance = 0.f;
 };
 
+// 法線付き三角形(時計回りが表)
+class Triangle {
+public:
+	//頂点情報3つ
+	DirectX::XMVECTOR p0;
+	DirectX::XMVECTOR p1;
+	DirectX::XMVECTOR p2;
+	//法線ベクトル
+	DirectX::XMVECTOR normal;
+};

@@ -298,8 +298,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 当たり判定
 	// 球
 	Sphere sphere;
-	// 平面
-	Plane plane;
+	//// 平面
+	//Plane plane;
+	// 三角形
+	Triangle triangle;
 
 	// --------------------
 	// 球2平面初期化
@@ -309,9 +311,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	sphere.center = XMVectorSet(0, 2, 0, 1);	// 中心座標
 	sphere.radius = 1.f;	// 半径
 
-	// 平面の初期値を設定
-	plane.normal = XMVectorSet(0, 1, 0, 0);	//法線ベクトル
-	plane.distance = 0.f;	// 原点からの距離
+	//// 平面の初期値を設定
+	//plane.normal = XMVectorSet(0, 1, 0, 0);	//法線ベクトル
+	//plane.distance = 0.f;	// 原点からの距離
+
+	// 三角形の初期値を設定
+	triangle.p0 = XMVectorSet(-1.f, 0, -1.f, 1);	//左手前
+	triangle.p1 = XMVectorSet(-1.f, 0, +1.f, 1);	//左奥
+	triangle.p2 = XMVectorSet(+1.f, 0, -1.f, 1);	//.右手前
+	triangle.normal = XMVectorSet(0, 1, -0, 0);	//.右手前
 
 #pragma endregion
 
@@ -386,9 +394,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		debugText.Print(spriteCommon, spherestr.str(), 50, 180, 1.f);
 
-		// 球と平面の当たり判定
+		//// 球と平面の当たり判定
+		//XMVECTOR inter;
+		//bool hit = Collision::CheckSphere2Plane(sphere, plane, &inter);
+		//if (hit) {
+		//	debugText.Print(spriteCommon, "HIT", 50, 200, 1.f);
+		//	// stringstreamをリセット、交点座標を埋め込む
+		//	spherestr.str("");
+		//	spherestr.clear();
+		//	spherestr << "("
+		//		<< std::fixed << std::setprecision(2)
+		//		<< inter.m128_f32[0] << ","
+		//		<< inter.m128_f32[1] << ","
+		//		<< inter.m128_f32[2] << ")";
+
+		//	debugText.Print(spriteCommon, spherestr.str(), 50, 220, 1.f);
+
+		// 球と三角形の当たり判定
 		XMVECTOR inter;
-		bool hit = Collision::CheckSphere2Plane(sphere, plane, &inter);
+		bool hit = Collision::CheckSphere2Triangle(sphere, triangle, &inter);
 		if (hit) {
 			debugText.Print(spriteCommon, "HIT", 50, 200, 1.f);
 			// stringstreamをリセット、交点座標を埋め込む
