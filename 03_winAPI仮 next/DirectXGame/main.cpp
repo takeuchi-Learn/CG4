@@ -311,7 +311,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 球の初期値を設定
 	sphere.center = XMVectorSet(0, 2, 0, 1);	// 中心座標
-	sphere.radius = 1.f;	// 半径c
+	sphere.radius = 2.f;	// 半径c
 
 	// 平面の初期値を設定
 	plane.normal = XMVectorSet(0, 1, 0, 0);	//法線ベクトル
@@ -400,12 +400,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		debugText.Print(spriteCommon, raystr.str(), 50, 180, 1.f);
 
-		// レイと三角絵の当たり判定
+		// レイと球の当たり判定
 		XMVECTOR inter;
 		float distance;
-		bool hit = Collision::CheckRay2Triangle(ray, triangle, &distance, &inter);
+		bool hit = Collision::CheckRay2Sphere(ray, sphere, &distance, &inter);
 		if (hit) {
-			debugText.Print(spriteCommon, "HIT", 50, 220, 1.f);
+			debugText.Print(spriteCommon, "HIT", 50, 260, 1.f);
 			// stringstreamをリセット、交点座標を埋め込む
 			raystr.str("");
 			raystr.clear();
@@ -415,7 +415,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				<< inter.m128_f32[1] << ","
 				<< inter.m128_f32[2] << ")";
 
-			debugText.Print(spriteCommon, raystr.str(), 50, 240, 1.f);
+			debugText.Print(spriteCommon, raystr.str(), 50, 280, 1.f);
 
 			raystr.str("");
 			raystr.clear();
@@ -423,7 +423,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				<< std::fixed << std::setprecision(2)
 				<< distance << ")";
 
-			debugText.Print(spriteCommon, raystr.str(), 50, 260, 1.f);
+			debugText.Print(spriteCommon, raystr.str(), 50, 300, 1.f);
 		}
 
 		// --------------------
