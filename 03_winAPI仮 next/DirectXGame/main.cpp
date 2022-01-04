@@ -400,22 +400,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		debugText.Print(spriteCommon, raystr.str(), 50, 180, 1.f);
 
-		// レイと平面の当たり判定
+		// レイと三角絵の当たり判定
 		XMVECTOR inter;
 		float distance;
-		bool hit = Collision::CheckRay2Plane(ray, plane, &distance, &inter);
+		bool hit = Collision::CheckRay2Triangle(ray, triangle, &distance, &inter);
 		if (hit) {
-			debugText.Print(spriteCommon, "HIT", 50, 260, 1.f);
+			debugText.Print(spriteCommon, "HIT", 50, 220, 1.f);
 			// stringstreamをリセット、交点座標を埋め込む
 			raystr.str("");
 			raystr.clear();
-			raystr << "("
+			raystr << "inter:("
 				<< std::fixed << std::setprecision(2)
 				<< inter.m128_f32[0] << ","
 				<< inter.m128_f32[1] << ","
 				<< inter.m128_f32[2] << ")";
 
-			debugText.Print(spriteCommon, raystr.str(), 50, 280, 1.f);
+			debugText.Print(spriteCommon, raystr.str(), 50, 240, 1.f);
+
+			raystr.str("");
+			raystr.clear();
+			raystr << "distance:("
+				<< std::fixed << std::setprecision(2)
+				<< distance << ")";
+
+			debugText.Print(spriteCommon, raystr.str(), 50, 260, 1.f);
 		}
 
 		// --------------------
