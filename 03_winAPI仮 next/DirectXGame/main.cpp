@@ -299,9 +299,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 球
 	Sphere sphere;
 	//// 平面
-	//Plane plane;
+	Plane plane;
 	// 三角形
 	Triangle triangle;
+	// レイ
+	Ray ray;
 
 	// --------------------
 	// 球2平面初期化
@@ -309,17 +311,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 球の初期値を設定
 	sphere.center = XMVectorSet(0, 2, 0, 1);	// 中心座標
-	sphere.radius = 1.f;	// 半径
+	sphere.radius = 1.f;	// 半径c
 
-	//// 平面の初期値を設定
-	//plane.normal = XMVectorSet(0, 1, 0, 0);	//法線ベクトル
-	//plane.distance = 0.f;	// 原点からの距離
+	// 平面の初期値を設定
+	plane.normal = XMVectorSet(0, 1, 0, 0);	//法線ベクトル
+	plane.distance = 0.f;	// 原点からの距離
 
 	// 三角形の初期値を設定
 	triangle.p0 = XMVectorSet(-1.f, 0, -1.f, 1);	//左手前
 	triangle.p1 = XMVectorSet(-1.f, 0, +1.f, 1);	//左奥
-	triangle.p2 = XMVectorSet(+1.f, 0, -1.f, 1);	//.右手前
-	triangle.normal = XMVectorSet(0, 1, -0, 0);	//.右手前
+	triangle.p2 = XMVectorSet(+1.f, 0, -1.f, 1);	//右手前
+	triangle.normal = XMVectorSet(0, 1, -0, 0);		//法線
+
+	// レイの初期値を設定
+	ray.start = XMVectorSet(0, 1, 0, 1);	//原点やや上
+	ray.dir = XMVectorSet(0, -1, 0, 0);		//下向き
 
 #pragma endregion
 
@@ -374,57 +380,42 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 球2平面更新
 		// --------------------
 
-		// 球移動
+		// レイ移動
 		{
-			XMVECTOR moveY = XMVectorSet(0, 0.01f, 0, 0);
-			if (input->hitKey(DIK_DOWN)) sphere.center += moveY;
-			else if (input->hitKey(DIK_UP)) sphere.center -= moveY;
+			XMVECTOR moveZ = XMVectorSet(0, 0, 0.01f, 0);
+			if (input->hitKey(DIK_DOWN)) ray.start += moveZ;
+			else if (input->hitKey(DIK_UP)) ray.start -= moveZ;
 
 			XMVECTOR moveX = XMVectorSet(0.01f, 0, 0, 0);
-			if (input->hitKey(DIK_RIGHT)) sphere.center += moveX;
-			else if (input->hitKey(DIK_LEFT)) sphere.center -= moveX;
+			if (input->hitKey(DIK_RIGHT)) ray.start += moveX;
+			else if (input->hitKey(DIK_LEFT)) ray.start -= moveX;
 		}
 		//stringstreamで変数の値を読み込み整形
-		std::ostringstream spherestr;
-		spherestr << "Sphere:("
+		std::ostringstream raystr;
+		raystr << "lay.start("
 			<< std::fixed << std::setprecision(2)	// 小数点以下2桁まで
-			<< sphere.center.m128_f32[0] << ","		// x
-			<< sphere.center.m128_f32[1] << ","		// y
-			<< sphere.center.m128_f32[2] << ")";	// z
+			<< ray.start.m128_f32[0] << ","		// x
+			<< ray.start.m128_f32[1] << ","		// y
+			<< ray.start.m128_f32[2] << ")";	// z
 
-		debugText.Print(spriteCommon, spherestr.str(), 50, 180, 1.f);
+		debugText.Print(spriteCommon, raystr.str(), 50, 180, 1.f);
 
-		//// 球と平面の当たり判定
-		//XMVECTOR inter;
-		//bool hit = Collision::CheckSphere2Plane(sphere, plane, &inter);
-		//if (hit) {
-		//	debugText.Print(spriteCommon, "HIT", 50, 200, 1.f);
-		//	// stringstreamをリセット、交点座標を埋め込む
-		//	spherestr.str("");
-		//	spherestr.clear();
-		//	spherestr << "("
-		//		<< std::fixed << std::setprecision(2)
-		//		<< inter.m128_f32[0] << ","
-		//		<< inter.m128_f32[1] << ","
-		//		<< inter.m128_f32[2] << ")";
-
-		//	debugText.Print(spriteCommon, spherestr.str(), 50, 220, 1.f);
-
-		// 球と三角形の当たり判定
+		// レイと平面の当たり判定
 		XMVECTOR inter;
-		bool hit = Collision::CheckSphere2Triangle(sphere, triangle, &inter);
+		float distance;
+		bool hit = Collision::CheckRay2Plane(ray, plane, &distance, &inter);
 		if (hit) {
-			debugText.Print(spriteCommon, "HIT", 50, 200, 1.f);
+			debugText.Print(spriteCommon, "HIT", 50, 260, 1.f);
 			// stringstreamをリセット、交点座標を埋め込む
-			spherestr.str("");
-			spherestr.clear();
-			spherestr << "("
+			raystr.str("");
+			raystr.clear();
+			raystr << "("
 				<< std::fixed << std::setprecision(2)
 				<< inter.m128_f32[0] << ","
 				<< inter.m128_f32[1] << ","
 				<< inter.m128_f32[2] << ")";
 
-			debugText.Print(spriteCommon, spherestr.str(), 50, 220, 1.f);
+			debugText.Print(spriteCommon, raystr.str(), 50, 280, 1.f);
 		}
 
 		// --------------------
