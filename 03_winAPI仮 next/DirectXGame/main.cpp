@@ -88,71 +88,73 @@ public:
 	STDMETHOD_(void, OnVoiceError) (THIS_ void* pBufferContext, HRESULT Error) {};
 };
 
-// 音声データ
+//音声データ
 struct SoundData {
-	// 波形フォーマット
+	//波形フォーマット
 	WAVEFORMATEX wfex;
-	// バッファの先頭アドレス
+	//バッファの先頭アドレス
 	BYTE* pBuffer;
-	// バッファのサイズ
+	//バッファのサイズ
 	unsigned int bufferSize;
-};
 
-// 音声読み込み
+	IXAudio2SourceVoice* pSourceVoice = nullptr;
+};
+//音声データの読み込み
 SoundData SoundLoadWave(const char* filename) {
-	// ファイル入力ストリームのインスタンス
+	HRESULT result;
+	//1.ファイルオープン
+	//ファイル入力ストリームのインスタンス
 	std::ifstream file;
-	// .wavファイルをバイナリモードで開く
+	//.wavファイルをバイナリモードで開く
 	file.open(filename, std::ios_base::binary);
-	// ファイルオープン失敗を検出する
+	//ファイルオープン失敗を検出する
 	assert(file.is_open());
 
-	// RIFFヘッダーの読み込み
+	//2.wavデータ読み込み
+	//RIFFヘッダーの読み込み
 	RiffHeader riff;
 	file.read((char*)&riff, sizeof(riff));
-	// ファイルがRIFFかチェック
+	//ファイルがRIFFかチェック
 	if (strncmp(riff.chunk.id, "RIFF", 4) != 0) {
 		assert(0);
 	}
-	// タイプがWAVEかチェック
+	//タイプがWAVEかチェック
 	if (strncmp(riff.type, "WAVE", 4) != 0) {
 		assert(0);
 	}
-
-	// Formatチャンクの読み込み
+	//Formatチャンクの読み込み
 	FormatChunk format = {};
-	// チャンクヘッダーの確認
+	//チャンクヘッダーの確認
 	file.read((char*)&format, sizeof(ChunkHeader));
 	if (strncmp(format.chunk.id, "fmt ", 4) != 0) {
 		assert(0);
 	}
-	// チャンク本体の読み込み
+	//チャンク本体の読み込み
 	assert(format.chunk.size <= sizeof(format.fmt));
 	file.read((char*)&format.fmt, format.chunk.size);
-
-	// Dataチャンクの読み込み
+	//Dataチャンクの読み込み
 	ChunkHeader data;
 	file.read((char*)&data, sizeof(data));
-	// JUNKチャンクを検出した場合
-	if (strncmp(data.id, "JUNK ", 4) == 0) {
-		// 読み取り位置をJUNKチャンクの終わりまで進める
+	//JUNKチャンクを検出した場合
+	if (strncmp(data.id, "JUNK", 4) == 0) {
+		//読み取り位置をJUNKチャンクの終わりまで進める
 		file.seekg(data.size, std::ios_base::cur);
-		// 再読み込み
+		//再読み込み
 		file.read((char*)&data, sizeof(data));
 	}
-
-	if (strncmp(data.id, "data ", 4) != 0) {
+	if (strncmp(data.id, "data", 4) != 0) {
 		assert(0);
 	}
-
-	// Dataチャンクのデータ部（波形データ）の読み込み
+	//Dataチャンクデータの一部（波形データ）の読み込み
 	char* pBuffer = new char[data.size];
 	file.read(pBuffer, data.size);
 
-	// Waveファイルを閉じる
+	//3.ファイルクローズ
+	//Waveファイルを閉じる
 	file.close();
 
-	// returnする為の音声データ
+	//4.読み込んだ音声データをreturn
+	//retrunするための音声データ
 	SoundData soundData = {};
 
 	soundData.wfex = format.fmt;
@@ -160,11 +162,10 @@ SoundData SoundLoadWave(const char* filename) {
 	soundData.bufferSize = data.size;
 
 	return soundData;
-}
-
-// 音声データ解放
+};
+//音声データの解放
 void SoundUnload(SoundData* soundData) {
-	// バッファのメモリを解放
+	//バッファのメモリを解放
 	delete[] soundData->pBuffer;
 
 	soundData->pBuffer = 0;
@@ -172,25 +173,43 @@ void SoundUnload(SoundData* soundData) {
 	soundData->wfex = {};
 }
 
-// 音声再生
-void SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
+void SoundStopWave(SoundData& soundData) { HRESULT result = soundData.pSourceVoice->Stop(); }
 
+/// <summary>
+/// 音声再生
+/// </summary>
+/// <param name="loopCount">0で繰り返し無し、XAUDIO2_LOOP_INFINITEで永遠</param>
+/// <param name="volume">0 ~ 1</param>
+void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData,
+	int loopCount = 0, float volume = 0.2) {
 	HRESULT result;
 
-	// 波形フォーマットを元にSourceVoiceの生成
-	IXAudio2SourceVoice* pSourceVoice = nullptr;
-	result = xAudio2->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
+	//波形フォーマットをもとにSourceVoiceの生成
+	result = xAudio2->CreateSourceVoice(&soundData.pSourceVoice, &soundData.wfex);
 	assert(SUCCEEDED(result));
 
-	// 再生する波形データの設定
+	//再生する波形データの設定
 	XAUDIO2_BUFFER buf{};
 	buf.pAudioData = soundData.pBuffer;
 	buf.AudioBytes = soundData.bufferSize;
 	buf.Flags = XAUDIO2_END_OF_STREAM;
+	buf.LoopCount = loopCount;
 
-	// 波形データの再生
-	result = pSourceVoice->SubmitSourceBuffer(&buf);
-	result = pSourceVoice->Start();
+	//波形データの再生
+	result = soundData.pSourceVoice->SubmitSourceBuffer(&buf);
+	result = soundData.pSourceVoice->SetVolume(volume);
+	result = soundData.pSourceVoice->Start();
+}
+
+//再生状態の確認
+bool checkPlaySound(SoundData& soundData) {
+	if (soundData.pSourceVoice == nullptr) return false;
+	XAUDIO2_VOICE_STATE tmp;
+	soundData.pSourceVoice->GetState(&tmp);
+	if (tmp.BuffersQueued == 0U) {
+		return false;
+	}
+	return true;
 }
 #pragma endregion
 
