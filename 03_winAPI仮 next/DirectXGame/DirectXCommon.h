@@ -25,6 +25,22 @@ class DirectXCommon {
 
 	WinAPI* winapi = nullptr;
 
+#pragma region FPS
+	static const USHORT divNum = 8;
+	LONGLONG fpsTime[divNum]{};
+	float fps;
+
+	void flipTimeFPS();
+	void updateFPS();
+
+public:
+	float getFPS();
+
+private:
+
+#pragma endregion
+
+
 	void initDevice();
 	void initCommand();
 	void initSwapchain();

@@ -400,6 +400,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		debugText.Print(spriteCommon, raystr.str(), 50, 180, 1.f);
 
+		raystr.str("");
+		raystr.clear();
+		raystr << "FPS: " << dxCom->getFPS();
+		debugText.Print(spriteCommon, raystr.str(), 0, 0);
+
 		// レイと球の当たり判定
 		XMVECTOR inter;
 		float distance;

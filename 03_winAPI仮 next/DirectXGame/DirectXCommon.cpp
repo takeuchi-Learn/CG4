@@ -7,6 +7,8 @@
 
 using namespace Microsoft::WRL;
 
+#include <chrono>
+
 void DirectXCommon::initDevice() {
 	HRESULT result;
 	//DXGiファクトリ(デバイス生成後は解放されてよい)
@@ -215,6 +217,10 @@ DirectXCommon::DirectXCommon(WinAPI* winapi) {
 	assert(winapi);
 	this->winapi = winapi;
 
+	fps = -1.f;
+	updateFPS();
+	flipTimeFPS();
+
 	initDevice();
 	initCommand();
 	initSwapchain();
@@ -284,6 +290,9 @@ void DirectXCommon::endDraw() {
 	cmdAllocator->Reset(); // キューをクリア
 	cmdList->Reset(cmdAllocator.Get(), nullptr);  // 再びコマンドリストを貯める準備
 
+	updateFPS();
+	flipTimeFPS();
+
 	// バッファをフリップ（裏表の入替え）
 	swapchain->Present(1, 0);
 }
@@ -291,3 +300,31 @@ void DirectXCommon::endDraw() {
 ID3D12Device* DirectXCommon::getDev() { return dev.Get(); }
 
 ID3D12GraphicsCommandList* DirectXCommon::getCmdList() { return cmdList.Get(); }
+
+
+// --------------------
+// FPS
+// --------------------
+
+void DirectXCommon::flipTimeFPS() {
+	for (UINT i = divNum - 1; i > 0; i--) {
+		fpsTime[i] = fpsTime[i - 1];
+	}
+	fpsTime[0] = std::chrono::duration_cast<std::chrono::microseconds>(
+		std::chrono::system_clock::now() - std::chrono::system_clock::time_point()
+		).count();
+}
+
+void DirectXCommon::updateFPS() {
+	float avgDiffTime = 0.f;
+	for (UINT i = 0; i < divNum - 1; i++) {
+		avgDiffTime += fpsTime[i] - fpsTime[i + 1];
+	}
+	avgDiffTime /= divNum - 1;
+
+	fps = -1.f;
+	constexpr auto microSec1sec = 1'000'000.f;
+	if (avgDiffTime != 0) fps = microSec1sec / avgDiffTime;
+}
+
+float DirectXCommon::getFPS() { return fps; }
