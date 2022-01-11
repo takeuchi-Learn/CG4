@@ -150,6 +150,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjCommon.cpp" />
     <ClCompile Include="Object3d.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="WinAPI.cpp" />
   </ItemGroup>
@@ -167,6 +168,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ObjCommon.h" />
     <ClInclude Include="Object3d.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="WinAPI.h" />
   </ItemGroup>

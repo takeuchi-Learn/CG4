@@ -49,169 +49,7 @@ using namespace Microsoft::WRL;
 #include "Collision.h"
 #include <iomanip>
 
-#pragma region チャンク
-// チャンクヘッダ
-struct ChunkHeader {
-	char id[4]; // チャンク毎のID
-	int32_t size;  // チャンクサイズ
-};
-
-// RIFFヘッダチャンク
-struct RiffHeader {
-	ChunkHeader chunk;   // "RIFF"
-	char type[4]; // "WAVE"
-};
-
-// FMTチャンク
-struct FormatChunk {
-	ChunkHeader chunk; // "fmt "
-	WAVEFORMATEX fmt; // 波形フォーマット
-};
-#pragma endregion
-
-#pragma region 音宣言
-class XAudio2VoiceCallback : public IXAudio2VoiceCallback {
-public:
-	// ボイス処理パスの開始時
-	STDMETHOD_(void, OnVoiceProcessingPassStart) (THIS_ UINT32 BytesRequired) {};
-	// ボイス処理パスの終了時
-	STDMETHOD_(void, OnVoiceProcessingPassEnd) (THIS) {};
-	// バッファストリームの再生が終了した時
-	STDMETHOD_(void, OnStreamEnd) (THIS) {};
-	// バッファの使用開始時
-	STDMETHOD_(void, OnBufferStart) (THIS_ void* pBufferContext) {};
-	// バッファの末尾に達した時
-	STDMETHOD_(void, OnBufferEnd) (THIS_ void* pBufferContext) {};
-	// 再生がループ位置に達した時
-	STDMETHOD_(void, OnLoopEnd) (THIS_ void* pBufferContext) {};
-	// ボイスの実行エラー時
-	STDMETHOD_(void, OnVoiceError) (THIS_ void* pBufferContext, HRESULT Error) {};
-};
-
-//音声データ
-struct SoundData {
-	//波形フォーマット
-	WAVEFORMATEX wfex;
-	//バッファの先頭アドレス
-	BYTE* pBuffer;
-	//バッファのサイズ
-	unsigned int bufferSize;
-
-	IXAudio2SourceVoice* pSourceVoice = nullptr;
-};
-//音声データの読み込み
-SoundData SoundLoadWave(const char* filename) {
-	HRESULT result;
-	//1.ファイルオープン
-	//ファイル入力ストリームのインスタンス
-	std::ifstream file;
-	//.wavファイルをバイナリモードで開く
-	file.open(filename, std::ios_base::binary);
-	//ファイルオープン失敗を検出する
-	assert(file.is_open());
-
-	//2.wavデータ読み込み
-	//RIFFヘッダーの読み込み
-	RiffHeader riff;
-	file.read((char*)&riff, sizeof(riff));
-	//ファイルがRIFFかチェック
-	if (strncmp(riff.chunk.id, "RIFF", 4) != 0) {
-		assert(0);
-	}
-	//タイプがWAVEかチェック
-	if (strncmp(riff.type, "WAVE", 4) != 0) {
-		assert(0);
-	}
-	//Formatチャンクの読み込み
-	FormatChunk format = {};
-	//チャンクヘッダーの確認
-	file.read((char*)&format, sizeof(ChunkHeader));
-	if (strncmp(format.chunk.id, "fmt ", 4) != 0) {
-		assert(0);
-	}
-	//チャンク本体の読み込み
-	assert(format.chunk.size <= sizeof(format.fmt));
-	file.read((char*)&format.fmt, format.chunk.size);
-	//Dataチャンクの読み込み
-	ChunkHeader data;
-	file.read((char*)&data, sizeof(data));
-	//JUNKチャンクを検出した場合
-	if (strncmp(data.id, "JUNK", 4) == 0) {
-		//読み取り位置をJUNKチャンクの終わりまで進める
-		file.seekg(data.size, std::ios_base::cur);
-		//再読み込み
-		file.read((char*)&data, sizeof(data));
-	}
-	if (strncmp(data.id, "data", 4) != 0) {
-		assert(0);
-	}
-	//Dataチャンクデータの一部（波形データ）の読み込み
-	char* pBuffer = new char[data.size];
-	file.read(pBuffer, data.size);
-
-	//3.ファイルクローズ
-	//Waveファイルを閉じる
-	file.close();
-
-	//4.読み込んだ音声データをreturn
-	//retrunするための音声データ
-	SoundData soundData = {};
-
-	soundData.wfex = format.fmt;
-	soundData.pBuffer = reinterpret_cast<BYTE*>(pBuffer);
-	soundData.bufferSize = data.size;
-
-	return soundData;
-};
-//音声データの解放
-void SoundUnload(SoundData* soundData) {
-	//バッファのメモリを解放
-	delete[] soundData->pBuffer;
-
-	soundData->pBuffer = 0;
-	soundData->bufferSize = 0;
-	soundData->wfex = {};
-}
-
-void SoundStopWave(SoundData& soundData) { HRESULT result = soundData.pSourceVoice->Stop(); }
-
-/// <summary>
-/// 音声再生
-/// </summary>
-/// <param name="loopCount">0で繰り返し無し、XAUDIO2_LOOP_INFINITEで永遠</param>
-/// <param name="volume">0 ~ 1</param>
-void SoundPlayWave(IXAudio2* xAudio2, SoundData& soundData,
-	int loopCount = 0, float volume = 0.2) {
-	HRESULT result;
-
-	//波形フォーマットをもとにSourceVoiceの生成
-	result = xAudio2->CreateSourceVoice(&soundData.pSourceVoice, &soundData.wfex);
-	assert(SUCCEEDED(result));
-
-	//再生する波形データの設定
-	XAUDIO2_BUFFER buf{};
-	buf.pAudioData = soundData.pBuffer;
-	buf.AudioBytes = soundData.bufferSize;
-	buf.Flags = XAUDIO2_END_OF_STREAM;
-	buf.LoopCount = loopCount;
-
-	//波形データの再生
-	result = soundData.pSourceVoice->SubmitSourceBuffer(&buf);
-	result = soundData.pSourceVoice->SetVolume(volume);
-	result = soundData.pSourceVoice->Start();
-}
-
-//再生状態の確認
-bool checkPlaySound(SoundData& soundData) {
-	if (soundData.pSourceVoice == nullptr) return false;
-	XAUDIO2_VOICE_STATE tmp;
-	soundData.pSourceVoice->GetState(&tmp);
-	if (tmp.BuffersQueued == 0U) {
-		return false;
-	}
-	return true;
-}
-#pragma endregion
+#include "Sound.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -221,24 +59,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//DirectX初期化
 	std::unique_ptr<DirectXCommon> dxCom(new DirectXCommon(winapi.get()));
 
-	HRESULT result;
-
 #pragma region 音初期化
 
-	ComPtr<IXAudio2> xAudio2;
-	IXAudio2MasteringVoice* masterVoice;
-	XAudio2VoiceCallback voiceCallback;
-
-	// XAudioエンジンのインスタンスを生成
-	result = XAudio2Create(&xAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
-	assert(SUCCEEDED(result));
-
-	// マスターボイスを生成
-	result = xAudio2->CreateMasteringVoice(&masterVoice);
-	assert(SUCCEEDED(result));
+	Sound::SoundCommon soundCommon{};
 
 	// 音声読み込み
-	SoundData soundData1 = SoundLoadWave("Resources/Alarm01.wav");
+	Sound soundData1 = Sound::SoundLoadWave("Resources/BGM.wav");
 #pragma endregion 音初期化
 
 #pragma region 描画初期化処理
@@ -371,6 +197,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
+	// --------------------
+	// 音声再生
+	// --------------------
+	Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
+
+
+
 	// ゲームループ
 	while (!winapi->processMessage()) {
 
@@ -382,16 +215,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-		// 数字の0キーが押された瞬間
+		// 数字の0キーが押された瞬間音を再生しなおす
 		if (input->triggerKey(DIK_0)) {
-			OutputDebugStringA("Hit 0\n");  // 出力ウィンドウに「Hit 0」と表示
-		}
-
-		float clearColor[] = { 0.1f, 0.25f, 0.5f, 0.0f }; // 青っぽい色
-
-		// スペースキーが押されていたら
-		if (input->hitKey(DIK_SPACE)) {
-			clearColor[1] = 1.0f;	// 画面クリアカラーの数値を書き換える
+			Sound::SoundStopWave(soundData1);
+			Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
 		}
 
 
@@ -516,9 +343,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 音関連終了処理(クラス化してデストラクタで行う方がよい)
 	// XAudio2解放
-	xAudio2.Reset();
+	// todo 手動で書かなくてもよくする
+	Sound::SoundCommon::End(soundCommon);
 	// 音声データ解放
-	SoundUnload(&soundData1);
+	// todo 手動で書かなくてもよくする
+	Sound::SoundUnload(&soundData1);
 #pragma endregion
 
 	return 0;
