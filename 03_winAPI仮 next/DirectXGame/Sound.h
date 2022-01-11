@@ -50,10 +50,13 @@ public:
 		Sound::XAudio2VoiceCallback voiceCallback;
 
 		SoundCommon();
-
-		static void End(SoundCommon& soundCommon);
+		~SoundCommon();
 	};
 
+	// --------------------
+	// メンバ変数
+	// --------------------
+private:
 	//波形フォーマット
 	WAVEFORMATEX wfex;
 	//バッファの先頭アドレス
@@ -63,12 +66,27 @@ public:
 
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
 
-	//音声データの読み込み
-	static Sound SoundLoadWave(const char* filename);
 
-	//音声データの解放
-	static void SoundUnload(Sound* soundData);
 
+	// --------------------
+	// メンバ関数
+	// --------------------
+public:
+	// 音声データの読み込み
+	Sound(const char* filename);
+
+	// 音声データの解放
+	~Sound();
+
+
+
+	// --------------------
+	// static関数
+	// --------------------
+private:
+	static void createSourceVoice(SoundCommon& soundCommon, Sound& soundData);
+
+public:
 	// 音声再生停止
 	static void SoundStopWave(Sound& soundData);
 
@@ -78,10 +96,10 @@ public:
 	/// <param name="loopCount">0で繰り返し無し、XAUDIO2_LOOP_INFINITEで永遠</param>
 	/// <param name="volume">0 ~ 1</param>
 	static void SoundPlayWave(SoundCommon& soundCommon,
- Sound& soundData,
+		Sound& soundData,
 		int loopCount = 0, float volume = 0.2);
 
 	//再生状態の確認
-	static bool checkPlaySound(Sound& soundData);
+	static bool checkPlaySound(SoundCommon& soundCommon, Sound& soundData);
 };
 

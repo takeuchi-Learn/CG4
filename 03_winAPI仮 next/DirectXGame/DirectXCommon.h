@@ -7,6 +7,8 @@
 
 #include "WinAPI.h"
 
+#include <DirectXMath.h>
+
 class DirectXCommon {
 	Microsoft::WRL::ComPtr<ID3D12Device> dev;
 	Microsoft::WRL::ComPtr<IDXGIFactory6> dxgiFactory;
@@ -49,7 +51,7 @@ private:
 	void initFence();
 
 	// 全画面クリア
-	void ClearRenderTarget();
+	void ClearRenderTarget(const DirectX::XMFLOAT3& clearColor);
 	// 深度バッファクリア
 	void ClearDepthBuffer();
 
@@ -57,7 +59,8 @@ public:
 	DirectXCommon(WinAPI* winapi);
 	~DirectXCommon();
 
-	void startDraw();
+	// @param clearColor 何もない場所の描画色。既定引数は暗い黄色っぽい色
+	void startDraw(const DirectX::XMFLOAT3& clearColor = DirectX::XMFLOAT3(0.5f, 0.5f, 0.1f));
 	void endDraw();
 
 	ID3D12Device* getDev();

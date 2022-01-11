@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Sound::SoundCommon soundCommon{};
 
 	// 音声読み込み
-	Sound soundData1 = Sound::SoundLoadWave("Resources/BGM.wav");
+	Sound soundData1{ "Resources/BGM.wav" };
 #pragma endregion 音初期化
 
 #pragma region 描画初期化処理
@@ -200,8 +200,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// --------------------
 	// 音声再生
 	// --------------------
-	Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
-
+	if (Sound::checkPlaySound(soundCommon, soundData1) == false) {
+		Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
+		OutputDebugStringA("PLAAAAAAAAAAAAAAAAY!\n");
+	} else {
+		Sound::SoundStopWave(soundData1);
+		OutputDebugStringA("STOOOOOOOOOOOOOOP!\n");
+	}
 
 
 	// ゲームループ
@@ -215,12 +220,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-		// 数字の0キーが押された瞬間音を再生しなおす
+			// 数字の0キーが押された瞬間音を再生しなおす
 		if (input->triggerKey(DIK_0)) {
-			Sound::SoundStopWave(soundData1);
-			Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
+			//Sound::SoundStopWave(soundData1);
+
+			if (Sound::checkPlaySound(soundCommon, soundData1)) {
+				Sound::SoundStopWave(soundData1);
+				OutputDebugStringA("STOP\n");
+			} else {
+				Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
+				OutputDebugStringA("PLAY\n");
+			}
 		}
 
+		{
+			const std::string tmp = "SOUND_PLAY_STATE : ";
+			std::string stateStr = "STOP []";
+			if (Sound::checkPlaySound(soundCommon, soundData1)) {
+				stateStr = "PLAY |>";
+			}
+			debugText.Print(spriteCommon, tmp + stateStr, 0, debugText.fontHeight * 2);
+
+			stateStr = "Press 0 to Play/Stop Sound";
+			debugText.Print(spriteCommon, stateStr, 0, debugText.fontHeight * 3);
+		}
 
 		// --------------------
 		// 球2平面更新
@@ -244,11 +267,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			<< ray.start.m128_f32[1] << ","		// y
 			<< ray.start.m128_f32[2] << ")";	// z
 
-		debugText.Print(spriteCommon, raystr.str(), 50, 180, 1.f);
+		debugText.Print(spriteCommon, raystr.str(), debugText.fontWidth * 2, debugText.fontHeight * 5, 1.f);
 
 		raystr.str("");
 		raystr.clear();
-		raystr << "FPS: " << dxCom->getFPS();
+		raystr << "FPS : " << dxCom->getFPS();
 		debugText.Print(spriteCommon, raystr.str(), 0, 0);
 
 		// レイと球の当たり判定
@@ -256,7 +279,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float distance;
 		bool hit = Collision::CheckRay2Sphere(ray, sphere, &distance, &inter);
 		if (hit) {
-			debugText.Print(spriteCommon, "HIT", 50, 260, 1.f);
+			debugText.Print(spriteCommon, "HIT", debugText.fontWidth * 2, debugText.fontHeight * 7, 1.f);
 			// stringstreamをリセット、交点座標を埋め込む
 			raystr.str("");
 			raystr.clear();
@@ -266,7 +289,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				<< inter.m128_f32[1] << ","
 				<< inter.m128_f32[2] << ")";
 
-			debugText.Print(spriteCommon, raystr.str(), 50, 280, 1.f);
+			debugText.Print(spriteCommon, raystr.str(), debugText.fontWidth * 2, debugText.fontHeight * 8, 1.f);
 
 			raystr.str("");
 			raystr.clear();
@@ -274,7 +297,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				<< std::fixed << std::setprecision(2)
 				<< distance << ")";
 
-			debugText.Print(spriteCommon, raystr.str(), 50, 300, 1.f);
+			debugText.Print(spriteCommon, raystr.str(), debugText.fontWidth * 2, debugText.fontHeight * 9, 1.f);
 		}
 
 		// --------------------
@@ -315,7 +338,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion DirectX毎フレーム処理
 
 #pragma region グラフィックスコマンド
-		dxCom->startDraw();
+		const XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
+		dxCom->startDraw(clearColor);
 
 		// ４．描画コマンドここから
 
@@ -340,15 +364,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion グラフィックスコマンド
 
 	}
-
-#pragma region 音関連終了処理(クラス化してデストラクタで行う方がよい)
-	// XAudio2解放
-	// todo 手動で書かなくてもよくする
-	Sound::SoundCommon::End(soundCommon);
-	// 音声データ解放
-	// todo 手動で書かなくてもよくする
-	Sound::SoundUnload(&soundData1);
-#pragma endregion
 
 	return 0;
 }

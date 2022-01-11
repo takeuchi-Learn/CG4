@@ -9,6 +9,8 @@ using namespace Microsoft::WRL;
 
 #include <chrono>
 
+#include <DirectXMath.h>
+
 void DirectXCommon::initDevice() {
 	HRESULT result;
 	//DXGiファクトリ(デバイス生成後は解放されてよい)
@@ -195,15 +197,15 @@ void DirectXCommon::initFence() {
 	result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 }
 
-void DirectXCommon::ClearRenderTarget() {
+void DirectXCommon::ClearRenderTarget(const DirectX::XMFLOAT3& clearColor) {
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
 	// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeaps->GetCPUDescriptorHandleForHeapStart(), bbIndex, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 
-	// 全画面クリア			R		G	B		A
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 0.0f }; // 青っぽい色
-	cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+	// 全画面クリア
+	float clearColorTmp[] = { clearColor.x, clearColor.y, clearColor.z, 0.0f };
+	cmdList->ClearRenderTargetView(rtvH, clearColorTmp, 0, nullptr);
 }
 
 void DirectXCommon::ClearDepthBuffer() {
@@ -233,7 +235,7 @@ DirectXCommon::~DirectXCommon() {
 
 }
 
-void DirectXCommon::startDraw() {
+void DirectXCommon::startDraw(const DirectX::XMFLOAT3& clearColor) {
 	// バックバッファの番号を取得（2つなので0番か1番）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
@@ -254,7 +256,7 @@ void DirectXCommon::startDraw() {
 	cmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
 
 	// 全画面クリア
-	ClearRenderTarget();
+	ClearRenderTarget(clearColor);
 	// 深度バッファクリア
 	ClearDepthBuffer();
 
