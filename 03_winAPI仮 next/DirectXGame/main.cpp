@@ -61,10 +61,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 音初期化
 
-	Sound::SoundCommon soundCommon{};
+	std::unique_ptr<Sound::SoundCommon> soundCommon(new Sound::SoundCommon());
 
 	// 音声読み込み
-	Sound soundData1{ "Resources/BGM.wav" };
+	std::unique_ptr <Sound> soundData1(new Sound("Resources/BGM.wav", soundCommon.get()));
 #pragma endregion 音初期化
 
 #pragma region 描画初期化処理
@@ -200,11 +200,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// --------------------
 	// 音声再生
 	// --------------------
-	if (Sound::checkPlaySound(soundCommon, soundData1) == false) {
-		Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
+	if (Sound::checkPlaySound(soundData1.get()) == false) {
+		Sound::SoundPlayWave(soundCommon.get(), soundData1.get(), XAUDIO2_LOOP_INFINITE);
 		OutputDebugStringA("PLAAAAAAAAAAAAAAAAY!\n");
 	} else {
-		Sound::SoundStopWave(soundData1);
+		Sound::SoundStopWave(soundData1.get());
 		OutputDebugStringA("STOOOOOOOOOOOOOOP!\n");
 	}
 
@@ -224,11 +224,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		if (input->triggerKey(DIK_0)) {
 			//Sound::SoundStopWave(soundData1);
 
-			if (Sound::checkPlaySound(soundCommon, soundData1)) {
-				Sound::SoundStopWave(soundData1);
+			if (Sound::checkPlaySound(soundData1.get())) {
+				Sound::SoundStopWave(soundData1.get());
 				OutputDebugStringA("STOP\n");
 			} else {
-				Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
+				Sound::SoundPlayWave(soundCommon.get(), soundData1.get(), XAUDIO2_LOOP_INFINITE);
 				OutputDebugStringA("PLAY\n");
 			}
 		}
@@ -236,7 +236,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 			const std::string tmp = "SOUND_PLAY_STATE : ";
 			std::string stateStr = "STOP []";
-			if (Sound::checkPlaySound(soundCommon, soundData1)) {
+			if (Sound::checkPlaySound(soundData1.get())) {
 				stateStr = "PLAY |>";
 			}
 			debugText.Print(spriteCommon, tmp + stateStr, 0, debugText.fontHeight * 2);
