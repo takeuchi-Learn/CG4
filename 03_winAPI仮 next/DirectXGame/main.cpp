@@ -51,6 +51,8 @@ using namespace Microsoft::WRL;
 
 #include "Sound.h"
 
+#include "Time.h"
+
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//WindowsAPI初期化
@@ -175,6 +177,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 
+
 #pragma region 入力初期化
 
 	std::unique_ptr<Input> input(new Input(winapi->getW().hInstance, winapi->getHwnd()));
@@ -196,6 +199,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	obj3d->position = { 0, 0, obj3dScale };
 
 #pragma endregion
+
+
+
+#pragma region 時間
+	std::unique_ptr<Time> timer(new Time());
+#pragma endregion
+
+
 
 	// --------------------
 	// 音声再生
@@ -244,6 +255,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			stateStr = "Press 0 to Play/Stop Sound";
 			debugText.Print(spriteCommon, stateStr, 0, debugText.fontHeight * 3);
 		}
+
+
 
 		// --------------------
 		// 球2平面更新
@@ -298,6 +311,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				<< distance << ")";
 
 			debugText.Print(spriteCommon, raystr.str(), debugText.fontWidth * 2, debugText.fontHeight * 9, 1.f);
+		}
+
+		{
+			if (input->hitKey(DIK_SPACE)) timer->reset();
+
+			std::ostringstream tmpStr{};
+			tmpStr << std::fixed << std::setprecision(6) <<
+				(long double)timer->getNowTime() / Time::oneSec << "[s]";
+			debugText.Print(spriteCommon, tmpStr.str(), 0, debugText.fontHeight * 11);
 		}
 
 		// --------------------
