@@ -13,7 +13,7 @@ public:
 
 	~Time();
 
-	Time(const float bpm = 150.f);
+	Time();
 
 	// ˆê”‚ÌŠÔ‚ğæ“¾
 	long long getOneBeatTime(const float bpm);

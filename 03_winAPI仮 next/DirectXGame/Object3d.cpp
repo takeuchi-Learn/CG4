@@ -20,6 +20,13 @@ void Object3d::createTransferBuffer(ID3D12Device* dev, ComPtr<ID3D12Resource>& c
 	);
 }
 
+XMMATRIX Object3d::getMatWorld() const { return matWorld; }
+
+//void Object3d::setTexture(ID3D12Device* dev, const UINT newTexNum) {
+//	texNum = newTexNum;
+//	//model->setTexture(dev, newTexNum, constantBufferNum);
+//}
+
 Object3d::Object3d(ID3D12Device* dev) {
 
 	matWorld = {};
@@ -27,7 +34,7 @@ Object3d::Object3d(ID3D12Device* dev) {
 	// 定数バッファの生成
 	createTransferBuffer(dev, constBuff);
 }
-Object3d::Object3d(ID3D12Device* dev, Model* model) {
+Object3d::Object3d(ID3D12Device* dev, Model* model, const UINT texNum) : texNum(texNum) {
 	matWorld = {};
 
 	// 定数バッファの生成
@@ -66,11 +73,12 @@ void Object3d::update(XMMATRIX& matView) {
 		constMap->mat = matWorld * matView * model->getMatProjection();
 		constBuff->Unmap(0, nullptr);
 	}
+
+	model->update(matView);
 }
 
 void Object3d::draw(ID3D12GraphicsCommandList* cmdList, ID3D12Device* dev) {
-
-	model->draw(dev, cmdList, constBuff.Get(), constantBufferNum);
+	model->draw(dev, cmdList, constBuff.Get(), constantBufferNum, texNum);
 }
 
 Object3d::~Object3d() {}

@@ -126,7 +126,7 @@ Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev,
 	descRangeSRV.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 レジスタ
 
 	// ルートパラメータの設定
-	CD3DX12_ROOT_PARAMETER rootparams[2];
+	CD3DX12_ROOT_PARAMETER rootparams[2]{};
 	rootparams[0].InitAsConstantBufferView(0); // 定数バッファビューとして初期化(b0レジスタ)
 	rootparams[1].InitAsDescriptorTable(1, &descRangeSRV);
 
@@ -234,7 +234,12 @@ void Sprite::SpriteCommonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber,
 	dev->CreateShaderResourceView(
 		spriteCommon.texBuff[texnumber].Get(), //ビューと関連付けるバッファ
 		&srvDesc, //テクスチャ設定情報
-		CD3DX12_CPU_DESCRIPTOR_HANDLE(spriteCommon.descHeap->GetCPUDescriptorHandleForHeapStart(), texnumber, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV))
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(
+			spriteCommon.descHeap->GetCPUDescriptorHandleForHeapStart(),
+			texnumber,
+			dev->GetDescriptorHandleIncrementSize(
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+		)
 	);
 }
 
@@ -410,14 +415,18 @@ void Sprite::SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& 
 		CD3DX12_GPU_DESCRIPTOR_HANDLE(
 			spriteCommon.descHeap->GetGPUDescriptorHandleForHeapStart(),
 			texNumber,
-			dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)));
+			dev->GetDescriptorHandleIncrementSize(
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+		)
+	);
 
 	// ポリゴンの描画（4頂点で四角形）
 	cmdList->DrawInstanced(4, 1, 0, 0);
 }
 
 // 更新と描画を同時に行う
-void Sprite::SpriteDrawWithUpdate(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev) {
+void Sprite::SpriteDrawWithUpdate(ID3D12GraphicsCommandList* cmdList,
+	const SpriteCommon& spriteCommon, ID3D12Device* dev) {
 	SpriteUpdate(spriteCommon);
 	SpriteDraw(cmdList, spriteCommon, dev);
 }

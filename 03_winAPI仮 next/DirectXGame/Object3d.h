@@ -66,6 +66,8 @@ private:
 	XMMATRIX matWorld;
 
 public:
+	UINT texNum = 0;
+
 	// アフィン変換情報
 	XMFLOAT3 scale = { 1,1,1 };
 	XMFLOAT3 rotation = { 0,0,0 };
@@ -76,12 +78,16 @@ public:
 	//モデルデータ
 	Model* model = nullptr;
 
+	XMMATRIX getMatWorld() const;
+
+	//void setTexture(ID3D12Device* dev, const UINT newTexNum);
+
 
 	// モデルは後から手動で読み込む(deleteも手動)
 	Object3d(ID3D12Device* dev);
 
 	// モデルデータもここで渡す(deleteは手動)
-	Object3d(ID3D12Device* dev, Model* model);
+	Object3d(ID3D12Device* dev, Model* model, const UINT texNum);
 
 	void update(XMMATRIX& matView);
 

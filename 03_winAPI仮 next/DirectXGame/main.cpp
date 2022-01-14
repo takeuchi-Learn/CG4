@@ -189,11 +189,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int animFrameCount = 0; // アニメーションの経過時間カウンター
 
+	constexpr UINT obj3dTexNum = 0U;
 	std::unique_ptr<Model> model(new Model(dxCom->getDev(),
 		L"Resources/model/model.obj", L"Resources/model/tex.png",
-		WinAPI::window_width, WinAPI::window_height, Object3d::constantBufferNum));
+		WinAPI::window_width, WinAPI::window_height, Object3d::constantBufferNum, obj3dTexNum));
 
-	std::unique_ptr<Object3d> obj3d(new Object3d(dxCom->getDev(), model.get()));
+	std::unique_ptr<Object3d> obj3d(new Object3d(dxCom->getDev(), model.get(), obj3dTexNum));
 	const float obj3dScale = 10.f;
 	obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
 	obj3d->position = { 0, 0, obj3dScale };

@@ -63,24 +63,24 @@ private:
 	ComPtr<ID3D12Resource> indexBuff;
 	D3D12_INDEX_BUFFER_VIEW ibView;
 
-	ComPtr<ID3D12Resource> texBuff;
+	std::vector<ComPtr<ID3D12Resource>> texBuff;
 
-	// --------------------
-	// obj3d分け 不明
-	// 配布エンジンではCameraクラスにあり、CameraクラスのインスタンスがObject3dクラス内にある
-	// リズマッチ等の制作ゲームではverticesやindices等と同じ扱いになっている
-	// --------------------
 	// 射影変換行列
 	XMMATRIX matProjection;
 
-
-
 public:
 
+	void loadTexture(ID3D12Device* dev, const wchar_t* texPath, const UINT texNum);
+
+	void setTexture(ID3D12Device* dev, UINT newTexNum);
+
 	Model(ID3D12Device* dev,
-		const wchar_t* objPath, const wchar_t* texPath,
-		const int window_width, const int window_height,
-		const unsigned int constantBufferNum);
+		const wchar_t* objPath,
+		const wchar_t* texPath,
+		const int window_width,
+		const int window_height,
+		const unsigned int constantBufferNum,
+		const int texNum);
 
 	XMMATRIX getMatProjection();
 
@@ -90,7 +90,7 @@ public:
 
 #pragma endregion クラス化で削除
 
-	void draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum);
+	void draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum);
 
 
 	void loadModel(ID3D12Device* dev, std::vector<Vertex>& vertices, std::vector<unsigned short>& indices, const wchar_t* objPath,

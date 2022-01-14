@@ -168,36 +168,37 @@ void Model::loadModel(ID3D12Device* dev,
 
 XMMATRIX Model::getMatProjection() { return matProjection; }
 
-Model::Model(ID3D12Device* dev,
-	const wchar_t* objPath, const wchar_t* texPath,
-	const int window_width, const int window_height,
-	const unsigned int constantBufferNum) {
+void Model::setTexture(ID3D12Device* dev, UINT newTexNum) {
+	TexMetadata metadata{};
 
-	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
-	descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	descHeapDesc.NumDescriptors = constantBufferNum + 1;
+	//シェーダーリソースビュー設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
 
-
-	// 生成
-	HRESULT result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
-
-	loadModel(dev, vertices, indices, objPath,
-		window_width, window_height,
-		vertBuff, vertMap, vbView,
-		indexBuff, ibView, matProjection
+	//ヒープの二番目にシェーダーリソースビュー作成
+	dev->CreateShaderResourceView(texBuff[newTexNum].Get(),
+		&srvDesc,
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(
+			descHeap->GetCPUDescriptorHandleForHeapStart(),
+			newTexNum,
+			dev->GetDescriptorHandleIncrementSize(
+				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+			)
+		)
 	);
+}
 
-
-	//InitializeObject3d(&obj3d, 0, dev, descHeap.Get());
-
-#pragma region テクスチャ
+void Model::loadTexture(ID3D12Device* dev, const wchar_t* texPath, const UINT texNum) {
+	assert(texNum <= texBuff.size() - 1);
 
 	//WICテクスチャのロード
 	TexMetadata metadata{};
 	ScratchImage scratchImg{};
 
-	result = LoadFromWICFile(
+	HRESULT result = LoadFromWICFile(
 		texPath,
 		WIC_FLAGS_NONE,
 		&metadata, scratchImg);
@@ -220,10 +221,10 @@ Model::Model(ID3D12Device* dev,
 		&texresDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(&texBuff));
+		IID_PPV_ARGS(&texBuff[texNum]));
 
 	//テクスチャバッファへのデータ転送
-	result = texBuff->WriteToSubresource(
+	result = texBuff[texNum]->WriteToSubresource(
 		0,
 		nullptr,
 		img->pixels,
@@ -231,23 +232,37 @@ Model::Model(ID3D12Device* dev,
 		(UINT)img->slicePitch
 	);
 
-	//シェーダーリソースビュー設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
+	setTexture(dev, texNum);
+}
 
-	//ヒープの二番目にシェーダーリソースビュー作成
-	dev->CreateShaderResourceView(texBuff.Get(),
-		&srvDesc,
-		CD3DX12_CPU_DESCRIPTOR_HANDLE(
-			descHeap->GetCPUDescriptorHandleForHeapStart(),
-			constantBufferNum, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
-		)
+Model::Model(ID3D12Device* dev,
+	const wchar_t* objPath, const wchar_t* texPath,
+	const int window_width, const int window_height,
+	const unsigned int constantBufferNum,
+	const int texNum = 0) {
+
+	texBuff.resize(constantBufferNum);
+
+	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
+	descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	descHeapDesc.NumDescriptors = constantBufferNum + 1;
+
+
+	// 生成
+	HRESULT result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
+
+	loadModel(dev, vertices, indices, objPath,
+		window_width, window_height,
+		vertBuff, vertMap, vbView,
+		indexBuff, ibView, matProjection
 	);
 
-#pragma endregion テクスチャ
+
+	//InitializeObject3d(&obj3d, 0, dev, descHeap.Get());
+
+	loadTexture(dev, texPath, texNum);
+	//setTexture(dev, texNum, constantBufferNum);
 }
 
 #pragma region クラス化で削除
@@ -257,7 +272,7 @@ void Model::update(XMMATRIX& matView) {
 }
 
 #pragma endregion クラス化で削除
-void Model::draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum) {
+void Model::draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum) {
 	// デスクリプタヒープの配列
 	ID3D12DescriptorHeap* ppHeaps[] = { descHeap.Get() };
 	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
@@ -269,11 +284,12 @@ void Model::draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<I
 
 	// 定数バッファビューをセット
 	cmdList->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
+
 	// シェーダリソースビューをセット
 	cmdList->SetGraphicsRootDescriptorTable(1,
 		CD3DX12_GPU_DESCRIPTOR_HANDLE(
 			descHeap->GetGPUDescriptorHandleForHeapStart(),
-			constantBufferNum,
+			texNum,
 			dev->GetDescriptorHandleIncrementSize(
 				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
 		)
