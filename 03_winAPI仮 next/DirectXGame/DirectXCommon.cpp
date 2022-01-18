@@ -280,7 +280,11 @@ void DirectXCommon::endDraw() {
 	// コマンドリストの実行
 	ID3D12CommandList* cmdLists[] = { cmdList.Get() }; // コマンドリストの配列
 	cmdQueue->ExecuteCommandLists(1, cmdLists);
-	// コマンドリストの実行完了を待つ
+
+	// バッファをフリップ（裏表の入替え）
+	swapchain->Present(1, 0);
+
+	// コマンドキューの実行完了を待つ
 	cmdQueue->Signal(fence.Get(), ++fenceVal);
 	if (fence->GetCompletedValue() != fenceVal) {
 		HANDLE event = CreateEvent(nullptr, false, false, nullptr);
@@ -294,9 +298,6 @@ void DirectXCommon::endDraw() {
 
 	updateFPS();
 	flipTimeFPS();
-
-	// バッファをフリップ（裏表の入替え）
-	swapchain->Present(1, 0);
 }
 
 ID3D12Device* DirectXCommon::getDev() { return dev.Get(); }
