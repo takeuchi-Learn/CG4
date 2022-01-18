@@ -16,7 +16,7 @@ public:
 	Time();
 
 	// ˆê”‚ÌŠÔ‚ğæ“¾
-	long long getOneBeatTime(const float bpm);
+	static long long getOneBeatTime(const float bpm);
 
 	// Œ»İ‚Ü‚Å‚ÌŠÔ‚ğæ“¾
 	// reset()ÅŒã‚ÉÀs‚µ‚½ŠÔ‚ª‹N“_
