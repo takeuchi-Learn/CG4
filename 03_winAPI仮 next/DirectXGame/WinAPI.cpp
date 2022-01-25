@@ -66,8 +66,7 @@ void WinAPI::destroy() {
 }
 
 WinAPI* WinAPI::getInstance() {
-	static WinAPI winapi;
-	return &winapi;
+	return winApi;
 }
 
 HWND WinAPI::getHwnd() { return hwnd; }
