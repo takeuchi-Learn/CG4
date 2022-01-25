@@ -56,10 +56,12 @@ using namespace Microsoft::WRL;
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//WindowsAPI初期化
-	std::unique_ptr<WinAPI> winapi(new WinAPI(L"DirectXクラス化"));
+	//std::unique_ptr<WinAPI> winapi(new WinAPI(L"DirectXクラス化"));
+	WinAPI::create(L"DirectXクラス化");
 
 	//DirectX初期化
-	std::unique_ptr<DirectXCommon> dxCom(new DirectXCommon(winapi.get()));
+	//std::unique_ptr<DirectXCommon> dxCom(new DirectXCommon(WinAPI::getInstance()));
+	DirectXCommon::create(WinAPI::getInstance());
 
 #pragma region 音初期化
 
@@ -87,12 +89,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// スプライト共通
 	// --------------------
 
-	Sprite::SpriteCommon spriteCommon = Sprite::SpriteCommonCreate(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height);
+	Sprite::SpriteCommon spriteCommon = Sprite::SpriteCommonCreate(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height);
 
 	// スプライト共通テクスチャ読み込み
 	enum TEX_NUM { TEX1, HOUSE };
-	Sprite::SpriteCommonLoadTexture(spriteCommon, TEX_NUM::TEX1, L"Resources/texture.png", dxCom->getDev());
-	Sprite::SpriteCommonLoadTexture(spriteCommon, TEX_NUM::HOUSE, L"Resources/house.png", dxCom->getDev());
+	Sprite::SpriteCommonLoadTexture(spriteCommon, TEX_NUM::TEX1, L"Resources/texture.png", DirectXCommon::getInstance()->getDev());
+	Sprite::SpriteCommonLoadTexture(spriteCommon, TEX_NUM::HOUSE, L"Resources/house.png", DirectXCommon::getInstance()->getDev());
 
 	// --------------------
 	// スプライト個別
@@ -103,7 +105,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// スプライトの生成
 	for (int i = 0; i < _countof(sprites); i++) {
-		sprites[i].SpriteCreate(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height, TEX_NUM::HOUSE, spriteCommon, { 0,0 }, false, false);
+		sprites[i].SpriteCreate(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height, TEX_NUM::HOUSE, spriteCommon, { 0,0 }, false, false);
 
 		// スプライトの座標変更
 		sprites[i].position.x = 1280 / 4;
@@ -132,13 +134,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// デバッグテキスト用のテクスチャ番号を指定
 	const int debugTextTexNumber = 2;
 	// デバッグテキスト用のテクスチャ読み込み
-	Sprite::SpriteCommonLoadTexture(spriteCommon, debugTextTexNumber, L"Resources/debugfont.png", dxCom->getDev());
+	Sprite::SpriteCommonLoadTexture(spriteCommon, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
 	// デバッグテキスト初期化
-	debugText.Initialize(dxCom->getDev(), WinAPI::window_width, WinAPI::window_height, debugTextTexNumber, spriteCommon);
+	debugText.Initialize(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height, debugTextTexNumber, spriteCommon);
 
 
 	// 3Dオブジェクト用パイプライン生成
-	Object3d::PipelineSet object3dPipelineSet = Object3d::Object3dCreateGraphicsPipeline(dxCom->getDev());
+	Object3d::PipelineSet object3dPipelineSet = Object3d::Object3dCreateGraphicsPipeline(DirectXCommon::getInstance()->getDev());
 
 #pragma endregion 描画初期化処理
 
@@ -180,7 +182,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 入力初期化
 
-	std::unique_ptr<Input> input(new Input(winapi->getW().hInstance, winapi->getHwnd()));
+	std::unique_ptr<Input> input(new Input(WinAPI::getInstance()->getW().hInstance, WinAPI::getInstance()->getHwnd()));
 
 #pragma endregion 入力初期化
 
@@ -190,11 +192,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int animFrameCount = 0; // アニメーションの経過時間カウンター
 
 	constexpr UINT obj3dTexNum = 0U;
-	std::unique_ptr<Model> model(new Model(dxCom->getDev(),
-		L"Resources/model/model.obj", L"Resources/model/tex.png",
-		WinAPI::window_width, WinAPI::window_height, Object3d::constantBufferNum, obj3dTexNum));
+	std::unique_ptr<Model> model(new Model(DirectXCommon::getInstance()->getDev(),
+										   L"Resources/model/model.obj", L"Resources/model/tex.png",
+										   WinAPI::window_width, WinAPI::window_height, Object3d::constantBufferNum, obj3dTexNum));
 
-	std::unique_ptr<Object3d> obj3d(new Object3d(dxCom->getDev(), model.get(), obj3dTexNum));
+	std::unique_ptr<Object3d> obj3d(new Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
 	const float obj3dScale = 10.f;
 	obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
 	obj3d->position = { 0, 0, obj3dScale };
@@ -222,7 +224,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	// ゲームループ
-	while (!winapi->processMessage()) {
+	while (!WinAPI::getInstance()->processMessage()) {
 
 #pragma region DirectX毎フレーム処理
 
@@ -285,7 +287,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		raystr.str("");
 		raystr.clear();
-		raystr << "FPS : " << dxCom->getFPS();
+		raystr << "FPS : " << DirectXCommon::getInstance()->getFPS();
 		debugText.Print(spriteCommon, raystr.str(), 0, 0);
 
 		// レイと球の当たり判定
@@ -362,31 +364,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region グラフィックスコマンド
 		const XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
-		dxCom->startDraw(clearColor);
+		DirectXCommon::getInstance()->startDraw(clearColor);
 
 		// ４．描画コマンドここから
 
-		Object3d::Object3dCommonBeginDraw(dxCom->getCmdList(), object3dPipelineSet.pipelinestate.Get(), object3dPipelineSet.rootsignature.Get());
+		Object3d::Object3dCommonBeginDraw(DirectXCommon::getInstance()->getCmdList(), object3dPipelineSet.pipelinestate.Get(), object3dPipelineSet.rootsignature.Get());
 
 
 
-		obj3d->draw(dxCom->getCmdList(), dxCom->getDev());
+		obj3d->draw(DirectXCommon::getInstance()->getCmdList(), DirectXCommon::getInstance()->getDev());
 
 		// スプライト共通コマンド
-		Sprite::SpriteCommonBeginDraw(spriteCommon, dxCom->getCmdList());
+		Sprite::SpriteCommonBeginDraw(spriteCommon, DirectXCommon::getInstance()->getCmdList());
 		// スプライト描画
 		for (int i = 0; i < _countof(sprites); i++) {
-			sprites[i].SpriteDrawWithUpdate(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
+			sprites[i].SpriteDrawWithUpdate(DirectXCommon::getInstance()->getCmdList(), spriteCommon, DirectXCommon::getInstance()->getDev());
 		}
 		// デバッグテキスト描画
-		debugText.DrawAll(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
+		debugText.DrawAll(DirectXCommon::getInstance()->getCmdList(), spriteCommon, DirectXCommon::getInstance()->getDev());
 
 		// ４．描画コマンドここまで
 
-		dxCom->endDraw();
+		DirectXCommon::getInstance()->endDraw();
 #pragma endregion グラフィックスコマンド
 
 	}
+
+	DirectXCommon::destroy();
+	WinAPI::destroy();
 
 	return 0;
 }

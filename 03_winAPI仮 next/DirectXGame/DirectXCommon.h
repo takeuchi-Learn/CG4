@@ -10,6 +10,16 @@
 #include <DirectXMath.h>
 
 class DirectXCommon {
+	DirectXCommon(const DirectXCommon& dxcom) = delete;
+	DirectXCommon& operator=(const DirectXCommon& dxcom) = delete;
+
+	static DirectXCommon* dxCom;
+
+	DirectXCommon(WinAPI* winapi);
+	~DirectXCommon();
+
+#pragma region privateメンバ変数
+
 	Microsoft::WRL::ComPtr<ID3D12Device> dev;
 	Microsoft::WRL::ComPtr<IDXGIFactory6> dxgiFactory;
 
@@ -26,6 +36,8 @@ class DirectXCommon {
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer;
 
 	WinAPI* winapi = nullptr;
+
+#pragma endregion
 
 #pragma region FPS
 	static const USHORT divNum = 8;
@@ -56,8 +68,9 @@ private:
 	void ClearDepthBuffer();
 
 public:
-	DirectXCommon(WinAPI* winapi);
-	~DirectXCommon();
+	static void create(WinAPI* winApi);
+	static void destroy();
+	static DirectXCommon* getInstance();
 
 	// @param clearColor 何もない場所の描画色。既定引数は暗い黄色っぽい色
 	void startDraw(const DirectX::XMFLOAT3& clearColor = DirectX::XMFLOAT3(0.5f, 0.5f, 0.1f));

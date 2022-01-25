@@ -11,6 +11,27 @@ using namespace Microsoft::WRL;
 
 #include <DirectXMath.h>
 
+DirectXCommon* DirectXCommon::dxCom = nullptr;
+
+DirectXCommon* DirectXCommon::getInstance() {
+	return dxCom;
+}
+
+void DirectXCommon::create(WinAPI* winApi) {
+	if (dxCom == nullptr) {
+		dxCom = new DirectXCommon(winApi);
+	}
+}
+
+void DirectXCommon::destroy() {
+	if (dxCom != nullptr) {
+		delete dxCom;
+		dxCom = nullptr;
+	}
+}
+
+
+
 void DirectXCommon::initDevice() {
 	HRESULT result;
 	//DXGiファクトリ(デバイス生成後は解放されてよい)

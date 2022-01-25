@@ -3,6 +3,14 @@
 
 class WinAPI {
 private:
+	WinAPI(const WinAPI& winapi) = delete;
+	WinAPI& operator=(const WinAPI& winapi) = delete;
+
+	static WinAPI* winApi;
+
+	WinAPI(const wchar_t* windowTitle = L"DirectXGame");
+	~WinAPI();
+
 	WNDCLASSEX w{}; // ウィンドウクラスの設定
 	HWND hwnd;
 
@@ -13,8 +21,9 @@ public:
 	const static int window_width = 1280;
 	const static int window_height = 720;
 
-	WinAPI(const wchar_t* windowTitle = L"DirectXGame");
-	~WinAPI();
+	static void create(const wchar_t* windowTitle = L"DirectXGame");
+	static void destroy();
+	static WinAPI* getInstance();
 
 	HWND getHwnd();
 	WNDCLASSEX getW();

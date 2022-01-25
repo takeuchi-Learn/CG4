@@ -1,5 +1,9 @@
 #include "WinAPI.h"
 
+WinAPI* WinAPI::winApi = nullptr;
+
+
+
 WinAPI::WinAPI( const wchar_t* windowTitle) {
 	
 	w.cbSize = sizeof(WNDCLASSEX);
@@ -47,6 +51,24 @@ LRESULT WinAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 }
 
 
+
+void WinAPI::create(const wchar_t* windowTitle) {
+	if (winApi == nullptr) {
+		winApi = new WinAPI(windowTitle);
+	}
+}
+
+void WinAPI::destroy() {
+	if (winApi != nullptr) {
+		delete winApi;
+		winApi = nullptr;
+	}
+}
+
+WinAPI* WinAPI::getInstance() {
+	static WinAPI winapi;
+	return &winapi;
+}
 
 HWND WinAPI::getHwnd() { return hwnd; }
 WNDCLASSEX WinAPI::getW() { return w; }
