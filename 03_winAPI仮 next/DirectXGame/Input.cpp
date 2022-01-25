@@ -4,23 +4,25 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-Input::Input(HINSTANCE hInstance, HWND hwnd) {
-	init(hInstance, hwnd);
+#include "WinAPI.h"
+
+Input::Input() {
+	init();
 }
 
-void Input::init(HINSTANCE hInstance, HWND hwnd) {
+void Input::init() {
 
 	HRESULT result;
 
 	result = DirectInput8Create(
-		hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput, nullptr);
+		WinAPI::getInstance()->getW().hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput, nullptr);
 
 	result = dinput->CreateDevice(GUID_SysKeyboard, &devkeyboard, NULL);
 
 	result = devkeyboard->SetDataFormat(&c_dfDIKeyboard); // •W€Œ`Ž®
 
 	result = devkeyboard->SetCooperativeLevel(
-		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+		WinAPI::getInstance()->getHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 }
 
 void Input::updateHitState() {

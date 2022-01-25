@@ -19,9 +19,9 @@ private:
 	ComPtr<IDirectInput8> dinput;
 
 public:
-	Input(HINSTANCE hInstance, HWND hwnd);
+	Input();
 
-	void init(HINSTANCE hInstance, HWND hwnd);
+	void init();
 	void updateHitState();
 
 	bool hitKey(BYTE keyCode);
