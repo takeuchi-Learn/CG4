@@ -132,7 +132,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DebugText debugText;
 
 	// デバッグテキスト用のテクスチャ番号を指定
-	constexpr int debugTextTexNumber = 2;
+	constexpr UINT debugTextTexNumber = Sprite::spriteSRVCount - 1;
 	// デバッグテキスト用のテクスチャ読み込み
 	Sprite::SpriteCommonLoadTexture(spriteCommon, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
 	// デバッグテキスト初期化
