@@ -100,7 +100,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// スプライト個別
 	// --------------------
 
-	const int SPRITES_NUM = 1;
+	constexpr int SPRITES_NUM = 1;
 	Sprite sprites[SPRITES_NUM];
 
 	// スプライトの生成
@@ -132,7 +132,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DebugText debugText;
 
 	// デバッグテキスト用のテクスチャ番号を指定
-	const int debugTextTexNumber = 2;
+	constexpr int debugTextTexNumber = 2;
 	// デバッグテキスト用のテクスチャ読み込み
 	Sprite::SpriteCommonLoadTexture(spriteCommon, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
 	// デバッグテキスト初期化
@@ -197,7 +197,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 										   WinAPI::window_width, WinAPI::window_height, Object3d::constantBufferNum, obj3dTexNum));
 
 	std::unique_ptr<Object3d> obj3d(new Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
-	const float obj3dScale = 10.f;
+	constexpr float obj3dScale = 10.f;
 	obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
 	obj3d->position = { 0, 0, obj3dScale };
 
@@ -248,12 +248,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		{
-			const std::string tmp = "SOUND_PLAY_STATE : ";
 			std::string stateStr = "STOP []";
 			if (Sound::checkPlaySound(soundData1.get())) {
 				stateStr = "PLAY |>";
 			}
-			debugText.Print(spriteCommon, tmp + stateStr, 0, debugText.fontHeight * 2);
+			debugText.Print(spriteCommon, "SOUND_PLAY_STATE : " + stateStr, 0, debugText.fontHeight * 2);
 
 			stateStr = "Press 0 to Play/Stop Sound";
 			debugText.Print(spriteCommon, stateStr, 0, debugText.fontHeight * 3);
@@ -339,13 +338,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 		}
 
-		if (input->hitKey(DIK_I))sprites[0].position.y -= 10; else if (input->hitKey(DIK_K))sprites[0].position.y += 10;
-		if (input->hitKey(DIK_J))sprites[0].position.x -= 10; else if (input->hitKey(DIK_L))sprites[0].position.x += 10;
-
-		// --------------------
-		// 3Dオブジェクト更新
-		// --------------------
-		obj3d->update(matView);
+		if (input->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (input->hitKey(DIK_K)) sprites[0].position.y += 10;
+		if (input->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (input->hitKey(DIK_L)) sprites[0].position.x += 10;
 
 
 
@@ -363,25 +357,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion DirectX毎フレーム処理
 
 #pragma region グラフィックスコマンド
-		const XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
+		constexpr XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
 		DirectXCommon::getInstance()->startDraw(clearColor);
 
 		// ４．描画コマンドここから
 
-		Object3d::Object3dCommonBeginDraw(DirectXCommon::getInstance()->getCmdList(), object3dPipelineSet.pipelinestate.Get(), object3dPipelineSet.rootsignature.Get());
+		Object3d::Object3dCommonBeginDraw(DirectXCommon::getInstance()->getCmdList(), object3dPipelineSet);
 
 
 
-		obj3d->draw(DirectXCommon::getInstance()->getCmdList(), DirectXCommon::getInstance()->getDev());
+		obj3d->drawWithUpdate(matView, DirectXCommon::getInstance());
 
 		// スプライト共通コマンド
 		Sprite::SpriteCommonBeginDraw(spriteCommon, DirectXCommon::getInstance()->getCmdList());
 		// スプライト描画
 		for (int i = 0; i < _countof(sprites); i++) {
-			sprites[i].SpriteDrawWithUpdate(DirectXCommon::getInstance()->getCmdList(), spriteCommon, DirectXCommon::getInstance()->getDev());
+			sprites[i].SpriteDrawWithUpdate(DirectXCommon::getInstance(), spriteCommon);
 		}
 		// デバッグテキスト描画
-		debugText.DrawAll(DirectXCommon::getInstance()->getCmdList(), spriteCommon, DirectXCommon::getInstance()->getDev());
+		debugText.DrawAll(DirectXCommon::getInstance(), spriteCommon);
 
 		// ４．描画コマンドここまで
 

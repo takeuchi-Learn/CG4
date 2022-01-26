@@ -2,6 +2,8 @@
 
 #include "ObjCommon.h"
 
+#include "DirectXCommon.h"
+
 class Sprite : ObjCommon {
 private:
 	using XMFLOAT3 = DirectX::XMFLOAT3;
@@ -104,6 +106,6 @@ public:
 	void SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev);
 
 	// çXêVÇ∆ï`âÊÇìØéûÇ…çsÇ§
-	void Sprite::SpriteDrawWithUpdate(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev);
+	void Sprite::SpriteDrawWithUpdate(DirectXCommon* dxCom, const SpriteCommon& spriteCommon);
 };
 

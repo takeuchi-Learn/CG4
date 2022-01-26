@@ -16,7 +16,7 @@ public: // メンバ関数
 
 	void Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, float x, float y, float scale = 1.0f);
 
-	void DrawAll(ID3D12GraphicsCommandList* cmdList, const Sprite::SpriteCommon& spriteCommon, ID3D12Device* dev);
+	void DrawAll(DirectXCommon* dxCom, const Sprite::SpriteCommon& spriteCommon);
 
 private: // メンバ変数     
 	// スプライトデータの配列

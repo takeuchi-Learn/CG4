@@ -75,10 +75,8 @@ public:
 	void setTexture(ID3D12Device* dev, UINT newTexNum);
 
 	Model(ID3D12Device* dev,
-		const wchar_t* objPath,
-		const wchar_t* texPath,
-		const int window_width,
-		const int window_height,
+		const wchar_t* objPath, const wchar_t* texPath,
+		const int window_width, const int window_height,
 		const unsigned int constantBufferNum,
 		const int texNum);
 

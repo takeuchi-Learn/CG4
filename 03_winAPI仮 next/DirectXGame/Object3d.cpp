@@ -77,17 +77,22 @@ void Object3d::update(XMMATRIX& matView) {
 	model->update(matView);
 }
 
-void Object3d::draw(ID3D12GraphicsCommandList* cmdList, ID3D12Device* dev) {
-	model->draw(dev, cmdList, constBuff.Get(), constantBufferNum, texNum);
+void Object3d::draw(DirectXCommon* dxCom) {
+	model->draw(dxCom->getDev(), dxCom->getCmdList(), constBuff.Get(), constantBufferNum, texNum);
+}
+
+void Object3d::drawWithUpdate(XMMATRIX& matView, DirectXCommon* dxCom) {
+	update(matView);
+	draw(dxCom);
 }
 
 Object3d::~Object3d() {}
 
 
 
-void Object3d::Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, ID3D12PipelineState* pPipelineState, ID3D12RootSignature* pRootSignature) {
-	cmdList->SetPipelineState(pPipelineState);
-	cmdList->SetGraphicsRootSignature(pRootSignature);
+void Object3d::Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet) {
+	cmdList->SetPipelineState(ppSet.pipelinestate.Get());
+	cmdList->SetGraphicsRootSignature(ppSet.rootsignature.Get());
 	//プリミティブ形状を設定
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

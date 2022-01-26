@@ -6,6 +6,7 @@
 #include <d3d12.h>
 
 #include "Model.h"
+#include "DirectXCommon.h"
 
 class Object3d {
 	// Microsoft::WRL::を省略
@@ -48,7 +49,7 @@ public:
 	// 頂点バッファの最大数
 	static const int constantBufferNum = 128;
 
-	static void Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, ID3D12PipelineState* pPipelineState, ID3D12RootSignature* pRootSignature);
+	static void Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet);
 
 	//3Dオブジェクト用パイプライン生成
 	// シェーダーモデル指定は "*s_5_0"
@@ -91,7 +92,9 @@ public:
 
 	void update(XMMATRIX& matView);
 
-	void draw(ID3D12GraphicsCommandList* cmdList, ID3D12Device* dev);
+	void draw(DirectXCommon* dxCom);
+
+	void drawWithUpdate(XMMATRIX& matView, DirectXCommon* dxCom);
 
 
 	~Object3d();

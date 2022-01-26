@@ -425,8 +425,8 @@ void Sprite::SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& 
 }
 
 // XV‚Æ•`‰æ‚ð“¯Žž‚És‚¤
-void Sprite::SpriteDrawWithUpdate(ID3D12GraphicsCommandList* cmdList,
-	const SpriteCommon& spriteCommon, ID3D12Device* dev) {
+void Sprite::SpriteDrawWithUpdate(DirectXCommon* dxCom,
+	const SpriteCommon& spriteCommon) {
 	SpriteUpdate(spriteCommon);
-	SpriteDraw(cmdList, spriteCommon, dev);
+	SpriteDraw(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
 }

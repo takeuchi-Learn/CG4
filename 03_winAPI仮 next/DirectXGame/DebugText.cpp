@@ -44,11 +44,11 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 }
 
 // まとめて描画
-void DebugText::DrawAll(ID3D12GraphicsCommandList* cmdList, const Sprite::SpriteCommon& spriteCommon, ID3D12Device* dev) {
+void DebugText::DrawAll(DirectXCommon* dxCom, const Sprite::SpriteCommon& spriteCommon) {
 	// 全ての文字のスプライトについて
 	for (int i = 0; i < spriteIndex; i++) {
 		// スプライト描画
-		sprites[i].SpriteDraw(cmdList, spriteCommon, dev);
+		sprites[i].SpriteDraw(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
 	}
 
 	spriteIndex = 0;
