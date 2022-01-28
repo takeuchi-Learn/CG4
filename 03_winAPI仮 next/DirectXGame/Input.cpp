@@ -25,15 +25,49 @@ void Input::init() {
 		WinAPI::getInstance()->getHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 }
 
-void Input::updateHitState() {
+void Input::update() {
 	HRESULT result;
 	result = devkeyboard->Acquire();
 
 	memcpy(preKey, key, sizeof(key));
 	result = devkeyboard->GetDeviceState(sizeof(key), key);
+
+	memcpy(preMouseState, mouseState, sizeof(mouseState));
+	GetKeyboardState(mouseState);
+
+	GetCursorPos(&mousePos);
+	ScreenToClient(WinAPI::getInstance()->getHwnd(), &mousePos);
 }
 
 bool Input::hitKey(BYTE keyCode) { return (bool)key[keyCode]; }
 bool Input::hitPreKey(BYTE keyCode) { return (bool)preKey[keyCode]; }
 
 bool Input::triggerKey(BYTE keyCode) { return (bool)(key[keyCode] && preKey[keyCode] == false); }
+
+bool Input::hitMouseBotton(BYTE keyCode) {
+	return (bool)(mouseState[keyCode] & 0x80);
+}
+
+
+bool Input::hitPreMouseBotton(BYTE keyCode) {
+	return (bool)(preMouseState[keyCode] & 0x80);
+}
+
+bool Input::triggerMouseBotton(BYTE keyCode) {
+	return hitMouseBotton(keyCode) && !hitPreMouseBotton(keyCode);
+}
+
+POINT Input::getMousePos() {
+	return mousePos;
+}
+
+bool Input::setMousePos(int x, int y) {
+	POINT tmpPos = { x,y };
+	ClientToScreen(WinAPI::getInstance()->getHwnd(), &tmpPos);
+
+	return SetCursorPos(tmpPos.x, tmpPos.y);
+}
+
+void Input::changeDispMouseCursorFlag(const bool dispFlag) {
+	ShowCursor((BOOL)dispFlag);
+}

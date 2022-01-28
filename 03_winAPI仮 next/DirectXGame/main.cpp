@@ -231,7 +231,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region DirectX毎フレーム処理
 
 		//キー入力更新
-		input->updateHitState();
+		input->update();
 		if (input->hitKey(DIK_ESCAPE)) break;	//ESCで終了
 
 
@@ -260,7 +260,41 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			debugText.Print(spriteCommon, stateStr, 0, debugText.fontHeight * 3);
 		}
 
+		// --------------------
+		// マウス
+		// --------------------
+		if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
+			debugText.Print(spriteCommon, "input mouse left",
+							input->getMousePos().x, input->getMousePos().y, 0.75f);
+		}
+		if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
+			debugText.Print(spriteCommon, "input mouse right",
+							input->getMousePos().x,
+							input->getMousePos().y + debugText.fontHeight, 0.75f);
+		}
+		if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
+			debugText.Print(spriteCommon, "input mouse wheel",
+							input->getMousePos().x,
+							input->getMousePos().y + debugText.fontHeight * 2, 0.75f);
+		}
+		if (input->hitMouseBotton(VK_LSHIFT)) {
+			debugText.Print(spriteCommon,"LSHIFT", 0,0,2);
+		}
 
+		// Rを押すたびマウスカーソルの表示非表示を切り替え
+		if (input->triggerKey(DIK_R)) {
+			static bool mouseDispFlag = true;
+			mouseDispFlag = !mouseDispFlag;
+			input->changeDispMouseCursorFlag(mouseDispFlag);
+		}
+
+		// Mキーでマウスカーソル位置を0,0に移動
+		if (input->triggerKey(DIK_M)) {
+			input->setMousePos(0, 0);
+		}
+		// --------------------
+		// マウスここまで
+		// --------------------
 
 		// --------------------
 		// 球2平面更新

@@ -14,7 +14,13 @@ private:
 	BYTE key[256];
 	BYTE preKey[256];
 
+	BYTE mouseState[256]{};
+	BYTE preMouseState[256]{};
+
+	POINT mousePos{};
+
 	ComPtr<IDirectInputDevice8> devkeyboard;
+	ComPtr<IDirectInputDevice8> devmouse;
 
 	ComPtr<IDirectInput8> dinput;
 
@@ -22,10 +28,27 @@ public:
 	Input();
 
 	void init();
-	void updateHitState();
+	void update();
 
 	bool hitKey(BYTE keyCode);
 	bool hitPreKey(BYTE keyCode);
 	bool triggerKey(BYTE keyCode);
+
+	enum MOUSE : UINT {
+		LEFT = VK_LBUTTON,
+		RIGHT = VK_RBUTTON,
+		WHEEL = VK_MBUTTON
+	};
+
+	// @param Input::MOUSE::Ç»ÇÒÇ∆Ç©
+	bool hitMouseBotton(_In_ BYTE keyCode);
+	bool hitPreMouseBotton(_In_ BYTE keyCode);
+	bool triggerMouseBotton(_In_ BYTE keyCode);
+
+	// @return POINTå^(LONG x Ç∆LONG y ÇÃÇ›ÇÃç\ë¢ëÃ)
+	POINT getMousePos();
+	bool setMousePos(int x, int y);
+
+	void changeDispMouseCursorFlag(const  bool dispFlag);
 };
 
