@@ -59,6 +59,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//std::unique_ptr<WinAPI> winapi(new WinAPI(L"DirectXクラス化"));
 	WinAPI::create(L"DirectXクラス化");
 
+	//WinAPI::getInstance()->setWindowText("DirectXクラス化 - ういんどうたいとる（へんこうご）");
+
 	//DirectX初期化
 	//std::unique_ptr<DirectXCommon> dxCom(new DirectXCommon(WinAPI::getInstance()));
 	DirectXCommon::create(WinAPI::getInstance());

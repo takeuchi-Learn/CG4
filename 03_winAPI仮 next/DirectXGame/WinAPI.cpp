@@ -72,6 +72,10 @@ WinAPI* WinAPI::getInstance() {
 HWND WinAPI::getHwnd() { return hwnd; }
 WNDCLASSEX WinAPI::getW() { return w; }
 
+void WinAPI::setWindowText(const LPCSTR window_title) {
+	SetWindowTextA(hwnd, window_title);
+}
+
 bool WinAPI::processMessage() {
 	MSG msg{};  // メッセージ
 

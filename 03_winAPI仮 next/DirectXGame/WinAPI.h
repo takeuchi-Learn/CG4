@@ -28,6 +28,8 @@ public:
 	HWND getHwnd();
 	WNDCLASSEX getW();
 
+	void setWindowText(const LPCSTR window_title);
+
 	//ゲームループ内で毎回呼びだす。trueが返ってきたらすぐに終了させるべき
 	//@return 異常の有無をbool型で返す(true == 異常 , false == 正常)
 	bool processMessage();
