@@ -11,6 +11,14 @@ class Input {
 public:
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 private:
+	Input(const Input& ip) = delete;
+	Input& operator=(const Input& ip) = delete;
+
+	Input();
+	~Input();
+
+	static Input* input;
+
 	BYTE key[256];
 	BYTE preKey[256];
 
@@ -25,7 +33,10 @@ private:
 	ComPtr<IDirectInput8> dinput;
 
 public:
-	Input();
+	static Input* getInstance();
+
+	static void create();
+	static void destroy();
 
 	void init();
 	void update();

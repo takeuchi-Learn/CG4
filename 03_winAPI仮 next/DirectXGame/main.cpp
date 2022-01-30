@@ -184,7 +184,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 入力初期化
 
-	std::unique_ptr<Input> input(new Input());
+	//std::unique_ptr<Input> input(new Input());
+	Input::create();
 
 #pragma endregion 入力初期化
 
@@ -231,13 +232,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region DirectX毎フレーム処理
 
 		//キー入力更新
-		input->update();
-		if (input->hitKey(DIK_ESCAPE)) break;	//ESCで終了
+		Input::getInstance()->update();
+		if (Input::getInstance()->hitKey(DIK_ESCAPE)) break;	//ESCで終了
 
 
 
 			// 数字の0キーが押された瞬間音を再生しなおす
-		if (input->triggerKey(DIK_0)) {
+		if (Input::getInstance()->triggerKey(DIK_0)) {
 			//Sound::SoundStopWave(soundData1);
 
 			if (Sound::checkPlaySound(soundData1.get())) {
@@ -263,34 +264,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// --------------------
 		// マウス
 		// --------------------
-		if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
+		if (Input::getInstance()->hitMouseBotton(Input::MOUSE::LEFT)) {
 			debugText.Print(spriteCommon, "input mouse left",
-							input->getMousePos().x, input->getMousePos().y, 0.75f);
+							Input::getInstance()->getMousePos().x, Input::getInstance()->getMousePos().y, 0.75f);
 		}
-		if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
+		if (Input::getInstance()->hitMouseBotton(Input::MOUSE::RIGHT)) {
 			debugText.Print(spriteCommon, "input mouse right",
-							input->getMousePos().x,
-							input->getMousePos().y + debugText.fontHeight, 0.75f);
+							Input::getInstance()->getMousePos().x,
+							Input::getInstance()->getMousePos().y + debugText.fontHeight, 0.75f);
 		}
-		if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
+		if (Input::getInstance()->hitMouseBotton(Input::MOUSE::WHEEL)) {
 			debugText.Print(spriteCommon, "input mouse wheel",
-							input->getMousePos().x,
-							input->getMousePos().y + debugText.fontHeight * 2, 0.75f);
+							Input::getInstance()->getMousePos().x,
+							Input::getInstance()->getMousePos().y + debugText.fontHeight * 2, 0.75f);
 		}
-		if (input->hitMouseBotton(VK_LSHIFT)) {
-			debugText.Print(spriteCommon,"LSHIFT", 0,0,2);
+		if (Input::getInstance()->hitMouseBotton(VK_LSHIFT)) {
+			debugText.Print(spriteCommon, "LSHIFT", 0, 0, 2);
 		}
 
 		// Rを押すたびマウスカーソルの表示非表示を切り替え
-		if (input->triggerKey(DIK_R)) {
+		if (Input::getInstance()->triggerKey(DIK_R)) {
 			static bool mouseDispFlag = true;
 			mouseDispFlag = !mouseDispFlag;
-			input->changeDispMouseCursorFlag(mouseDispFlag);
+			Input::getInstance()->changeDispMouseCursorFlag(mouseDispFlag);
 		}
 
 		// Mキーでマウスカーソル位置を0,0に移動
-		if (input->triggerKey(DIK_M)) {
-			input->setMousePos(0, 0);
+		if (Input::getInstance()->triggerKey(DIK_M)) {
+			Input::getInstance()->setMousePos(0, 0);
 		}
 		// --------------------
 		// マウスここまで
@@ -303,12 +304,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// レイ移動
 		{
 			XMVECTOR moveZ = XMVectorSet(0, 0, 0.01f, 0);
-			if (input->hitKey(DIK_DOWN)) ray.start += moveZ;
-			else if (input->hitKey(DIK_UP)) ray.start -= moveZ;
+			if (Input::getInstance()->hitKey(DIK_DOWN)) ray.start += moveZ;
+			else if (Input::getInstance()->hitKey(DIK_UP)) ray.start -= moveZ;
 
 			XMVECTOR moveX = XMVectorSet(0.01f, 0, 0, 0);
-			if (input->hitKey(DIK_RIGHT)) ray.start += moveX;
-			else if (input->hitKey(DIK_LEFT)) ray.start -= moveX;
+			if (Input::getInstance()->hitKey(DIK_RIGHT)) ray.start += moveX;
+			else if (Input::getInstance()->hitKey(DIK_LEFT)) ray.start -= moveX;
 		}
 		//stringstreamで変数の値を読み込み整形
 		std::ostringstream raystr;
@@ -352,7 +353,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		{
-			if (input->hitKey(DIK_SPACE)) timer->reset();
+			if (Input::getInstance()->hitKey(DIK_SPACE)) timer->reset();
 
 			std::ostringstream tmpStr{};
 			tmpStr << std::fixed << std::setprecision(6) <<
@@ -364,9 +365,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 球2平面更新ここまで
 		// --------------------
 
-		if (input->hitKey(DIK_A) || input->hitKey(DIK_D)) {
+		if (Input::getInstance()->hitKey(DIK_A) || Input::getInstance()->hitKey(DIK_D)) {
 			float angle = 0.f;
-			if (input->hitKey(DIK_D)) { angle += XMConvertToRadians(1.0f); } else if (input->hitKey(DIK_A)) { angle -= XMConvertToRadians(1.0f); }
+			if (Input::getInstance()->hitKey(DIK_D)) { angle += XMConvertToRadians(1.0f); } else if (Input::getInstance()->hitKey(DIK_A)) { angle -= XMConvertToRadians(1.0f); }
 
 			// angleラジアンだけY軸まわりに回転。半径は-100
 			eye.x = -100 * sinf(angle);
@@ -374,8 +375,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 		}
 
-		if (input->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (input->hitKey(DIK_K)) sprites[0].position.y += 10;
-		if (input->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (input->hitKey(DIK_L)) sprites[0].position.x += 10;
+		if (Input::getInstance()->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (Input::getInstance()->hitKey(DIK_K)) sprites[0].position.y += 10;
+		if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
 
 
 
@@ -407,7 +408,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// スプライト共通コマンド
 		Sprite::SpriteCommonBeginDraw(spriteCommon, DirectXCommon::getInstance()->getCmdList());
 		// スプライト描画
-		for (int i = 0; i < _countof(sprites); i++) {
+		for (UINT i = 0; i < _countof(sprites); i++) {
 			sprites[i].SpriteDrawWithUpdate(DirectXCommon::getInstance(), spriteCommon);
 		}
 		// デバッグテキスト描画
@@ -419,6 +420,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion グラフィックスコマンド
 
 	}
+	Input::destroy();
 
 	DirectXCommon::destroy();
 	WinAPI::destroy();

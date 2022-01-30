@@ -6,8 +6,17 @@
 
 #include "WinAPI.h"
 
+Input* Input::input = nullptr;
+
 Input::Input() {
 	init();
+}
+
+Input::~Input() {
+}
+
+Input* Input::getInstance() {
+	return input;
 }
 
 void Input::init() {
@@ -23,6 +32,19 @@ void Input::init() {
 
 	result = devkeyboard->SetCooperativeLevel(
 		WinAPI::getInstance()->getHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+}
+
+void Input::create() {
+	if (input == nullptr) {
+		input = new Input();
+	}
+}
+
+void Input::destroy() {
+	if (input != nullptr) {
+		delete input;
+		input = nullptr;
+	}
 }
 
 void Input::update() {
