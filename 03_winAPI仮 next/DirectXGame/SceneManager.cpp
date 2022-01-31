@@ -1,6 +1,10 @@
 #include "SceneManager.h"
 
 #include "TitleScene.h"
+#include "PlayScene.h"
+#include "EndScene.h"
+
+#include "Input.h"
 
 SceneManager::SceneManager()
 	: nextScene(SCENE_NUM::NONE) {
@@ -27,17 +31,16 @@ void SceneManager::update() {
 		nowScene->fin();
 		delete nowScene;
 
-		// todo プレイ、エンドシーン追加
 		// undone シーンを追加する際はここのcaseも追加
 		switch (nextScene) {
 		case SCENE_NUM::TITLE:
 			nowScene = new TitleScene();
 			break;
 		case SCENE_NUM::PLAY:
-			//nowScene = new PlayScene();
+			nowScene = new PlayScene();
 			break;
 		case SCENE_NUM::END:
-			//nowScene = new EndScene();
+			nowScene = new EndScene();
 			break;
 		}
 

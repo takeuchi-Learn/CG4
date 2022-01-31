@@ -52,6 +52,16 @@ bool Input::hitPreKey(BYTE keyCode) { return (bool)preKey[keyCode]; }
 
 bool Input::triggerKey(BYTE keyCode) { return (bool)(key[keyCode] && preKey[keyCode] == false); }
 
+void Input::resetState() {
+	for (UINT i = 0; i < 256; i++) {
+		key[i] = 0;
+		preKey[i] = 0;
+
+		mouseState[i] = 0;
+		preMouseState[i] = 0;
+	}
+}
+
 bool Input::hitMouseBotton(BYTE keyCode) {
 	return (bool)(mouseState[keyCode] & 0x80);
 }

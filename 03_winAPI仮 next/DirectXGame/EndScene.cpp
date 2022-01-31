@@ -4,7 +4,10 @@
 
 #include "Input.h"
 
+#include "WinAPI.h"
+
 void EndScene::init() {
+	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : End");
 }
 
 void EndScene::update() {

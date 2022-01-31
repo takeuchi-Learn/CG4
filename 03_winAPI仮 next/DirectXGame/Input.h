@@ -40,6 +40,8 @@ public:
 	bool hitPreKey(BYTE keyCode);
 	bool triggerKey(BYTE keyCode);
 
+	void resetState();
+
 	enum MOUSE : UINT {
 		LEFT = VK_LBUTTON,
 		RIGHT = VK_RBUTTON,
