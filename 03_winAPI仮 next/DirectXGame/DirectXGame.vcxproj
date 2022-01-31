@@ -145,6 +145,7 @@
     <ClCompile Include="CollisionPrimitive.cpp" />
     <ClCompile Include="DebugText.cpp" />
     <ClCompile Include="DirectXCommon.cpp" />
+    <ClCompile Include="EndScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Looper.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjCommon.cpp" />
     <ClCompile Include="Object3d.cpp" />
+    <ClCompile Include="PlayScene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -170,12 +172,14 @@
     <ClInclude Include="CollisionPrimitive.h" />
     <ClInclude Include="DebugText.h" />
     <ClInclude Include="DirectXCommon.h" />
+    <ClInclude Include="EndScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Looper.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ObjCommon.h" />
     <ClInclude Include="Object3d.h" />
+    <ClInclude Include="PlayScene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprite.h" />
