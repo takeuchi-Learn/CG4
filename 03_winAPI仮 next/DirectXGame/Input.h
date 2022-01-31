@@ -17,8 +17,6 @@ private:
 	Input();
 	~Input();
 
-	static Input* input;
-
 	BYTE key[256];
 	BYTE preKey[256];
 
@@ -34,9 +32,6 @@ private:
 
 public:
 	static Input* getInstance();
-
-	static void create();
-	static void destroy();
 
 	void init();
 	void update();

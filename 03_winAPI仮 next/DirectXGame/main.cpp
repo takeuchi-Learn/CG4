@@ -185,7 +185,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 入力初期化
 
 	//std::unique_ptr<Input> input(new Input());
-	Input::create();
 
 #pragma endregion 入力初期化
 
@@ -420,8 +419,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion グラフィックスコマンド
 
 	}
-	Input::destroy();
-
 	DirectXCommon::destroy();
 	WinAPI::destroy();
 
