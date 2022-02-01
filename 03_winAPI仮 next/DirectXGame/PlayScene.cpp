@@ -4,102 +4,31 @@
 
 #include "Input.h"
 
-#include <DirectXMath.h>
-
-#include <memory>
-
-#include "Sound.h"
-
-#include "Sprite.h"
-
-#include "DebugText.h"
-
-#include "Object3d.h"
-
-#include "Collision.h"
-
-#include "Time.h"
-
 #include <sstream>
 #include <iomanip>
 
-#include<xaudio2.h>
+#include <xaudio2.h>
 
 using namespace DirectX;
 
-namespace {
-
-#pragma region 音
-
-	Sound::SoundCommon* soundCommon = nullptr;
-
-	Sound* soundData1 = nullptr;
-
-#pragma endregion 音
-
-#pragma region ビュー変換行列
-
-	XMMATRIX matView;
-	XMFLOAT3 eye(0, 0, -100);   // 視点座標
-	XMFLOAT3 target(0, 0, 0);   // 注視点座標
-	XMFLOAT3 up(0, 1, 0);       // 上方向ベクトル
-
-#pragma endregion ビュー変換行列
-
-#pragma region スプライト
-
-	// --------------------
-	// スプライト共通
-	// --------------------
-	Sprite::SpriteCommon spriteCommon;
-	// スプライト共通テクスチャ読み込み
-	enum TEX_NUM { TEX1, HOUSE };
-
-	// --------------------
-	// スプライト個別
-	// --------------------
-	constexpr int SPRITES_NUM = 1;
-	Sprite sprites[SPRITES_NUM];
-
-	// --------------------
-	// デバッグテキスト
-	// --------------------
-	DebugText debugText;
-	// デバッグテキスト用のテクスチャ番号を指定
-	constexpr UINT debugTextTexNumber = Sprite::spriteSRVCount - 1;
-
-#pragma endregion スプライト
-
-#pragma region 3Dオブジェクト
-	// 3Dオブジェクト用パイプライン生成
-	Object3d::PipelineSet object3dPipelineSet;
-
-	constexpr UINT obj3dTexNum = 0U;
-	std::unique_ptr<Model> model;
-	std::unique_ptr<Object3d> obj3d;
-	constexpr float obj3dScale = 10.f;
-
-#pragma endregion 3Dオブジェクト
-
-#pragma region 時間
-
-	std::unique_ptr<Time> timer(new Time());
-
-#pragma endregion 時間
-}
-
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play");
+
+#pragma region ビュー変換
+
+	eye = XMFLOAT3(0, 0, -100);   // 視点座標
+	target = XMFLOAT3(0, 0, 0);   // 注視点座標
+	up = XMFLOAT3(0, 1, 0);       // 上方向ベクトル
+	matView = XMMatrixLookAtLH(
+		XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up)
+	);
+
+#pragma endregion ビュー変換
 
 #pragma region 音
 
 	soundCommon = new Sound::SoundCommon();
 	soundData1 = new Sound("Resources/BGM.wav", soundCommon);
-
-	// ビュー変換行列
-	matView = XMMatrixLookAtLH(
-		XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up)
-	);
 
 #pragma endregion 音
 
@@ -158,17 +87,17 @@ void PlayScene::init() {
 
 #pragma endregion 3Dオブジェクト
 
+	timer.reset(new Time());
 	timer->reset();
 }
 
 void PlayScene::update() {
+
 	if (Input::getInstance()->triggerKey(DIK_SPACE)) {
 		SceneManager::getInstange()->changeScene(SCENE_NUM::END);
 	}
 
-
-
-#pragma region mainからそのまま移植
+#pragma region 音
 
 	// 数字の0キーが押された瞬間音を再生しなおす
 	if (Input::getInstance()->triggerKey(DIK_0)) {
@@ -176,10 +105,10 @@ void PlayScene::update() {
 
 		if (Sound::checkPlaySound(soundData1)) {
 			Sound::SoundStopWave(soundData1);
-			OutputDebugStringA("STOP\n");
+			//OutputDebugStringA("STOP\n");
 		} else {
 			Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
-			OutputDebugStringA("PLAY\n");
+			//OutputDebugStringA("PLAY\n");
 		}
 	}
 
@@ -194,9 +123,10 @@ void PlayScene::update() {
 		debugText.Print(spriteCommon, stateStr, 0, debugText.fontHeight * 3);
 	}
 
-	// --------------------
-	// マウス
-	// --------------------
+#pragma endregion 音
+
+#pragma region マウス
+
 	if (Input::getInstance()->hitMouseBotton(Input::MOUSE::LEFT)) {
 		debugText.Print(spriteCommon, "input mouse left",
 		Input::getInstance()->getMousePos().x, Input::getInstance()->getMousePos().y, 0.75f);
@@ -226,9 +156,10 @@ void PlayScene::update() {
 	if (Input::getInstance()->triggerKey(DIK_M)) {
 		Input::getInstance()->setMousePos(0, 0);
 	}
-	// --------------------
-	// マウスここまで
-	// --------------------
+
+#pragma endregion マウス
+
+#pragma region 時間
 
 	{
 		std::ostringstream raystr{};
@@ -246,12 +177,9 @@ void PlayScene::update() {
 		debugText.Print(spriteCommon, tmpStr.str(), 0, debugText.fontHeight * 11);
 	}
 
-	// --------------------
-	// 球2平面更新ここまで
-	// --------------------
+#pragma endregion 時間
 
 	if (Input::getInstance()->hitKey(DIK_A) || Input::getInstance()->hitKey(DIK_D)) {
-		float angle = 0.f;
 		if (Input::getInstance()->hitKey(DIK_D)) { angle += XMConvertToRadians(1.0f); } else if (Input::getInstance()->hitKey(DIK_A)) { angle -= XMConvertToRadians(1.0f); }
 
 		// angleラジアンだけY軸まわりに回転。半径は-100
@@ -262,20 +190,6 @@ void PlayScene::update() {
 
 	if (Input::getInstance()->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (Input::getInstance()->hitKey(DIK_K)) sprites[0].position.y += 10;
 	if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
-
-
-
-
-
-	//// X座標,Y座標を指定して表示
-	//debugText.Print(spriteCommon, "Hello,DirectX!!", 200, 100);
-	//// X座標,Y座標,縮尺を指定して表示
-	//debugText.Print(spriteCommon, "Nihon Kogakuin", 200, 200, 2.0f);
-
-	//sprite.rotation = 45;
-	//sprite.position = {1280/2, 720/2, 0};
-	//sprite.color = {0, 0, 1, 1};
-#pragma endregion
 }
 
 void PlayScene::draw() {
