@@ -17,6 +17,10 @@ using namespace std;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
+namespace {
+	constexpr float nearZ = 0.1f, farZ = 1000.f;
+}
+
 void Model::loadModel(ID3D12Device* dev,
 	std::vector<Vertex>& vertices, std::vector<unsigned short>& indices,
 	const wchar_t* objPath,
@@ -162,7 +166,128 @@ void Model::loadModel(ID3D12Device* dev,
 	matProjection = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(60.0f), // 上下画角60度
 		(float)window_width / window_height, // アスペクト比（画面横幅 / 画面縦幅）
-		0.1f, 1000.0f // 前端、奥端
+		nearZ, farZ // 前端、奥端
+	);
+}
+
+void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width, const int window_height) {
+
+	constexpr UINT vMax = 32, uMax = 32;
+
+	constexpr int vertexNum = uMax * (vMax + 1);
+	constexpr int indexNum = 2 * vMax * (uMax + 1);
+
+	vertices.resize(vertexNum);
+	indices.resize(indexNum);
+
+	for (UINT v = 0; v <= vMax; v++) {
+		for (UINT u = 0; u < uMax; u++) {
+			float theata = XM_PI * v / vMax;
+			float phi = (XM_PI * 2) * u / uMax;
+			float fX = r * sin(theata) * cos(phi);
+			float fY = r * cos(theata);
+			float fZ = r * sin(theata) * sin(phi);
+			vertices[uMax * v + u].pos = XMFLOAT3(fX, fY, fZ);
+		}
+	}
+
+	for (UINT v = 0, i = 0; v < vMax; v++) {
+		for (UINT u = 0; u <= uMax; u++) {
+			if (u == uMax) {
+				indices[i] = v * uMax;
+				i++;
+				indices[i] = (v + 1) * uMax;
+				i++;
+			} else {
+				indices[i] = (v * uMax) + u;
+				i++;
+				indices[i] = indices[i - 1] + uMax;
+				i++;
+			}
+		}
+	}
+
+	for (UINT i = 0; i < indices.size() / 3; i++) {// 三角形１つごとに計算していく
+	// 三角形のインデックスを取り出して、一時的な変数に入れる
+		USHORT index0 = indices[i * 3 + 0];
+		USHORT index1 = indices[i * 3 + 1];
+		USHORT index2 = indices[i * 3 + 2];
+		// 三角形を構成する頂点座標をベクトルに代入
+		XMVECTOR p0 = XMLoadFloat3(&vertices[index0].pos);
+		XMVECTOR p1 = XMLoadFloat3(&vertices[index1].pos);
+		XMVECTOR p2 = XMLoadFloat3(&vertices[index2].pos);
+		// p0→p1ベクトル、p0→p2ベクトルを計算（ベクトルの減算）
+		XMVECTOR v1 = XMVectorSubtract(p1, p0);
+		XMVECTOR v2 = XMVectorSubtract(p2, p0);
+		// 外積は両方から垂直なベクトル
+		XMVECTOR normal = XMVector3Cross(v1, v2);
+		// 正規化（長さを1にする)
+		normal = XMVector3Normalize(normal);
+		// 求めた法線を頂点データに代入
+		XMStoreFloat3(&vertices[index0].normal, normal);
+		XMStoreFloat3(&vertices[index1].normal, normal);
+		XMStoreFloat3(&vertices[index2].normal, normal);
+	}
+
+	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
+	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * vertices.size());
+
+	HRESULT result = S_FALSE;
+
+	//頂点バッファの生成
+	result = dev->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&vertBuff));
+
+	//GPU上のバッファに対応した仮想メモリを取得
+	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+
+	std::copy(vertices.begin(), vertices.end(), vertMap);
+
+	//マップを解除
+	vertBuff->Unmap(0, nullptr);
+
+	//頂点バッファビューの作成
+	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
+	vbView.SizeInBytes = sizeVB;
+	vbView.StrideInBytes = sizeof(Vertex);
+
+	//インデックスデータ全体のサイズ
+	UINT sizeIB = static_cast<UINT>(sizeof(unsigned short) * indices.size());
+
+	//インデックスバッファの生成
+	result = dev->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(sizeIB),
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&indexBuff)
+	);
+
+	//インデックスバッファビューの作成
+	ibView.BufferLocation = indexBuff->GetGPUVirtualAddress();
+	ibView.Format = DXGI_FORMAT_R16_UINT;
+	ibView.SizeInBytes = sizeIB;
+
+	//GPU上のバッファに対応した仮想メモリを取得
+	unsigned short* indexMap = nullptr;
+	result = indexBuff->Map(0, nullptr, (void**)&indexMap);
+
+	std::copy(indices.begin(), indices.end(), indexMap);
+	//繋がりを解除
+	indexBuff->Unmap(0, nullptr);
+
+
+	//射影変換行列(透視投影)
+	matProjection = XMMatrixPerspectiveFovLH(
+		XM_PI / 3.f, // 上下画角60度
+		(float)window_width / window_height, // アスペクト比（画面横幅 / 画面縦幅）
+		nearZ, farZ // 前端、奥端
 	);
 }
 
@@ -263,6 +388,28 @@ Model::Model(ID3D12Device* dev,
 
 	loadTexture(dev, texPath, texNum);
 	//setTexture(dev, texNum, constantBufferNum);
+}
+
+Model::Model(ID3D12Device* dev,
+			 const wchar_t* texPath,
+			 const float r,
+			 const int window_width, const int window_height,
+			 const unsigned int constantBufferNum,
+			 const int texNum) {
+	texBuff.resize(constantBufferNum);
+
+	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
+	descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	descHeapDesc.NumDescriptors = constantBufferNum + 1;
+
+
+	// 生成
+	HRESULT result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
+
+	loadSphere(dev, r, window_width, window_height);
+
+	loadTexture(dev, texPath, texNum);
 }
 
 #pragma region クラス化で削除

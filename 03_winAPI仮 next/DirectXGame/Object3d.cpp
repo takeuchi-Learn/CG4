@@ -90,11 +90,11 @@ Object3d::~Object3d() {}
 
 
 
-void Object3d::Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet) {
+void Object3d::Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet, D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology) {
 	cmdList->SetPipelineState(ppSet.pipelinestate.Get());
 	cmdList->SetGraphicsRootSignature(ppSet.rootsignature.Get());
 	//プリミティブ形状を設定
-	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmdList->IASetPrimitiveTopology(PrimitiveTopology);
 }
 
 Object3d::PipelineSet Object3d::Object3dCreateGraphicsPipeline(ID3D12Device* dev,

@@ -75,6 +75,8 @@ private:
 		ComPtr<ID3D12Resource>& indexBuff, D3D12_INDEX_BUFFER_VIEW& ibView,
 		XMMATRIX& matProjection);
 
+	void loadSphere(ID3D12Device* dev, const float r, const int window_width, const int window_height);
+
 public:
 
 	void loadTexture(ID3D12Device* dev, const wchar_t* texPath, const UINT texNum);
@@ -86,6 +88,14 @@ public:
 		const int window_width, const int window_height,
 		const unsigned int constantBufferNum,
 		const int texNum);
+
+	// ‹…‘Ì
+	Model(ID3D12Device* dev,
+		  const wchar_t* texPath,
+		  const float r,
+		  const int window_width, const int window_height,
+		  const unsigned int constantBufferNum,
+		  const int texNum);
 
 	XMMATRIX getMatProjection();
 

@@ -49,7 +49,8 @@ public:
 	// 頂点バッファの最大数
 	static const int constantBufferNum = 128;
 
-	static void Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet);
+	static void Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet,
+										D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology = D3D12_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//3Dオブジェクト用パイプライン生成
 	// シェーダーモデル指定は "*s_5_0"

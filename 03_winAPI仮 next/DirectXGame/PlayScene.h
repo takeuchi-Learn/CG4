@@ -10,6 +10,8 @@
 
 #include <DirectXMath.h>
 
+#include "Sphere.h"
+
 class PlayScene :
 	public GameScene {
 
@@ -62,7 +64,11 @@ class PlayScene :
 	std::unique_ptr<Object3d> obj3d;
 	const float obj3dScale = 10.f;
 
-	float angle = 0.f;
+	DirectX::XMFLOAT2 angle{};	// 各軸周りの回転角
+
+
+
+	std::unique_ptr<Sphere> sphere;
 
 #pragma endregion 3Dオブジェクト
 

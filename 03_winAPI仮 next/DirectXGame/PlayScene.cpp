@@ -11,6 +11,71 @@
 
 using namespace DirectX;
 
+namespace {
+	// 正規化
+	inline XMFLOAT3 normalVec(const XMFLOAT3& vec) {
+		// 視線ベクトル
+		XMFLOAT3 look = vec;
+		// XMVECTORを経由して正規化
+		const XMVECTOR normalLookVec = XMVector3Normalize(XMLoadFloat3(&look));
+		//XMFLOAT3に戻す
+		XMStoreFloat3(&look, normalLookVec);
+
+		return look;
+	}
+
+	XMFLOAT3 operator-(const XMFLOAT3& num1, const XMFLOAT3& num2) {
+		return XMFLOAT3(
+		num1.x - num2.x,
+		num1.y - num2.y,
+		num1.z - num2.z);
+	}
+	XMFLOAT3 operator+(const XMFLOAT3& num1, const XMFLOAT3& num2) {
+		return XMFLOAT3(
+		num1.x + num2.x,
+		num1.y + num2.y,
+		num1.z + num2.z);
+	}
+
+	// @return pos -> targetの単位ベクトル
+	XMFLOAT3 getLook(const XMFLOAT3& target, const XMFLOAT3& pos) {
+		return normalVec(target - pos);
+	}
+
+	XMFLOAT3 getCameraMoveVal(const float moveSpeed, const XMFLOAT3& eye, const XMFLOAT3& target) {
+		// 視線ベクトル
+		const XMFLOAT3 look = getLook(target, eye);
+
+		const XMFLOAT3 moveVal{
+			moveSpeed * look.x,
+			moveSpeed * look.y,
+			moveSpeed * look.z
+		};
+
+		return moveVal;
+	}
+
+	/// <summary>
+	/// カメラを回転
+	/// </summary>
+	/// <param name="target">注視点座標の変数(入出力)</param>
+	/// <param name="eye">カメラの位置</param>
+	/// <param name="targetlength">カメラから注視点までの距離</param>
+	/// <param name="angleX">X軸周りの回転角</param>
+	/// <param name="angleY">Y軸周りの回転角</param>
+	void cameraRotation(XMFLOAT3& target, const XMFLOAT3& eye, const float targetlength,
+						const float angleX, const float angleY) {
+		// 視線ベクトル
+		const XMFLOAT3 look = getLook(target, eye);
+
+		constexpr float lookLen = 50.f;
+		target = eye;
+		target.x += targetlength * sinf(angleY) + look.x * lookLen;
+		target.y += targetlength * sinf(angleX) + look.y * lookLen;
+		target.z += targetlength * cosf(angleY) + look.z * lookLen;
+	}
+}
+
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play");
 
@@ -48,7 +113,7 @@ void PlayScene::init() {
 		sprites[i].SpriteCreate(
 			DirectXCommon::getInstance()->getDev(),
 			WinAPI::window_width, WinAPI::window_height,
-			TEX_NUM::HOUSE, spriteCommon, { 0,0 }, false, false
+			TEX_NUM::TEX1, spriteCommon, { 0,0 }, false, false
 		);
 		// スプライトの座標変更
 		sprites[i].position.x = 1280 / 4;
@@ -84,6 +149,8 @@ void PlayScene::init() {
 	obj3d.reset(new Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
 	obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
 	obj3d->position = { 0, 0, obj3dScale };
+
+	sphere.reset(new Sphere(DirectXCommon::getInstance()->getDev(), 2.f, L"Resources/red.png", 0));
 
 #pragma endregion 3Dオブジェクト
 
@@ -179,23 +246,78 @@ void PlayScene::update() {
 
 #pragma endregion 時間
 
-	if (Input::getInstance()->hitKey(DIK_A) || Input::getInstance()->hitKey(DIK_D)) {
-		if (Input::getInstance()->hitKey(DIK_D)) { angle += XMConvertToRadians(1.0f); } else if (Input::getInstance()->hitKey(DIK_A)) { angle -= XMConvertToRadians(1.0f); }
+#pragma region カメラ移動回転
+
+	if (Input::getInstance()->hitKey(DIK_A) || Input::getInstance()->hitKey(DIK_D) ||
+		Input::getInstance()->hitKey(DIK_S) || Input::getInstance()->hitKey(DIK_W) ||
+		Input::getInstance()->hitKey(DIK_E) || Input::getInstance()->hitKey(DIK_C) ||
+		Input::getInstance()->hitKey(DIK_UP) || Input::getInstance()->hitKey(DIK_DOWN) ||
+		Input::getInstance()->hitKey(DIK_LEFT) || Input::getInstance()->hitKey(DIK_RIGHT)) {
+
+		const float rotaVal = XM_PI / DirectXCommon::getInstance()->getFPS();	// 毎秒半周
+
+		if (Input::getInstance()->hitKey(DIK_RIGHT)) {
+			angle.y += rotaVal;
+			if (angle.y > XM_PI * 2) { angle.y = 0; }
+		} else if (Input::getInstance()->hitKey(DIK_LEFT)) {
+			angle.y -= rotaVal;
+			if (angle.y < 0) { angle.y = XM_PI * 2; }
+		}
+
+		if (Input::getInstance()->hitKey(DIK_UP)) {
+			if (angle.x + rotaVal < XM_PIDIV2) angle.x += rotaVal;
+		} else if (Input::getInstance()->hitKey(DIK_DOWN)) {
+			if (angle.x - rotaVal > -XM_PIDIV2) angle.x -= rotaVal;
+		}
 
 		// angleラジアンだけY軸まわりに回転。半径は-100
-		eye.x = -100 * sinf(angle);
-		eye.z = -100 * cosf(angle);
+		constexpr float camRange = 100.f;	// targetLength
+		cameraRotation(target, eye, camRange, angle.x, angle.y);
+
+
+		// todo カメラの移動も関数化する(カメラ以外にも使えそう)
+		// 移動量
+		constexpr float moveSpeed = 1.25f;
+		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye, target);
+		XMFLOAT3 moveDiff{};
+		// 視点移動
+		if (Input::getInstance()->hitKey(DIK_W)) {
+			moveDiff.x += moveVal.x;
+			moveDiff.z += moveVal.z;
+		} else if (Input::getInstance()->hitKey(DIK_S)) {
+			moveDiff.x -= moveVal.x;
+			moveDiff.z -= moveVal.z;
+		}
+		if (Input::getInstance()->hitKey(DIK_A)) {
+			moveDiff.z += moveVal.x;
+			moveDiff.x -= moveVal.z;
+		} else if (Input::getInstance()->hitKey(DIK_D)) {
+			moveDiff.z -= moveVal.x;
+			moveDiff.x += moveVal.z;
+		}
+		if (Input::getInstance()->hitKey(DIK_E)) {
+			moveDiff.y -= moveVal.y;
+		} else if (Input::getInstance()->hitKey(DIK_C)) {
+			moveDiff.y += moveVal.y;
+		}
+
+		eye = eye + moveDiff;
+
 		matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 	}
+
+#pragma endregion カメラ移動回転
 
 	if (Input::getInstance()->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (Input::getInstance()->hitKey(DIK_K)) sprites[0].position.y += 10;
 	if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
 }
 
 void PlayScene::draw() {
-
-#pragma region mainからそのまま移植
 	// ４．描画コマンドここから
+	// 球体コマンド
+	Sphere::sphereCommonBeginDraw(object3dPipelineSet);
+	sphere->drawWithUpdate(matView, DirectXCommon::getInstance());
+	// 3Dオブジェクトコマンド
 	Object3d::Object3dCommonBeginDraw(DirectXCommon::getInstance()->getCmdList(), object3dPipelineSet);
 	obj3d->drawWithUpdate(matView, DirectXCommon::getInstance());
 	// スプライト共通コマンド
@@ -207,7 +329,6 @@ void PlayScene::draw() {
 	// デバッグテキスト描画
 	debugText.DrawAll(DirectXCommon::getInstance(), spriteCommon);
 	// ４．描画コマンドここまで
-#pragma endregion
 }
 
 void PlayScene::fin() {
