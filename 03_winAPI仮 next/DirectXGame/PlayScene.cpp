@@ -80,6 +80,7 @@ namespace {
 		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye, target);
 
 		eye.x += moveVal.x;
+		eye.y += moveVal.y;
 		eye.z += moveVal.z;
 	}
 
@@ -88,6 +89,7 @@ namespace {
 		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye, target);
 
 		eye.z -= moveVal.x;
+		eye.y += moveVal.y;
 		eye.x += moveVal.z;
 	}
 
