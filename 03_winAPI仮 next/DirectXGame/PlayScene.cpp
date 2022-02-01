@@ -308,8 +308,6 @@ void PlayScene::update() {
 		// todo カメラの移動も関数化する(カメラ以外にも使えそう)
 		// 移動量
 		constexpr float moveSpeed = 1.25f;
-		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye, target);
-		XMFLOAT3 moveDiff{};
 		// 視点移動
 		if (Input::getInstance()->hitKey(DIK_W)) {
 			cameraMoveForward(moveSpeed, eye, target);
