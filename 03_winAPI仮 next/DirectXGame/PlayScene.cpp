@@ -61,8 +61,8 @@ namespace {
 	/// <param name="target">注視点座標の変数(入出力)</param>
 	/// <param name="eye">カメラの位置</param>
 	/// <param name="targetlength">カメラから注視点までの距離</param>
-	/// <param name="angleX">X軸周りの回転角</param>
-	/// <param name="angleY">Y軸周りの回転角</param>
+	/// <param name="angleX">X軸周りの回転角(-PI/2 ~ PI/2の範囲で送る)</param>
+	/// <param name="angleY">Y軸周りの回転角(0 ~ 2PIの範囲で送る)</param>
 	void cameraRotation(XMFLOAT3& target, const XMFLOAT3& eye, const float targetlength,
 						const float angleX, const float angleY) {
 		// 視線ベクトル
