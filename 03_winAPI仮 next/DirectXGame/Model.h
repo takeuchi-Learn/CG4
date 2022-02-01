@@ -68,6 +68,13 @@ private:
 	// 射影変換行列
 	XMMATRIX matProjection;
 
+
+	void loadModel(ID3D12Device* dev, std::vector<Vertex>& vertices, std::vector<unsigned short>& indices, const wchar_t* objPath,
+		const int window_width, const int window_height,
+		ComPtr<ID3D12Resource>& vertBuff, Vertex* vertMap, D3D12_VERTEX_BUFFER_VIEW& vbView,
+		ComPtr<ID3D12Resource>& indexBuff, D3D12_INDEX_BUFFER_VIEW& ibView,
+		XMMATRIX& matProjection);
+
 public:
 
 	void loadTexture(ID3D12Device* dev, const wchar_t* texPath, const UINT texNum);
@@ -82,19 +89,8 @@ public:
 
 	XMMATRIX getMatProjection();
 
-#pragma region クラス化で削除
-
 	void update(XMMATRIX& matView);
 
-#pragma endregion クラス化で削除
-
 	void draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum);
-
-
-	void loadModel(ID3D12Device* dev, std::vector<Vertex>& vertices, std::vector<unsigned short>& indices, const wchar_t* objPath,
-		const int window_width, const int window_height,
-		ComPtr<ID3D12Resource>& vertBuff, Vertex* vertMap, D3D12_VERTEX_BUFFER_VIEW& vbView,
-		ComPtr<ID3D12Resource>& indexBuff, D3D12_INDEX_BUFFER_VIEW& ibView,
-		XMMATRIX& matProjection);
 };
 
