@@ -74,6 +74,34 @@ namespace {
 		target.y += targetlength * sinf(angleX) + look.y * lookLen;
 		target.z += targetlength * cosf(angleY) + look.z * lookLen;
 	}
+
+	// 視線方向に移動
+	void cameraMoveForward(const float moveSpeed, XMFLOAT3& eye, const XMFLOAT3& target) {
+		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye, target);
+
+		eye.x += moveVal.x;
+		eye.z += moveVal.z;
+	}
+
+	// 視線方向を前進とする向きで右に移動
+	void cameraMoveRight(const float moveSpeed, XMFLOAT3& eye, const XMFLOAT3& target) {
+		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye, target);
+
+		eye.z -= moveVal.x;
+		eye.x += moveVal.z;
+	}
+
+	// 視線方向を前進とする向きで上に移動(無くてもいいかも)
+	void cameraMoveUp(const float moveSpeed, XMFLOAT3& eye, const XMFLOAT3& target) {
+		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye, target);
+
+		eye.y -= moveVal.y;
+	}
+
+	// matViewを更新する
+	void updateMatView(XMMATRIX& matView, const XMFLOAT3& eye, const XMFLOAT3& target, const XMFLOAT3& up) {
+		matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+	}
 }
 
 void PlayScene::init() {
@@ -282,28 +310,22 @@ void PlayScene::update() {
 		XMFLOAT3 moveDiff{};
 		// 視点移動
 		if (Input::getInstance()->hitKey(DIK_W)) {
-			moveDiff.x += moveVal.x;
-			moveDiff.z += moveVal.z;
+			cameraMoveForward(moveSpeed, eye, target);
 		} else if (Input::getInstance()->hitKey(DIK_S)) {
-			moveDiff.x -= moveVal.x;
-			moveDiff.z -= moveVal.z;
+			cameraMoveForward(-moveSpeed, eye, target);
 		}
 		if (Input::getInstance()->hitKey(DIK_A)) {
-			moveDiff.z += moveVal.x;
-			moveDiff.x -= moveVal.z;
+			cameraMoveRight(-moveSpeed, eye, target);
 		} else if (Input::getInstance()->hitKey(DIK_D)) {
-			moveDiff.z -= moveVal.x;
-			moveDiff.x += moveVal.z;
+			cameraMoveRight(moveSpeed, eye, target);
 		}
 		if (Input::getInstance()->hitKey(DIK_E)) {
-			moveDiff.y -= moveVal.y;
+			cameraMoveUp(moveSpeed, eye, target);
 		} else if (Input::getInstance()->hitKey(DIK_C)) {
-			moveDiff.y += moveVal.y;
+			cameraMoveUp(-moveSpeed, eye, target);
 		}
 
-		eye = eye + moveDiff;
-
-		matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
+		updateMatView(matView, eye, target, up);
 	}
 
 #pragma endregion カメラ移動回転
