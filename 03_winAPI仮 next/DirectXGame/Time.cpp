@@ -18,7 +18,7 @@ Time::Time() :
 	nowTimeDir(startTimeDir) {
 }
 
-long long Time::getOneBeatTime(const float bpm) { return 60.0 * (float)oneSec / bpm; }
+long long Time::getOneBeatTime(const float bpm) { return 60.f * (float)oneSec / bpm; }
 
 long long Time::getNowTime() {
 	nowTimeDir = steady_clock::now();
