@@ -262,7 +262,7 @@ void DirectXCommon::startDraw(const DirectX::XMFLOAT3& clearColor) {
 
 	// １．リソースバリアで書き込み可能に変更
 	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
-		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+																	  D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 	// ２．描画先指定
 			// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
@@ -294,7 +294,7 @@ void DirectXCommon::endDraw() {
 
 	// ５．リソースバリアを戻す
 	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(backBuffers[bbIndex].Get(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+																	  D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
 	// 命令のクローズ
 	cmdList->Close();
@@ -330,12 +330,17 @@ ID3D12GraphicsCommandList* DirectXCommon::getCmdList() { return cmdList.Get(); }
 // FPS
 // --------------------
 
+namespace {
+	using myTimeUnit = std::chrono::microseconds;
+	constexpr auto oneSec = std::chrono::duration_cast<myTimeUnit>(std::chrono::seconds(1)).count();
+}
+
 void DirectXCommon::flipTimeFPS() {
 	for (UINT i = divNum - 1; i > 0; i--) {
 		fpsTime[i] = fpsTime[i - 1];
 	}
-	fpsTime[0] = std::chrono::duration_cast<std::chrono::microseconds>(
-		std::chrono::system_clock::now() - std::chrono::system_clock::time_point()
+	fpsTime[0] = std::chrono::duration_cast<myTimeUnit>(
+		std::chrono::steady_clock::now() - std::chrono::steady_clock::time_point()
 		).count();
 }
 
@@ -347,8 +352,7 @@ void DirectXCommon::updateFPS() {
 	avgDiffTime /= divNum - 1;
 
 	fps = -1.f;
-	constexpr auto microSec1sec = 1'000'000.f;
-	if (avgDiffTime != 0) fps = microSec1sec / avgDiffTime;
+	if (avgDiffTime != 0) fps = oneSec / avgDiffTime;
 }
 
 float DirectXCommon::getFPS() { return fps; }

@@ -4,21 +4,25 @@ using namespace std::chrono;
 
 using timeUnit = microseconds;
 
+namespace {
+	constexpr auto oneSec = timeUnit(1s);
+}
+
 const long long Time::oneSec = duration_cast<timeUnit>(seconds(1)).count();
 
 Time::~Time() {
 }
 
 Time::Time() :
-	startTimeDir(system_clock::now()),
+	startTimeDir(steady_clock::now()),
 	nowTimeDir(startTimeDir) {
 }
 
 long long Time::getOneBeatTime(const float bpm) { return 60.0 * (float)oneSec / bpm; }
 
 long long Time::getNowTime() {
-	nowTimeDir = system_clock::now();
+	nowTimeDir = steady_clock::now();
 	return duration_cast<timeUnit>(nowTimeDir - startTimeDir).count();
 }
 
-void Time::reset() { startTimeDir = system_clock::now(); }
+void Time::reset() { startTimeDir = steady_clock::now(); }

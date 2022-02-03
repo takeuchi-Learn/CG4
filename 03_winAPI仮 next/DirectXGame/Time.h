@@ -4,8 +4,8 @@
 
 class Time {
 private:
-	std::chrono::system_clock::time_point  startTimeDir{};
-	std::chrono::system_clock::time_point  nowTimeDir{};
+	std::chrono::steady_clock::time_point  startTimeDir{};
+	std::chrono::steady_clock::time_point  nowTimeDir{};
 
 public:
 
