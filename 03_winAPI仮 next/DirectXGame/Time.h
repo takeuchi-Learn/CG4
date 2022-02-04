@@ -7,6 +7,8 @@ private:
 	std::chrono::steady_clock::time_point  startTimeDir{};
 	std::chrono::steady_clock::time_point  nowTimeDir{};
 
+	using timeUnit = std::chrono::microseconds;
+
 public:
 
 	static const long long oneSec;
@@ -16,7 +18,7 @@ public:
 	Time();
 
 	// ˆê”‚ÌŠÔ‚ğæ“¾
-	static long long getOneBeatTime(const float bpm);
+	inline static long long getOneBeatTime(const float bpm) { return (float)std::chrono::duration_cast<timeUnit>(std::chrono::seconds(60ll)).count() / bpm; };
 
 	// Œ»İ‚Ü‚Å‚ÌŠÔ‚ğæ“¾
 	// reset()ÅŒã‚ÉÀs‚µ‚½ŠÔ‚ª‹N“_
