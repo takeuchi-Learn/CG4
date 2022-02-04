@@ -17,7 +17,7 @@ void Sphere::sphereCommonBeginDraw(Object3d::PipelineSet& ppSet) {
 	Object3d::Object3dCommonBeginDraw(DirectXCommon::getInstance()->getCmdList(), ppSet, D3D12_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 }
 
-void Sphere::drawWithUpdate(DirectX::XMMATRIX& matView, DirectXCommon* dxCom) {
+void Sphere::drawWithUpdate(const DirectX::XMMATRIX & matView, DirectXCommon* dxCom) {
 	obj3d->position = pos;
 	obj3d->scale.x = scale.x * r;
 	obj3d->scale.y = scale.y * r;

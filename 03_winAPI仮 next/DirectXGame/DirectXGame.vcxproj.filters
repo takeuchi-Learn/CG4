@@ -99,6 +99,9 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Sphere</Filter>
     </ClCompile>
@@ -160,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Sphere</Filter>

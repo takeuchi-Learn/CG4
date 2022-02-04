@@ -19,6 +19,6 @@ public:
 
 	static void sphereCommonBeginDraw(Object3d::PipelineSet& ppSet);
 
-	void drawWithUpdate(DirectX::XMMATRIX& matView, DirectXCommon* dxCom);
+	void drawWithUpdate(const DirectX::XMMATRIX & matView, DirectXCommon* dxCom);
 };
 

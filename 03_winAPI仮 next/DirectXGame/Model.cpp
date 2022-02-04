@@ -414,7 +414,7 @@ Model::Model(ID3D12Device* dev,
 
 #pragma region ÉNÉâÉXâªÇ≈çÌèú
 
-void Model::update(XMMATRIX& matView) {
+void Model::update(const XMMATRIX & matView) {
 	// UpdateObject3d(&obj3d, matView, matProjection);
 }
 

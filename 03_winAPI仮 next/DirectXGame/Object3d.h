@@ -91,11 +91,11 @@ public:
 	// モデルデータもここで渡す(deleteは手動)
 	Object3d(ID3D12Device* dev, Model* model, const UINT texNum);
 
-	void update(XMMATRIX& matView);
+	void update(const XMMATRIX & matView);
 
 	void draw(DirectXCommon* dxCom);
 
-	void drawWithUpdate(XMMATRIX& matView, DirectXCommon* dxCom);
+	void drawWithUpdate(const XMMATRIX & matView, DirectXCommon* dxCom);
 
 
 	~Object3d();

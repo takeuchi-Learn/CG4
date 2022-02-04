@@ -99,7 +99,7 @@ public:
 
 	XMMATRIX getMatProjection();
 
-	void update(XMMATRIX& matView);
+	void update(const XMMATRIX & matView);
 
 	void draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum);
 };

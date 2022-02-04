@@ -12,15 +12,17 @@
 
 #include "Sphere.h"
 
+#include "Camera.h"
+
 class PlayScene :
 	public GameScene {
 
 #pragma region ビュー変換行列
 
-	DirectX::XMMATRIX matView;
-	DirectX::XMFLOAT3 eye;   // 視点座標
-	DirectX::XMFLOAT3 target;   // 注視点座標
-	DirectX::XMFLOAT3 up;       // 上方向ベクトル
+	//DirectX::XMMATRIX matView;
+	DirectX::XMFLOAT3 eye_local;   // 視点座標
+	DirectX::XMFLOAT3 target_local;   // 注視点座標
+	DirectX::XMFLOAT3 up_local;       // 上方向ベクトル
 
 #pragma endregion ビュー変換行列
 
@@ -74,6 +76,8 @@ class PlayScene :
 
 
 	std::unique_ptr<Time> timer;
+
+	std::unique_ptr<Camera> camera;
 
 public:
 	void init() override;
