@@ -143,7 +143,7 @@ void DirectXCommon::initSwapchain() {
 }
 
 void DirectXCommon::initRTV() {
-	HRESULT result;
+	HRESULT result = S_FALSE;
 
 	// 各種設定をしてデスクリプタヒープを生成
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};

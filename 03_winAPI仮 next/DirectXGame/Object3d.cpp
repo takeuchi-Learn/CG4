@@ -186,10 +186,25 @@ Object3d::PipelineSet Object3d::Object3dCreateGraphicsPipeline(ID3D12Device* dev
 	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE; //ソースの値を100%使う
 	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO; //デストの値を0%使う
 
-	//半透明合成
-	blenddesc.BlendOp = D3D12_BLEND_OP_ADD; //加算
-	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA; //ソースのアルファ値
-	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA; //1.0f-ソースのアルファ値
+	//--半透明合成
+	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				//加算
+	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;			//ソースのアルファ値
+	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	//デストの値を100%使う
+
+	//---加算
+	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
+	//blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
+	//blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
+
+	//---減算
+	//blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	//デストからソースを減算
+	//blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
+	//blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
+
+	//---反転
+	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
+	//blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	//1.0 - デストカラーの値
+	//blenddesc.DestBlend = D3D12_BLEND_ZERO;
 
 	gpipeline.InputLayout.pInputElementDescs = inputLayout;
 	gpipeline.InputLayout.NumElements = _countof(inputLayout);
