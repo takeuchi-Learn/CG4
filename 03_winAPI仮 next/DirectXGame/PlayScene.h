@@ -28,9 +28,9 @@ class PlayScene :
 
 #pragma region ‰¹
 
-	Sound::SoundCommon* soundCommon = nullptr;
+	std::unique_ptr<Sound::SoundCommon> soundCommon;
 
-	Sound* soundData1 = nullptr;
+	std::unique_ptr<Sound> soundData1;
 
 #pragma endregion ‰¹
 

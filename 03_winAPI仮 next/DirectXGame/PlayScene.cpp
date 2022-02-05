@@ -124,7 +124,7 @@ void PlayScene::init() {
 	target_local = XMFLOAT3(0, 0, 0);   // 注視点座標
 	up_local = XMFLOAT3(0, 1, 0);       // 上方向ベクトル
 
-	if (camera == false) camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
+	camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
 	camera->setEye(eye_local);
 	camera->setTarget(target_local);
 	camera->setUp(up_local);
@@ -134,8 +134,8 @@ void PlayScene::init() {
 
 #pragma region 音
 
-	soundCommon = new Sound::SoundCommon();
-	soundData1 = new Sound("Resources/BGM.wav", soundCommon);
+	soundCommon.reset(new Sound::SoundCommon());
+	soundData1.reset(new Sound("Resources/BGM.wav", soundCommon.get()));
 
 #pragma endregion 音
 
@@ -184,24 +184,20 @@ void PlayScene::init() {
 
 #pragma region 3Dオブジェクト
 
-	if (model == false) {
-		model.reset(new Model(DirectXCommon::getInstance()->getDev(),
-							  L"Resources/model/model.obj", L"Resources/model/tex.png",
-							  WinAPI::window_width, WinAPI::window_height,
-							  Object3d::constantBufferNum, obj3dTexNum));
-	}
+	model.reset(new Model(DirectXCommon::getInstance()->getDev(),
+						  L"Resources/model/model.obj", L"Resources/model/tex.png",
+						  WinAPI::window_width, WinAPI::window_height,
+						  Object3d::constantBufferNum, obj3dTexNum));
 
-	if (obj3d == false) {
-		obj3d.reset(new Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
-		obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
-		obj3d->position = { 0, 0, obj3dScale };
-	}
+	obj3d.reset(new Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
+	obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
+	obj3d->position = { 0, 0, obj3dScale };
 
-	if (sphere == false) sphere.reset(new Sphere(DirectXCommon::getInstance()->getDev(), 2.f, L"Resources/red.png", 0));
+	sphere.reset(new Sphere(DirectXCommon::getInstance()->getDev(), 2.f, L"Resources/red.png", 0));
 
 #pragma endregion 3Dオブジェクト
 
-	if (timer == false) timer.reset(new Time());
+	timer.reset(new Time());
 }
 
 void PlayScene::update() {
@@ -216,18 +212,18 @@ void PlayScene::update() {
 	if (Input::getInstance()->triggerKey(DIK_0)) {
 		//Sound::SoundStopWave(soundData1);
 
-		if (Sound::checkPlaySound(soundData1)) {
-			Sound::SoundStopWave(soundData1);
+		if (Sound::checkPlaySound(soundData1.get())) {
+			Sound::SoundStopWave(soundData1.get());
 			//OutputDebugStringA("STOP\n");
 		} else {
-			Sound::SoundPlayWave(soundCommon, soundData1, XAUDIO2_LOOP_INFINITE);
+			Sound::SoundPlayWave(soundCommon.get(), soundData1.get(), XAUDIO2_LOOP_INFINITE);
 			//OutputDebugStringA("PLAY\n");
 		}
 	}
 
 	{
 		std::string stateStr = "STOP []";
-		if (Sound::checkPlaySound(soundData1)) {
+		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
 		}
 		debugText.Print(spriteCommon, "SOUND_PLAY_STATE : " + stateStr, 0, debugText.fontHeight * 2);
@@ -376,7 +372,5 @@ void PlayScene::draw() {
 }
 
 void PlayScene::fin() {
-	Sound::SoundStopWave(soundData1);
-	delete soundData1;
-	delete soundCommon;
+	//Sound::SoundStopWave(soundData1.get());
 }

@@ -86,9 +86,7 @@ Sound::Sound(const char* filename, Sound::SoundCommon* soundCommon) {
 }
 
 Sound::~Sound() {
-	/*if (checkPlaySound(, *this)) {
-		SoundStopWave(*this);
-	}*/
+	SoundStopWave(this);
 
 	if (this->pSourceVoice != nullptr) {
 		this->pSourceVoice->DestroyVoice();
@@ -134,7 +132,8 @@ void Sound::SoundPlayWave(SoundCommon* soundCommon, Sound* soundData, int loopCo
 
 bool Sound::checkPlaySound(Sound* soundData) {
 
-	if (soundData->pSourceVoice == nullptr) return false;
+	if (soundData == nullptr ||
+		soundData->pSourceVoice == nullptr) return false;
 
 	XAUDIO2_VOICE_STATE tmp{};
 	soundData->pSourceVoice->GetState(&tmp);
