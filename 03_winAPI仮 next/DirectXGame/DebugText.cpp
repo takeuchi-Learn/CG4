@@ -52,9 +52,7 @@ int DebugText::formatPrint(const Sprite::SpriteCommon& spriteCommon, const float
 	va_start(args, fmt);
 	const int ret = vsnprintf(outStrChar, maxCharCount - 1, fmt, args);
 
-	std::string outStr(outStrChar);
-
-	Print(spriteCommon, outStr, x, y, scale);
+	Print(spriteCommon, outStrChar, x, y, scale);
 	va_end(args);
 
 	return ret;

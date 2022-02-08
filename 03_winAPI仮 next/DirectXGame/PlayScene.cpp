@@ -12,123 +12,15 @@
 
 using namespace DirectX;
 
-namespace {
-#pragma region XMFLOAT3operator
-
-	XMFLOAT3 operator-(const XMFLOAT3& num1, const XMFLOAT3& num2) {
-		return XMFLOAT3(
-		num1.x - num2.x,
-		num1.y - num2.y,
-		num1.z - num2.z);
-	}
-	XMFLOAT3 operator+(const XMFLOAT3& num1, const XMFLOAT3& num2) {
-		return XMFLOAT3(
-		num1.x + num2.x,
-		num1.y + num2.y,
-		num1.z + num2.z);
-	}
-
-#pragma endregion XMFLOAT3operator
-
-#pragma region カメラ関数系
-
-	// 正規化
-	inline XMFLOAT3 normalVec(const XMFLOAT3& vec) {
-		// 視線ベクトル
-		XMFLOAT3 look = vec;
-		// XMVECTORを経由して正規化
-		const XMVECTOR normalLookVec = XMVector3Normalize(XMLoadFloat3(&look));
-		//XMFLOAT3に戻す
-		XMStoreFloat3(&look, normalLookVec);
-
-		return look;
-	}
-
-	// @return pos -> targetの単位ベクトル
-	XMFLOAT3 getLook(const XMFLOAT3& target_local, const XMFLOAT3& pos) {
-		return normalVec(target_local - pos);
-	}
-
-	XMFLOAT3 getCameraMoveVal(const float moveSpeed, const XMFLOAT3& eye_local, const XMFLOAT3& target_local) {
-		// 視線ベクトル
-		const XMFLOAT3 look = getLook(target_local, eye_local);
-
-		const XMFLOAT3 moveVal{
-			moveSpeed * look.x,
-			moveSpeed * look.y,
-			moveSpeed * look.z
-		};
-
-		return moveVal;
-	}
-
-	/// <summary>
-	/// カメラを回転
-	/// </summary>
-	/// <param name="target">注視点座標の変数(入出力)</param>
-	/// <param name="eye">カメラの位置</param>
-	/// <param name="targetlength">カメラから注視点までの距離</param>
-	/// <param name="angleX">X軸周りの回転角(-PI/2 ~ PI/2の範囲で送る)</param>
-	/// <param name="angleY">Y軸周りの回転角(0 ~ 2PIの範囲で送る)</param>
-	void cameraRotation(XMFLOAT3& target_local, const XMFLOAT3& eye_local, const float targetlength,
-						const float angleX, const float angleY) {
-		// 視線ベクトル
-		const XMFLOAT3 look = getLook(target_local, eye_local);
-
-		constexpr float lookLen = 50.f;
-		target_local = eye_local;
-		target_local.x += targetlength * sinf(angleY) + look.x * lookLen;
-		target_local.y += targetlength * sinf(angleX) + look.y * lookLen;
-		target_local.z += targetlength * cosf(angleY) + look.z * lookLen;
-	}
-
-	// 視線方向に移動
-	void cameraMoveForward(const float moveSpeed, XMFLOAT3& eye_local, const XMFLOAT3& target_local) {
-		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye_local, target_local);
-
-		eye_local.x += moveVal.x;
-		eye_local.y += moveVal.y;
-		eye_local.z += moveVal.z;
-	}
-
-	// 視線方向を前進とする向きで右に移動
-	void cameraMoveRight(const float moveSpeed, XMFLOAT3& eye_local, const XMFLOAT3& target_local) {
-		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye_local, target_local);
-
-		eye_local.z -= moveVal.x;
-		eye_local.y += moveVal.y;
-		eye_local.x += moveVal.z;
-	}
-
-	// 視線方向を前進とする向きで上に移動(無くてもいいかも)
-	void cameraMoveUp(const float moveSpeed, XMFLOAT3& eye_local, const XMFLOAT3& target_local) {
-		const XMFLOAT3 moveVal = getCameraMoveVal(moveSpeed, eye_local, target_local);
-
-		eye_local.y -= moveVal.y;
-	}
-
-	// matViewを更新する
-	void updateMatView(XMMATRIX& matView, const XMFLOAT3& eye_local, const XMFLOAT3& target_local, const XMFLOAT3& up_local) {
-		matView = XMMatrixLookAtLH(XMLoadFloat3(&eye_local), XMLoadFloat3(&target_local), XMLoadFloat3(&up_local));
-	}
-
-#pragma endregion カメラ関数系
-}
-
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play");
 
 #pragma region ビュー変換
 
-	eye_local = XMFLOAT3(0, 0, -100);   // 視点座標
-	target_local = XMFLOAT3(0, 0, 0);   // 注視点座標
-	up_local = XMFLOAT3(0, 1, 0);       // 上方向ベクトル
-
 	camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
-	camera->setEye(eye_local);
-	camera->setTarget(target_local);
-	camera->setUp(up_local);
-	camera->setUp(up_local);
+	camera->setEye(XMFLOAT3(0, 0, -100));	// 視点座標
+	camera->setTarget(XMFLOAT3(0, 0, 0));	// 注視点座標
+	camera->setUp(XMFLOAT3(0, 1, 0));		// 上方向
 
 #pragma endregion ビュー変換
 
@@ -279,11 +171,7 @@ void PlayScene::update() {
 
 #pragma region カメラ移動回転
 
-	if (Input::getInstance()->hitKey(DIK_A) || Input::getInstance()->hitKey(DIK_D) ||
-		Input::getInstance()->hitKey(DIK_S) || Input::getInstance()->hitKey(DIK_W) ||
-		Input::getInstance()->hitKey(DIK_E) || Input::getInstance()->hitKey(DIK_C) ||
-		Input::getInstance()->hitKey(DIK_UP) || Input::getInstance()->hitKey(DIK_DOWN) ||
-		Input::getInstance()->hitKey(DIK_LEFT) || Input::getInstance()->hitKey(DIK_RIGHT)) {
+	{
 
 		const float rotaVal = XM_PIDIV2 / DirectXCommon::getInstance()->getFPS();	// 毎秒四半周
 
@@ -303,33 +191,22 @@ void PlayScene::update() {
 
 		// angleラジアンだけY軸まわりに回転。半径は-100
 		constexpr float camRange = 100.f;	// targetLength
-		cameraRotation(target_local, eye_local, camRange, angle.x, angle.y);
+		camera->rotation(camRange, angle.x, angle.y);
 
 
-		// todo カメラの移動も関数化する(カメラ以外にも使えそう)
 		// 移動量
 		constexpr float moveSpeed = 1.25f;
 		// 視点移動
 		if (Input::getInstance()->hitKey(DIK_W)) {
-			cameraMoveForward(moveSpeed, eye_local, target_local);
+			camera->moveForward(moveSpeed);
 		} else if (Input::getInstance()->hitKey(DIK_S)) {
-			cameraMoveForward(-moveSpeed, eye_local, target_local);
+			camera->moveForward(-moveSpeed);
 		}
 		if (Input::getInstance()->hitKey(DIK_A)) {
-			cameraMoveRight(-moveSpeed, eye_local, target_local);
+			camera->moveRight(-moveSpeed);
 		} else if (Input::getInstance()->hitKey(DIK_D)) {
-			cameraMoveRight(moveSpeed, eye_local, target_local);
+			camera->moveRight(moveSpeed);
 		}
-		if (Input::getInstance()->hitKey(DIK_E)) {
-			cameraMoveUp(moveSpeed, eye_local, target_local);
-		} else if (Input::getInstance()->hitKey(DIK_C)) {
-			cameraMoveUp(-moveSpeed, eye_local, target_local);
-		}
-
-		//updateMatView(matView, eye, target, up);
-		camera->setEye(eye_local);
-		camera->setTarget(target_local);
-		camera->setUp(up_local);
 	}
 
 #pragma endregion カメラ移動回転

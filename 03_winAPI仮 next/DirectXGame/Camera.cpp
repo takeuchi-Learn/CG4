@@ -2,6 +2,28 @@
 
 using namespace DirectX;
 
+namespace {
+	XMFLOAT3 operator-(const XMFLOAT3& num1, const XMFLOAT3& num2) {
+		return XMFLOAT3(
+		num1.x - num2.x,
+		num1.y - num2.y,
+		num1.z - num2.z);
+	}
+	XMFLOAT3 operator+(const XMFLOAT3& num1, const XMFLOAT3& num2) {
+		return XMFLOAT3(
+		num1.x + num2.x,
+		num1.y + num2.y,
+		num1.z + num2.z);
+	}
+
+	XMFLOAT3 operator*(const XMFLOAT3& num1, const float num2) {
+		return XMFLOAT3(
+		num1.x * num2,
+		num1.y * num2,
+		num1.z * num2);
+	}
+}
+
 void Camera::updateViewMatrix() {
 	// 視点座標
 	XMVECTOR eyePosition = XMLoadFloat3(&eye);
@@ -12,7 +34,7 @@ void Camera::updateViewMatrix() {
 
 	// カメラZ軸（視線方向）
 	XMVECTOR cameraAxisZ = XMVectorSubtract(targetPosition, eyePosition);
-	// 0ベクトルだと向きが定まらないので除外
+	// 0ベクトルだと向きが無い除外
 	assert(!XMVector3Equal(cameraAxisZ, XMVectorZero()));
 	assert(!XMVector3IsInfinite(cameraAxisZ));
 	assert(!XMVector3Equal(upVector, XMVectorZero()));
@@ -36,7 +58,7 @@ void Camera::updateViewMatrix() {
 	//（ワールド座標系でのカメラの右方向、上方向、前方向）	
 
 	// カメラ回転行列
-	XMMATRIX matCameraRot;
+	XMMATRIX matCameraRot{};
 	// カメラ座標系→ワールド座標系の変換行列
 	matCameraRot.r[0] = cameraAxisX;
 	matCameraRot.r[1] = cameraAxisY;
@@ -186,4 +208,47 @@ void Camera::update() {
 		// ビュープロジェクションの合成
 		matViewProjection = matView * matProjection;
 	}
+}
+
+
+XMFLOAT3 Camera::getLook() const {
+	// 視線ベクトル
+	XMFLOAT3 look = target - eye;
+	// XMVECTORを経由して正規化
+	const XMVECTOR normalLookVec = XMVector3Normalize(XMLoadFloat3(&look));
+	//XMFLOAT3に戻す
+	XMStoreFloat3(&look, normalLookVec);
+
+	return look;
+}
+
+void Camera::rotation(const float targetlength, const float angleX, const float angleY) {
+	// 視線ベクトル
+	const auto look = getLook();
+
+	constexpr float lookLen = 50.f;
+	target = eye;
+	target.x += targetlength * sinf(angleY) + look.x * lookLen;
+	target.y += targetlength * sinf(angleX) + look.y * lookLen;
+	target.z += targetlength * cosf(angleY) + look.z * lookLen;
+
+	viewDirty = true;
+}
+
+void Camera::moveForward(const float speed) {
+	const auto moveVal = getLook() * speed;
+
+	eye = eye + moveVal;
+
+	viewDirty = true;
+}
+
+void Camera::moveRight(const float speed) {
+	const auto moveVal = getLook() * speed;
+
+	eye.z -= moveVal.x;
+	eye.y += moveVal.y;
+	eye.x += moveVal.z;
+
+	viewDirty = true;
 }

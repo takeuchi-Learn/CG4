@@ -96,6 +96,21 @@ public:
 
 	inline float getFogAngleYRad() { return fogAngleYRad; }
 
+	XMFLOAT3 getLook() const;
+
+	/// <summary>
+	/// カメラを回転
+	/// </summary>
+	/// <param name="targetlength">カメラから注視点までの距離</param>
+	/// <param name="angleX">X軸周りの回転角(-PI/2 ~ PI/2の範囲で送る)</param>
+	/// <param name="angleY">Y軸周りの回転角(0 ~ 2PIの範囲で送る)</param>
+	void rotation(const float targetlength,
+						const float angleX, const float angleY);
+
+	void moveForward(const float speed);
+
+	void moveRight(const float speed);
+
 
 	/// <summary>
 	/// ベクトルによる視点移動(eyeのみの移動、targetは変わらない)
