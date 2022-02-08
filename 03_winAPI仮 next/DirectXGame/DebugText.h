@@ -14,7 +14,11 @@ public: // 定数の宣言
 public: // メンバ関数
 	void Initialize(ID3D12Device* dev, int window_width, int window_height, UINT texnumber, const Sprite::SpriteCommon& spriteCommon);
 
-	void Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, float x, float y, float scale = 1.0f);
+	void Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, const float x, const float y, const float scale = 1.0f);
+
+	// 内部でvsnprintfを使用
+	// @return vsnprintfの戻り値
+	int formatPrint(const Sprite::SpriteCommon& spriteCommon, const float x, const float y, const float scale, const char* fmt, ...);
 
 	void DrawAll(DirectXCommon* dxCom, const Sprite::SpriteCommon& spriteCommon);
 

@@ -214,22 +214,19 @@ void PlayScene::update() {
 
 		if (Sound::checkPlaySound(soundData1.get())) {
 			Sound::SoundStopWave(soundData1.get());
-			//OutputDebugStringA("STOP\n");
 		} else {
 			Sound::SoundPlayWave(soundCommon.get(), soundData1.get(), XAUDIO2_LOOP_INFINITE);
-			//OutputDebugStringA("PLAY\n");
 		}
 	}
 
 	{
-		std::string stateStr = "STOP []";
+		static std::string stateStr = "STOP []";
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
-		}
-		debugText.Print(spriteCommon, "SOUND_PLAY_STATE : " + stateStr, 0, debugText.fontHeight * 2);
+		} else stateStr = "STOP []";
+		debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 2, 1.f, "SOUND_PLAY_STATE : %s", stateStr.c_str());
 
-		stateStr = "Press 0 to Play/Stop Sound";
-		debugText.Print(spriteCommon, stateStr, 0, debugText.fontHeight * 3);
+		debugText.Print(spriteCommon, "Press 0 to Play/Stop Sound", 0, debugText.fontHeight * 3);
 	}
 
 #pragma endregion ‰¹
@@ -270,21 +267,13 @@ void PlayScene::update() {
 
 #pragma region ŽžŠÔ
 
-	{
-		std::ostringstream raystr{};
-		raystr << "FPS : " << DirectXCommon::getInstance()->getFPS();
-		debugText.Print(spriteCommon, raystr.str(), 0, 0);
-	}
 
-	{
-		if (Input::getInstance()->hitKey(DIK_R)) timer->reset();
+	debugText.formatPrint(spriteCommon, 0, 0, 1.f, "FPS : %f", DirectXCommon::getInstance()->getFPS());
 
-		std::ostringstream tmpStr{};
-		tmpStr << "Time : "
-			<< std::fixed << std::setprecision(6)
-			<< (long double)timer->getNowTime() / Time::oneSec << "[s]";
-		debugText.Print(spriteCommon, tmpStr.str(), 0, debugText.fontHeight * 5);
-	}
+	if (Input::getInstance()->hitKey(DIK_R)) timer->reset();
+
+	debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 5, 1.f,
+						  "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
 
 #pragma endregion ŽžŠÔ
 

@@ -8,7 +8,7 @@ void DebugText::Initialize(ID3D12Device* dev, int window_width, int window_heigh
 	}
 }
 
-void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, float x, float y, float scale) {
+void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, const float x, const float y, const float scale) {
 	// ‘S‚Ä‚Ì•¶Žš‚É‚Â‚¢‚Ä
 	for (int i = 0; i < text.size(); i++) {
 		// Å‘å•¶Žš”’´‰ß
@@ -41,6 +41,23 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 		// •¶Žš‚ð‚P‚Âi‚ß‚é
 		spriteIndex++;
 	}
+}
+
+int DebugText::formatPrint(const Sprite::SpriteCommon& spriteCommon, const float x, const float y, const float scale, const char* fmt, ...) {
+	
+	char outStrChar[maxCharCount]{};
+
+	va_list args;
+
+	va_start(args, fmt);
+	const int ret = vsnprintf(outStrChar, maxCharCount - 1, fmt, args);
+
+	std::string outStr(outStrChar);
+
+	Print(spriteCommon, outStr, x, y, scale);
+	va_end(args);
+
+	return ret;
 }
 
 // ‚Ü‚Æ‚ß‚Ä•`‰æ
