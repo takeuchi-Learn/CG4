@@ -22,10 +22,11 @@ private:
 
 	// サブクラス
 public:
-// 頂点データ構造体
+	// 頂点データ構造体
 	struct VertexPos {
 		XMFLOAT3 pos; // xyz座標
 		float scale; // スケール
+		XMFLOAT3 color;
 	};
 
 	// 定数バッファ用データ構造体
@@ -132,7 +133,11 @@ public:
 	/// <param name="accel">加速度</param>
 	/// <param name="start_scale">開始時スケール</param>
 	/// <param name="end_scale">終了時スケール</param>
-	void add(Time* timer, int life, XMFLOAT3 position, XMFLOAT3 velocity, XMFLOAT3 accel, float start_scale, float end_scale);
+	void add(Time* timer, int life,
+			 XMFLOAT3 position, XMFLOAT3 velocity, XMFLOAT3 accel,
+			 float start_scale, float end_scale,
+			 float start_rotation, float end_rotation,
+			 XMFLOAT3 start_color, XMFLOAT3 end_color);
 
 	/// <summary>
 	/// デスクリプタヒープの初期化

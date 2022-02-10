@@ -95,7 +95,9 @@ void ParticleManager::update() {
 		// カラーの線形補間
 		it->color = it->s_color + (it->e_color - it->s_color) / f;
 
-		// スケールの線形補間
+		// スケールの補間(二乗)
+		//it->scale = it->s_scale + (it->e_scale - it->s_scale) / (1 - pow(1 - f, 3));
+		// 線形補間
 		it->scale = it->s_scale + (it->e_scale - it->s_scale) / f;
 
 		// スケールの線形補間
@@ -115,6 +117,7 @@ void ParticleManager::update() {
 			vertMap->pos = it->position;
 			// スケール
 			vertMap->scale = it->scale;
+			vertMap->color = it->color;
 			// 次の頂点へ
 			vertMap++;
 			if (++vertCount >= vertexCount) {
@@ -168,7 +171,11 @@ void ParticleManager::draw(ID3D12GraphicsCommandList* cmdList) {
 	cmdList->DrawInstanced(drawNum, 1, 0, 0);
 }
 
-void ParticleManager::add(Time* timer, int life, XMFLOAT3 position, XMFLOAT3 velocity, XMFLOAT3 accel, float start_scale, float end_scale) {
+void ParticleManager::add(Time* timer, int life,
+						  XMFLOAT3 position, XMFLOAT3 velocity, XMFLOAT3 accel,
+						  float start_scale, float end_scale,
+						  float start_rotation, float end_rotation,
+						  XMFLOAT3 start_color, XMFLOAT3 end_color) {
 	// リストに要素を追加
 	particles.emplace_front();
 	// 追加した要素の参照
@@ -180,6 +187,10 @@ void ParticleManager::add(Time* timer, int life, XMFLOAT3 position, XMFLOAT3 vel
 	p.e_scale = end_scale;
 	p.life = life;
 	p.timer = timer;
+	p.s_rotation = start_rotation;
+	p.e_rotation = end_rotation;
+	p.s_color = start_color;
+	p.e_color = end_color;
 	p.startTime = timer->getNowTime();
 }
 
@@ -285,6 +296,11 @@ void ParticleManager::InitializeGraphicsPipeline() {
 		},
 		{ // スケール
 			"TEXCOORD", 0, DXGI_FORMAT_R32_FLOAT, 0,
+			D3D12_APPEND_ALIGNED_ELEMENT,
+			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
+		},
+		{ // 色
+			"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
 			D3D12_APPEND_ALIGNED_ELEMENT,
 			D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
 		},

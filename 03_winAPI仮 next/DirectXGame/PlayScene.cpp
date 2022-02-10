@@ -250,8 +250,8 @@ void PlayScene::update() {
 	if (Input::getInstance()->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (Input::getInstance()->hitKey(DIK_K)) sprites[0].position.y += 10;
 	if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
 
-	// Pを押すたびパーティクル10粒追加
-	constexpr UINT particleNum = 10U;
+	// Pを押すたびパーティクル20粒追加
+	constexpr UINT particleNum = 20U;
 	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum);
 
 	camera->update();
@@ -304,6 +304,10 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 		acc.y = -MyRand::getRand(0.f, rnd_acc) - grav;
 
 		// 追加
-		particleMgr->add(timer.get(), Time::oneSec / 2, generatePos, vel, acc, 0.2f, 0.0f);
+		particleMgr->add(timer.get(),
+						 Time::oneSec / 2, generatePos, vel, acc,
+						 0.2f, 0.0f,
+						 0.f, 0.f,
+						 XMFLOAT3(1, 1, 1), XMFLOAT3(1, 0, 1));
 	}
 }
