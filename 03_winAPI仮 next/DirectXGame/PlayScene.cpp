@@ -8,17 +8,49 @@
 #include <iomanip>
 
 #include <xaudio2.h>
-
+#include <random>
 
 using namespace DirectX;
+
+namespace {
+	class MyRand {
+	public:
+		// 一様乱数
+		static int getRand(const int min, const int max) {
+			static std::random_device rnd{};
+			static std::mt19937_64 mt(rnd());
+
+			std::uniform_int_distribution<> myRand(min, max);	// 範囲指定の乱数
+			return myRand(mt);
+		}
+		static double getRand(const double min, const double max) {
+			static std::random_device rnd{};
+			static std::mt19937_64 mt(rnd());
+
+			std::uniform_real_distribution<> myRand(min, max);	// 範囲指定の乱数
+			return myRand(mt);
+		}
+
+		// 正規分布乱数
+		static int getRandNormally(const double center, const double range) {
+			static std::random_device rnd{};
+			static std::mt19937_64 mt(rnd());
+
+			std::normal_distribution<> myRand(center, range);	// 範囲指定の乱数
+			return myRand(mt);
+		}
+	};
+}
 
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play");
 
+	dxCom = DirectXCommon::getInstance();
+
 #pragma region ビュー変換
 
 	camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
-	camera->setEye(XMFLOAT3(0, 0, -100));	// 視点座標
+	camera->setEye(XMFLOAT3(0, 0, -175));	// 視点座標
 	camera->setTarget(XMFLOAT3(0, 0, 0));	// 注視点座標
 	camera->setUp(XMFLOAT3(0, 1, 0));		// 上方向
 
@@ -88,6 +120,10 @@ void PlayScene::init() {
 	sphere.reset(new Sphere(DirectXCommon::getInstance()->getDev(), 2.f, L"Resources/red.png", 0));
 
 #pragma endregion 3Dオブジェクト
+
+	particleMgr = ParticleManager::getInstance();
+	particleMgr->init(dxCom->getDev(), L"Resources/effect1.png");
+	particleMgr->setCamera(camera.get());
 
 	timer.reset(new Time());
 }
@@ -160,7 +196,7 @@ void PlayScene::update() {
 #pragma region 時間
 
 
-	debugText.formatPrint(spriteCommon, 0, 0, 1.f, "FPS : %f", DirectXCommon::getInstance()->getFPS());
+	debugText.formatPrint(spriteCommon, 0, 0, 1.f, "FPS : %f", dxCom->getFPS());
 
 	if (Input::getInstance()->hitKey(DIK_R)) timer->reset();
 
@@ -195,7 +231,7 @@ void PlayScene::update() {
 
 
 		// 移動量
-		constexpr float moveSpeed = 1.25f;
+		const float moveSpeed = 75.f / dxCom->getFPS();
 		// 視点移動
 		if (Input::getInstance()->hitKey(DIK_W)) {
 			camera->moveForward(moveSpeed);
@@ -214,29 +250,60 @@ void PlayScene::update() {
 	if (Input::getInstance()->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (Input::getInstance()->hitKey(DIK_K)) sprites[0].position.y += 10;
 	if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
 
+	// Pを押すたびパーティクル10粒追加
+	constexpr UINT particleNum = 10U;
+	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum);
 
 	camera->update();
+	particleMgr->update();
 }
 
 void PlayScene::draw() {
 	// ４．描画コマンドここから
 	// 球体コマンド
 	Sphere::sphereCommonBeginDraw(object3dPipelineSet);
-	sphere->drawWithUpdate(camera->getViewMatrix(), DirectXCommon::getInstance());
+	sphere->drawWithUpdate(camera->getViewMatrix(), dxCom);
 	// 3Dオブジェクトコマンド
-	Object3d::Object3dCommonBeginDraw(DirectXCommon::getInstance()->getCmdList(), object3dPipelineSet);
-	obj3d->drawWithUpdate(camera->getViewMatrix(), DirectXCommon::getInstance());
+	Object3d::Object3dCommonBeginDraw(dxCom->getCmdList(), object3dPipelineSet);
+	obj3d->drawWithUpdate(camera->getViewMatrix(), dxCom);
+
+	particleMgr->draw(dxCom->getCmdList());
+
 	// スプライト共通コマンド
-	Sprite::SpriteCommonBeginDraw(spriteCommon, DirectXCommon::getInstance()->getCmdList());
+	Sprite::SpriteCommonBeginDraw(spriteCommon, dxCom->getCmdList());
 	// スプライト描画
 	for (UINT i = 0; i < _countof(sprites); i++) {
-		sprites[i].SpriteDrawWithUpdate(DirectXCommon::getInstance(), spriteCommon);
+		sprites[i].SpriteDrawWithUpdate(dxCom, spriteCommon);
 	}
 	// デバッグテキスト描画
-	debugText.DrawAll(DirectXCommon::getInstance(), spriteCommon);
+	debugText.DrawAll(dxCom, spriteCommon);
 	// ４．描画コマンドここまで
 }
 
 void PlayScene::fin() {
 	//Sound::SoundStopWave(soundData1.get());
+}
+
+void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum) {
+	for (UINT i = 0U; i < particleNum; i++) {
+		// X,Y,Z全て[-2.5f,+2.5f]でランダムに分布
+		constexpr float rnd_pos = 2.5f;
+		XMFLOAT3 generatePos = pos;
+		/*generatePos.x += MyRand::getRandNormally(0.f, rnd_pos);
+		generatePos.y += MyRand::getRandNormally(0.f, rnd_pos);
+		generatePos.z += MyRand::getRandNormally(0.f, rnd_pos);*/
+
+		constexpr float rnd_vel = 0.075f;
+		XMFLOAT3 vel{};
+		vel.x = (float)MyRand::getRand(-rnd_vel, rnd_vel);
+		vel.y = (float)MyRand::getRand(-rnd_vel, rnd_vel);
+		vel.z = (float)MyRand::getRand(-rnd_vel, rnd_vel);
+
+		XMFLOAT3 acc{};
+		constexpr float rnd_acc = 0.001f, grav = 0.001f;
+		acc.y = -MyRand::getRand(0.f, rnd_acc) - grav;
+
+		// 追加
+		particleMgr->add(timer.get(), Time::oneSec / 2, generatePos, vel, acc, 0.2f, 0.0f);
+	}
 }

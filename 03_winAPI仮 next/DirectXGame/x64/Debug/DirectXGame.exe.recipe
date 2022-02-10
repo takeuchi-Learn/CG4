@@ -13,6 +13,15 @@
       <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\BasicVS.cso</FullPath>
     </ContentFile>
     <ContentFile>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\ParticleGS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\ParticlePS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\ParticleVS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
       <FullPath>C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\SpritePS.cso</FullPath>
     </ContentFile>
     <ContentFile>

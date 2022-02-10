@@ -3,24 +3,24 @@
 using namespace DirectX;
 
 namespace {
-	XMFLOAT3 operator-(const XMFLOAT3& num1, const XMFLOAT3& num2) {
+	XMFLOAT3 operator-(const XMFLOAT3& left, const XMFLOAT3& right) {
 		return XMFLOAT3(
-		num1.x - num2.x,
-		num1.y - num2.y,
-		num1.z - num2.z);
+		left.x - right.x,
+		left.y - right.y,
+		left.z - right.z);
 	}
-	XMFLOAT3 operator+(const XMFLOAT3& num1, const XMFLOAT3& num2) {
+	XMFLOAT3 operator+(const XMFLOAT3& left, const XMFLOAT3& right) {
 		return XMFLOAT3(
-		num1.x + num2.x,
-		num1.y + num2.y,
-		num1.z + num2.z);
+		left.x + right.x,
+		left.y + right.y,
+		left.z + right.z);
 	}
 
-	XMFLOAT3 operator*(const XMFLOAT3& num1, const float num2) {
+	XMFLOAT3 operator*(const XMFLOAT3& left, const float right) {
 		return XMFLOAT3(
-		num1.x * num2,
-		num1.y * num2,
-		num1.z * num2);
+		left.x * right,
+		left.y * right,
+		left.z * right);
 	}
 }
 
@@ -227,28 +227,27 @@ void Camera::rotation(const float targetlength, const float angleX, const float 
 	const auto look = getLook();
 
 	constexpr float lookLen = 50.f;
-	target = eye;
-	target.x += targetlength * sinf(angleY) + look.x * lookLen;
-	target.y += targetlength * sinf(angleX) + look.y * lookLen;
-	target.z += targetlength * cosf(angleY) + look.z * lookLen;
+	auto newTarget = eye;
+	newTarget.x += targetlength * sinf(angleY) + look.x * lookLen;
+	newTarget.y += targetlength * sinf(angleX) + look.y * lookLen;
+	newTarget.z += targetlength * cosf(angleY) + look.z * lookLen;
 
-	viewDirty = true;
+	setTarget(newTarget);
 }
 
 void Camera::moveForward(const float speed) {
 	const auto moveVal = getLook() * speed;
 
-	eye = eye + moveVal;
-
-	viewDirty = true;
+	moveEye(moveVal);
 }
 
 void Camera::moveRight(const float speed) {
 	const auto moveVal = getLook() * speed;
 
-	eye.z -= moveVal.x;
-	eye.y += moveVal.y;
-	eye.x += moveVal.z;
+	XMFLOAT3 val{};
+	val.z -= moveVal.x;
+	val.y += moveVal.y;
+	val.x += moveVal.z;
 
-	viewDirty = true;
+	moveEye(val);
 }

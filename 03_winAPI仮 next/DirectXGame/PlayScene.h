@@ -14,6 +14,10 @@
 
 #include "Camera.h"
 
+#include "ParticleManager.h"
+
+#include "DirectXCommon.h"
+
 class PlayScene :
 	public GameScene {
 
@@ -78,6 +82,13 @@ class PlayScene :
 	std::unique_ptr<Time> timer;
 
 	std::unique_ptr<Camera> camera;
+
+	ParticleManager* particleMgr = nullptr;
+
+	DirectXCommon* dxCom = nullptr;
+
+private:
+	void createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum = 10U);
 
 public:
 	void init() override;
