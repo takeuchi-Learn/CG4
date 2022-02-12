@@ -86,6 +86,7 @@ void ParticleManager::update() {
 		// 進行度を0～1の範囲に換算
 		float f = (float)it->life / it->nowTime;
 
+		// todo 時間依存にする
 		// 速度に加速度を加算
 		it->velocity = it->velocity + it->accel;
 
@@ -183,14 +184,19 @@ void ParticleManager::add(Time* timer, int life,
 	p.position = position;
 	p.velocity = velocity;
 	p.accel = accel;
+
 	p.s_scale = start_scale;
 	p.e_scale = end_scale;
+
 	p.life = life;
 	p.timer = timer;
+
 	p.s_rotation = start_rotation;
 	p.e_rotation = end_rotation;
+
 	p.s_color = start_color;
 	p.e_color = end_color;
+
 	p.startTime = timer->getNowTime();
 }
 
@@ -327,14 +333,20 @@ void ParticleManager::InitializeGraphicsPipeline() {
 	D3D12_RENDER_TARGET_BLEND_DESC blenddesc{};
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;	// RBGA全てのチャンネルを描画
 	blenddesc.BlendEnable = true;
-	// 加算ブレンディング
+#pragma region ブレンドステート
+	//半透明合成
+	/*blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
+	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;*/
+	//加算
 	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
 	blenddesc.SrcBlend = D3D12_BLEND_ONE;
 	blenddesc.DestBlend = D3D12_BLEND_ONE;
-	//// 減算ブレンディング
+	////減算
 	//blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
 	//blenddesc.SrcBlend = D3D12_BLEND_ONE;
 	//blenddesc.DestBlend = D3D12_BLEND_ONE;
+#pragma endregion ブレンドステート
 
 	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;
@@ -356,6 +368,8 @@ void ParticleManager::InitializeGraphicsPipeline() {
 	gpipeline.NumRenderTargets = 1;	// 描画対象は1つ
 	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
+
+	gpipeline.BlendState.AlphaToCoverageEnable = true;	//透明部分の深度値は書き込まない
 
 	// デスクリプタレンジ
 	CD3DX12_DESCRIPTOR_RANGE descRangeSRV;
