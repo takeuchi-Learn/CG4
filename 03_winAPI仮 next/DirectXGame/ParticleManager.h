@@ -108,19 +108,13 @@ private:
 	std::forward_list<Particle> particles;
 	Camera* camera = nullptr;
 
-private:
-	ParticleManager() = default;
-	ParticleManager(const ParticleManager&) = delete;
-	~ParticleManager() = default;
-	ParticleManager& operator=(const ParticleManager&) = delete;
-
 	// ƒƒ“ƒoŠÖ”
 public:
-	static ParticleManager* getInstance();
-
 	void init(ID3D12Device* device, const wchar_t* texFilePath);
 	void update();
 	void draw(ID3D12GraphicsCommandList* cmdList);
+
+	void drawWithUpdate(ID3D12GraphicsCommandList* cmdList);
 
 	inline void setCamera(Camera* camera) { this->camera = camera; }
 

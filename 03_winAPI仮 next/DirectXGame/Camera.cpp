@@ -238,16 +238,13 @@ void Camera::rotation(const float targetlength, const float angleX, const float 
 void Camera::moveForward(const float speed) {
 	const auto moveVal = getLook() * speed;
 
-	moveEye(moveVal);
+	moveCamera(moveVal);
 }
 
 void Camera::moveRight(const float speed) {
 	const auto moveVal = getLook() * speed;
 
-	XMFLOAT3 val{};
-	val.z -= moveVal.x;
-	val.y += moveVal.y;
-	val.x += moveVal.z;
+	const XMFLOAT3 val{ moveVal.z, moveVal.y, -moveVal.x };
 
-	moveEye(val);
+	moveCamera(val);
 }

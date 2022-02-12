@@ -83,7 +83,7 @@ class PlayScene :
 
 	std::unique_ptr<Camera> camera;
 
-	ParticleManager* particleMgr = nullptr;
+	std::unique_ptr<ParticleManager> particleMgr;
 
 	DirectXCommon* dxCom = nullptr;
 

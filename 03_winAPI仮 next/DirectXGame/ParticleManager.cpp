@@ -32,11 +32,6 @@ const DirectX::XMFLOAT3 operator/(const DirectX::XMFLOAT3& lhs, const float rhs)
 	return result;
 }
 
-ParticleManager* ParticleManager::getInstance() {
-	static ParticleManager instance;
-	return &instance;
-}
-
 void ParticleManager::init(ID3D12Device* device, const wchar_t* texFilePath) {
 	// nullptrチェック
 	assert(device);
@@ -84,7 +79,7 @@ void ParticleManager::update() {
 		// 経過フレーム数をカウント
 		it->nowTime = it->timer->getNowTime() - it->startTime;
 		// 進行度を0～1の範囲に換算
-		float f = (float)it->life / it->nowTime;
+		const float f = (float)it->life / it->nowTime;
 
 		// todo 時間依存にする
 		// 速度に加速度を加算
@@ -94,22 +89,24 @@ void ParticleManager::update() {
 		it->position = it->position + it->velocity;
 
 		// カラーの線形補間
-		it->color = it->s_color + (it->e_color - it->s_color) / f;
+		//it->color = it->s_color + (it->e_color - it->s_color) / f;
+		// 二乗In補間
+		it->color = it->s_color + (it->e_color - it->s_color) / (f * f);
 
-		// スケールの補間(二乗)
+		// スケールの補間(三乗)
 		//it->scale = it->s_scale + (it->e_scale - it->s_scale) / (1 - pow(1 - f, 3));
 		// 線形補間
 		it->scale = it->s_scale + (it->e_scale - it->s_scale) / f;
 
-		// スケールの線形補間
+		// 回転の線形補間
 		it->rotation = it->s_rotation + (it->e_rotation - it->s_rotation) / f;
 	}
 
 	// 頂点バッファへデータ転送
-	int vertCount = 0;
 	VertexPos* vertMap = nullptr;
 	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
 	if (SUCCEEDED(result)) {
+		int vertCount = 0;
 		// パーティクルの情報を1つずつ反映
 		for (std::forward_list<Particle>::iterator it = particles.begin();
 			it != particles.end();
@@ -170,6 +167,11 @@ void ParticleManager::draw(ID3D12GraphicsCommandList* cmdList) {
 	cmdList->SetGraphicsRootDescriptorTable(1, gpuDescHandleSRV);
 	// 描画コマンド
 	cmdList->DrawInstanced(drawNum, 1, 0, 0);
+}
+
+void ParticleManager::drawWithUpdate(ID3D12GraphicsCommandList* cmdList) {
+	update();
+	draw(cmdList);
 }
 
 void ParticleManager::add(Time* timer, int life,

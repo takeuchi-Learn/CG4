@@ -20,14 +20,24 @@ namespace {
 			static std::random_device rnd{};
 			static std::mt19937_64 mt(rnd());
 
-			std::uniform_int_distribution<> myRand(min, max);	// 範囲指定の乱数
+			int minLocal = min, maxLocal = max;
+			if (max < min) {
+				minLocal = max;
+				maxLocal = min;
+			}
+			std::uniform_int_distribution<> myRand(minLocal, maxLocal);	// 範囲指定の乱数
 			return myRand(mt);
 		}
 		static double getRand(const double min, const double max) {
 			static std::random_device rnd{};
 			static std::mt19937_64 mt(rnd());
 
-			std::uniform_real_distribution<> myRand(min, max);	// 範囲指定の乱数
+			double minLocal = min, maxLocal = max;
+			if (max < min) {
+				minLocal = max;
+				maxLocal = min;
+			}
+			std::uniform_real_distribution<> myRand(minLocal, maxLocal);	// 範囲指定の乱数
 			return myRand(mt);
 		}
 
@@ -121,7 +131,7 @@ void PlayScene::init() {
 
 #pragma endregion 3Dオブジェクト
 
-	particleMgr = ParticleManager::getInstance();
+	particleMgr.reset(new ParticleManager());
 	particleMgr->init(dxCom->getDev(), L"Resources/effect1.png");
 	particleMgr->setCamera(camera.get());
 
@@ -255,7 +265,6 @@ void PlayScene::update() {
 	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum);
 
 	camera->update();
-	particleMgr->update();
 }
 
 void PlayScene::draw() {
@@ -267,7 +276,7 @@ void PlayScene::draw() {
 	Object3d::Object3dCommonBeginDraw(dxCom->getCmdList(), object3dPipelineSet);
 	obj3d->drawWithUpdate(camera->getViewMatrix(), dxCom);
 
-	particleMgr->draw(dxCom->getCmdList());
+	particleMgr->drawWithUpdate(dxCom->getCmdList());
 
 	// スプライト共通コマンド
 	Sprite::SpriteCommonBeginDraw(spriteCommon, dxCom->getCmdList());
@@ -293,21 +302,21 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 		generatePos.y += MyRand::getRandNormally(0.f, rnd_pos);
 		generatePos.z += MyRand::getRandNormally(0.f, rnd_pos);*/
 
-		constexpr float rnd_vel = 0.075f;
+		constexpr float rnd_vel = 0.0625f;
 		XMFLOAT3 vel{};
 		vel.x = (float)MyRand::getRand(-rnd_vel, rnd_vel);
 		vel.y = (float)MyRand::getRand(-rnd_vel, rnd_vel);
 		vel.z = (float)MyRand::getRand(-rnd_vel, rnd_vel);
 
 		XMFLOAT3 acc{};
-		constexpr float rnd_acc = 0.001f, grav = 0.001f;
-		acc.y = -MyRand::getRand(0.f, rnd_acc) - grav;
+		constexpr float rnd_acc = 0.001f;
+		acc.y = -MyRand::getRand(rnd_acc, rnd_acc * 2.f);
 
 		// 追加
 		particleMgr->add(timer.get(),
-						 Time::oneSec / 2, generatePos, vel, acc,
-						 0.2f, 0.0f,
+						 Time::oneSec / 4, generatePos, vel, acc,
+						 0.4f, 0.0f,
 						 0.f, 0.f,
-						 XMFLOAT3(1, 1, 1), XMFLOAT3(1, 0, 1));
+						 XMFLOAT3(1, 1, 0.25f), XMFLOAT3(1, 0, 1));
 	}
 }
