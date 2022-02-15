@@ -175,7 +175,7 @@ void Camera::moveCamera(const XMVECTOR& move) {
 
 Camera::Camera(const float window_width, const float window_height) {
 
-	aspectRatio = (float)window_width / window_height;
+	aspectRatio = window_width / window_height;
 
 	//ビュー行列の計算
 	updateViewMatrix();

@@ -110,6 +110,11 @@ private:
 
 	// ƒƒ“ƒoŠÖ”
 public:
+	// ‰Šú‰»‚È‚µ
+	ParticleManager();
+
+	ParticleManager(ID3D12Device* device, const wchar_t* texFilePath, Camera* camera);
+
 	void init(ID3D12Device* device, const wchar_t* texFilePath);
 	void update();
 	void draw(ID3D12GraphicsCommandList* cmdList);

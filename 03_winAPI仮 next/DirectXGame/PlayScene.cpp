@@ -164,9 +164,7 @@ void PlayScene::init() {
 
 #pragma endregion 3Dオブジェクト
 
-	particleMgr.reset(new ParticleManager());
-	particleMgr->init(dxCom->getDev(), L"Resources/effect1.png");
-	particleMgr->setCamera(camera.get());
+	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png",camera.get()));
 
 	timer.reset(new Time());
 }

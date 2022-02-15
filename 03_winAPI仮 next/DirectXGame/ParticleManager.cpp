@@ -65,6 +65,16 @@ void ParticleManager::init(ID3D12Device* device, const wchar_t* texFilePath) {
 	}
 }
 
+ParticleManager::ParticleManager() {
+}
+
+ParticleManager::ParticleManager(ID3D12Device* device,
+								 const wchar_t* texFilePath,
+								 Camera* camera) {
+	init(device, texFilePath);
+	setCamera(camera);
+}
+
 void ParticleManager::update() {
 	HRESULT result = S_FALSE;
 
@@ -386,7 +396,7 @@ void ParticleManager::InitializeGraphicsPipeline() {
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
 	// ルートシグネチャの設定
-	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc{};
 	rootSignatureDesc.Init_1_0(_countof(rootparams), rootparams, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> rootSigBlob;
