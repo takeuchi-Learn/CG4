@@ -78,9 +78,6 @@ ParticleManager::ParticleManager(ID3D12Device* device,
 void ParticleManager::update() {
 	HRESULT result = S_FALSE;
 
-	// 寿命が尽きたパーティクルを全削除
-	particles.remove_if([](Particle& x) { return x.nowTime >= x.life; });
-
 	// 全パーティクル更新
 	for (std::forward_list<Particle>::iterator it = particles.begin();
 		it != particles.end();
@@ -111,6 +108,9 @@ void ParticleManager::update() {
 		// 回転の線形補間
 		it->rotation = it->s_rotation + (it->e_rotation - it->s_rotation) / f;
 	}
+
+	// 寿命が尽きたパーティクルを全削除
+	particles.remove_if([](Particle& x) { return x.nowTime >= x.life; });
 
 	// 頂点バッファへデータ転送
 	VertexPos* vertMap = nullptr;
