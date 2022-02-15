@@ -2,8 +2,6 @@
 
 using namespace std::chrono;
 
-const Time::timeType Time::oneSec = duration_cast<timeUnit>(seconds(1)).count();
-
 Time::~Time() {
 }
 

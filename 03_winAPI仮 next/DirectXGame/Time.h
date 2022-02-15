@@ -11,7 +11,7 @@ public:
 	using timeUnit = std::chrono::microseconds;
 	using timeType = long long;
 
-	static const long long oneSec;
+	static constexpr long long oneSec = std::chrono::duration_cast<timeUnit>(std::chrono::seconds(1)).count();
 
 	~Time();
 

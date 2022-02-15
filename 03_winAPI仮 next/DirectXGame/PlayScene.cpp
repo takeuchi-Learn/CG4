@@ -14,12 +14,24 @@ using namespace DirectX;
 
 namespace {
 	class MyRand {
-	public:
-		// 一様乱数
-		static int getRand(const int min, const int max) {
-			static std::random_device rnd{};
-			static std::mt19937_64 mt(rnd());
+	private:
+		MyRand(const MyRand& mrnd) = delete;
+		MyRand& operator=(const MyRand& mrnd) = delete;
 
+		std::random_device rnd{};
+		std::mt19937_64 mt{};
+
+		MyRand() : rnd(), mt(rnd()) {};
+		~MyRand() {};
+
+		static MyRand* getInstance() {
+			static MyRand myRand{};
+			return &myRand;
+		}
+
+	private:
+		// 一様乱数
+		int local_getRand(const int min, const int max) {
 			int minLocal = min, maxLocal = max;
 			if (max < min) {
 				minLocal = max;
@@ -28,10 +40,7 @@ namespace {
 			std::uniform_int_distribution<> myRand(minLocal, maxLocal);	// 範囲指定の乱数
 			return myRand(mt);
 		}
-		static double getRand(const double min, const double max) {
-			static std::random_device rnd{};
-			static std::mt19937_64 mt(rnd());
-
+		double local_getRand(const double min, const double max) {
 			double minLocal = min, maxLocal = max;
 			if (max < min) {
 				minLocal = max;
@@ -42,12 +51,36 @@ namespace {
 		}
 
 		// 正規分布乱数
-		static int getRandNormally(const double center, const double range) {
-			static std::random_device rnd{};
-			static std::mt19937_64 mt(rnd());
+		double local_getRandNormally(const double center, const double range) {
+			double rangeLocal = range;
+			if (range < 0.0) rangeLocal = -rangeLocal;
+			else if (range == 0.0) rangeLocal = 1.f;
 
-			std::normal_distribution<> myRand(center, range);	// 範囲指定の乱数
+			std::normal_distribution<> myRand(center, rangeLocal);	// 範囲指定の乱数
 			return myRand(mt);
+		}
+
+	public:
+		// 一様乱数_整数
+		static int getRand(const int min, const int max) {
+			return getInstance()->local_getRand(min, max);
+		}
+		// 一様乱数_小数(double)
+		static double getRand(const double min, const double max) {
+			return getInstance()->local_getRand(min, max);
+		}
+		// 一様乱数_小数(float)
+		static float getRandf(const float min, const float max) {
+			return (float)getRand((double)min, (double)max);
+		}
+
+		// 正規分布乱数_double
+		static double getRandNormally(const double center, const double range) {
+			return getInstance()->local_getRandNormally(center, range);
+		}
+		// 正規分布乱数_float
+		static float getRandNormallyf(const float center, const float range) {
+			return (float)getRandNormally((double)center, (double)range);
 		}
 	};
 }
@@ -158,10 +191,10 @@ void PlayScene::update() {
 	}
 
 	{
-		static std::string stateStr = "STOP []";
+		std::string stateStr = "STOP []";
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
-		} else stateStr = "STOP []";
+		}
 		debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 2, 1.f, "SOUND_PLAY_STATE : %s", stateStr.c_str());
 
 		debugText.Print(spriteCommon, "Press 0 to Play/Stop Sound", 0, debugText.fontHeight * 3);
@@ -186,7 +219,7 @@ void PlayScene::update() {
 		Input::getInstance()->getMousePos().y + debugText.fontHeight * 2, 0.75f);
 	}
 	if (Input::getInstance()->hitMouseBotton(VK_LSHIFT)) {
-		debugText.Print(spriteCommon, "LSHIFT", 0, 0, 2);
+		debugText.Print(spriteCommon, "LSHIFT(WinAPI)", 0, 0, 2);
 	}
 
 	// Rを押すたびマウスカーソルの表示非表示を切り替え
@@ -219,7 +252,7 @@ void PlayScene::update() {
 
 	{
 
-		const float rotaVal = XM_PIDIV2 / DirectXCommon::getInstance()->getFPS();	// 毎秒四半周
+		const float rotaVal = XM_PIDIV4 / 2.f / DirectXCommon::getInstance()->getFPS();	// 毎秒四半周
 
 		if (Input::getInstance()->hitKey(DIK_RIGHT)) {
 			angle.y += rotaVal;
@@ -241,7 +274,7 @@ void PlayScene::update() {
 
 
 		// 移動量
-		const float moveSpeed = 75.f / dxCom->getFPS();
+		const float moveSpeed = 20.f / dxCom->getFPS();
 		// 視点移動
 		if (Input::getInstance()->hitKey(DIK_W)) {
 			camera->moveForward(moveSpeed);
@@ -262,7 +295,7 @@ void PlayScene::update() {
 
 	// Pを押すたびパーティクル20粒追加
 	constexpr UINT particleNum = 20U;
-	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum);
+	/*if (Input::getInstance()->triggerKey(DIK_P)) */createParticle(obj3d->position, particleNum);
 
 	camera->update();
 }
@@ -295,28 +328,43 @@ void PlayScene::fin() {
 
 void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum) {
 	for (UINT i = 0U; i < particleNum; i++) {
+
+		const float theata = MyRand::getRandf(0, XM_PI);
+		const float phi = MyRand::getRandf(0, XM_PI * 2.f);
+		const float r = MyRand::getRandf(0, 0.0625f);
+
 		// X,Y,Z全て[-2.5f,+2.5f]でランダムに分布
 		constexpr float rnd_pos = 2.5f;
 		XMFLOAT3 generatePos = pos;
-		/*generatePos.x += MyRand::getRandNormally(0.f, rnd_pos);
-		generatePos.y += MyRand::getRandNormally(0.f, rnd_pos);
-		generatePos.z += MyRand::getRandNormally(0.f, rnd_pos);*/
+		/*generatePos.x += MyRand::getRandNormallyf(0.f, rnd_pos);
+		generatePos.y += MyRand::getRandNormallyf(0.f, rnd_pos);
+		generatePos.z += MyRand::getRandNormallyf(0.f, rnd_pos);*/
 
 		constexpr float rnd_vel = 0.0625f;
-		XMFLOAT3 vel{};
-		vel.x = (float)MyRand::getRand(-rnd_vel, rnd_vel);
-		vel.y = (float)MyRand::getRand(-rnd_vel, rnd_vel);
-		vel.z = (float)MyRand::getRand(-rnd_vel, rnd_vel);
+		const XMFLOAT3 vel{
+			r * sin(theata) * cos(phi),
+			r * cos(theata),
+			r * sin(theata) * sin(phi)
+		};
 
-		XMFLOAT3 acc{};
 		constexpr float rnd_acc = 0.001f;
-		acc.y = -MyRand::getRand(rnd_acc, rnd_acc * 2.f);
+		XMFLOAT3 acc{};
+
+		/*acc.x = 0.f;
+		acc.y = -MyRand::getRandf(rnd_acc, rnd_acc * 2.f);
+		acc.z = 0.f;*/
+
+
+		constexpr auto startCol = XMFLOAT3(1, 1, 0.25f), endCol = XMFLOAT3(1, 0, 1);
+		constexpr int life = Time::oneSec / 4;
+		constexpr float startScale = 0.25f, endScale = 0.f;
+		constexpr float startRota = 0.f, endRota = 0.f;
 
 		// 追加
 		particleMgr->add(timer.get(),
-						 Time::oneSec / 4, generatePos, vel, acc,
-						 0.4f, 0.0f,
-						 0.f, 0.f,
-						 XMFLOAT3(1, 1, 0.25f), XMFLOAT3(1, 0, 1));
+						 life, generatePos, vel, acc,
+						 startScale, endScale,
+						 startRota, endRota,
+						 startCol, endCol);
 	}
 }
