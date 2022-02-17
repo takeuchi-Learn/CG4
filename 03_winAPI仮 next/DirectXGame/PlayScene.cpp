@@ -250,7 +250,7 @@ void PlayScene::update() {
 
 	{
 
-		const float rotaVal = XM_PIDIV4 / 2.f / DirectXCommon::getInstance()->getFPS();	// 毎秒四半周
+		const float rotaVal = XM_PIDIV2 / DirectXCommon::getInstance()->getFPS();	// 毎秒四半周
 
 		if (Input::getInstance()->hitKey(DIK_RIGHT)) {
 			angle.y += rotaVal;
@@ -272,7 +272,7 @@ void PlayScene::update() {
 
 
 		// 移動量
-		const float moveSpeed = 20.f / dxCom->getFPS();
+		const float moveSpeed = 75.f / dxCom->getFPS();
 		// 視点移動
 		if (Input::getInstance()->hitKey(DIK_W)) {
 			camera->moveForward(moveSpeed);
@@ -291,9 +291,9 @@ void PlayScene::update() {
 	if (Input::getInstance()->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (Input::getInstance()->hitKey(DIK_K)) sprites[0].position.y += 10;
 	if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
 
-	// Pを押すたびパーティクル20粒追加
-	constexpr UINT particleNum = 20U;
-	/*if (Input::getInstance()->triggerKey(DIK_P)) */createParticle(obj3d->position, particleNum);
+	// Pを押すたびパーティクル50粒追加
+	constexpr UINT particleNum = 50U;
+	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum);
 
 	camera->update();
 }
@@ -329,7 +329,7 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 
 		const float theata = MyRand::getRandf(0, XM_PI);
 		const float phi = MyRand::getRandf(0, XM_PI * 2.f);
-		const float r = MyRand::getRandf(0, 0.0625f);
+		const float r = MyRand::getRandf(0, 5.f);
 
 		// X,Y,Z全て[-2.5f,+2.5f]でランダムに分布
 		constexpr float rnd_pos = 2.5f;
@@ -338,14 +338,14 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 		generatePos.y += MyRand::getRandNormallyf(0.f, rnd_pos);
 		generatePos.z += MyRand::getRandNormallyf(0.f, rnd_pos);*/
 
-		constexpr float rnd_vel = 0.0625f;
+		//constexpr float rnd_vel = 0.0625f;
 		const XMFLOAT3 vel{
 			r * sin(theata) * cos(phi),
 			r * cos(theata),
 			r * sin(theata) * sin(phi)
 		};
 
-		constexpr float rnd_acc = 0.001f;
+		//constexpr float rnd_acc = 0.05f;
 		XMFLOAT3 acc{};
 
 		/*acc.x = 0.f;
@@ -355,7 +355,7 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 
 		constexpr auto startCol = XMFLOAT3(1, 1, 0.25f), endCol = XMFLOAT3(1, 0, 1);
 		constexpr int life = Time::oneSec / 4;
-		constexpr float startScale = 0.25f, endScale = 0.f;
+		constexpr float startScale = 10.f, endScale = 0.f;
 		constexpr float startRota = 0.f, endRota = 0.f;
 
 		// 追加

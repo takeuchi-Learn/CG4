@@ -352,7 +352,7 @@ void Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int window_height
 	this->isFlipY = isFlipY;
 
 	// 頂点データ
-	VertexPosUv vertices[4];
+	VertexPosUv vertices[4]{};
 
 	// 指定番号の画像が読み込み済みなら
 	if (spriteCommon.texBuff[texNumber]) {

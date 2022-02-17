@@ -16,12 +16,6 @@
     <Filter Include="シェーダーファイル">
       <UniqueIdentifier>{7e5584a5-2895-4181-9eaf-f65622106b57}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Scene">
-      <UniqueIdentifier>{f99a78c4-777e-4387-b6c3-375eb9f6ff3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Scene">
-      <UniqueIdentifier>{5107e7cf-4e80-4f37-9389-2b188672b798}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\System">
       <UniqueIdentifier>{cf4331a4-35dd-4e1d-81de-d7a044e43b65}</UniqueIdentifier>
     </Filter>
@@ -37,24 +31,21 @@
     <Filter Include="Sphere">
       <UniqueIdentifier>{9ca9b2da-81fb-4d7b-9aea-7acce23ae854}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{a1e0cbaf-3197-4c1d-94b2-278cf0d1c83b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sceme">
+      <UniqueIdentifier>{86a5f2ac-cda4-4b54-abf6-e62b548c4b43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object共通">
+      <UniqueIdentifier>{94bc1451-ed14-473b-9b23-b9eff326d1ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjCommon.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="DebugText.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Object3d.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
@@ -68,9 +59,6 @@
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="TitleScene.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="System.cpp">
       <Filter>ソース ファイル\System</Filter>
@@ -87,20 +75,11 @@
     <ClCompile Include="CollisionPrimitive.cpp">
       <Filter>ソース ファイル\Collision</Filter>
     </ClCompile>
-    <ClCompile Include="PlayScene.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="EndScene.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="GameScene.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Sphere</Filter>
@@ -108,24 +87,36 @@
     <ClCompile Include="ParticleManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="EndScene.cpp">
+      <Filter>Sceme</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayScene.cpp">
+      <Filter>Sceme</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>Sceme</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Object共通</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3d.cpp">
+      <Filter>Object共通</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Object共通</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjCommon.cpp">
+      <Filter>Object共通</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjCommon.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="DebugText.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Object3d.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
@@ -139,9 +130,6 @@
     </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="TitleScene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="DirectXCommon.h">
       <Filter>ヘッダー ファイル\System</Filter>
@@ -158,23 +146,38 @@
     <ClInclude Include="CollisionPrimitive.h">
       <Filter>ヘッダー ファイル\Collision</Filter>
     </ClInclude>
-    <ClInclude Include="PlayScene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="EndScene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="GameScene.h">
       <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Sphere</Filter>
     </ClInclude>
     <ClInclude Include="ParticleManager.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="EndScene.h">
+      <Filter>Sceme</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayScene.h">
+      <Filter>Sceme</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScene.h">
+      <Filter>Sceme</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Object共通</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3d.h">
+      <Filter>Object共通</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjCommon.h">
+      <Filter>Object共通</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Object共通</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

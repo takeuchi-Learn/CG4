@@ -108,7 +108,7 @@ void Camera::updateViewMatrix() {
 void Camera::updateProjectionMatrix() {
 	// “§‹“Š‰e‚É‚æ‚éË‰es—ñ‚Ì¶¬
 	matProjection = XMMatrixPerspectiveFovLH(
-		XMConvertToRadians(fogAngleYRad),
+		fogAngleYRad,
 		aspectRatio,
 		nearZ, farZ
 	);
@@ -174,6 +174,8 @@ void Camera::moveCamera(const XMVECTOR& move) {
 }
 
 Camera::Camera(const float window_width, const float window_height) {
+
+	fogAngleYRad = DirectX::XM_PI / 3.f;
 
 	aspectRatio = window_width / window_height;
 
