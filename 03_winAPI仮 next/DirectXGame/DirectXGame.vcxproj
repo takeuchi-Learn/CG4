@@ -157,6 +157,7 @@
     <ClCompile Include="Object3d.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="PlayScene.cpp" />
+    <ClCompile Include="RandomNum.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Object3d.h" />
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="PlayScene.h" />
+    <ClInclude Include="RandomNum.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sphere.h" />

@@ -8,82 +8,9 @@
 #include <iomanip>
 
 #include <xaudio2.h>
-#include <random>
+#include "RandomNum.h"
 
 using namespace DirectX;
-
-namespace {
-	class MyRand {
-	private:
-		MyRand(const MyRand& mrnd) = delete;
-		MyRand& operator=(const MyRand& mrnd) = delete;
-
-		std::random_device rnd{};
-		std::mt19937_64 mt{};
-
-		MyRand() : rnd(), mt(rnd()) {};
-		~MyRand() {};
-
-		static MyRand* getInstance() {
-			static MyRand myRand{};
-			return &myRand;
-		}
-
-	private:
-		// 一様乱数
-		int local_getRand(const int min, const int max) {
-			int minLocal = min, maxLocal = max;
-			if (max < min) {
-				minLocal = max;
-				maxLocal = min;
-			}
-			std::uniform_int_distribution<> myRand(minLocal, maxLocal);	// 範囲指定の乱数
-			return myRand(mt);
-		}
-		double local_getRand(const double min, const double max) {
-			double minLocal = min, maxLocal = max;
-			if (max < min) {
-				minLocal = max;
-				maxLocal = min;
-			}
-			std::uniform_real_distribution<> myRand(minLocal, maxLocal);	// 範囲指定の乱数
-			return myRand(mt);
-		}
-
-		// 正規分布乱数
-		double local_getRandNormally(const double center, const double range) {
-			double rangeLocal = range;
-			if (range < 0.0) rangeLocal = -rangeLocal;
-			else if (range == 0.0) rangeLocal = 1.f;
-
-			std::normal_distribution<> myRand(center, rangeLocal);	// 範囲指定の乱数
-			return myRand(mt);
-		}
-
-	public:
-		// 一様乱数_整数
-		static int getRand(const int min, const int max) {
-			return getInstance()->local_getRand(min, max);
-		}
-		// 一様乱数_小数(double)
-		static double getRand(const double min, const double max) {
-			return getInstance()->local_getRand(min, max);
-		}
-		// 一様乱数_小数(float)
-		static float getRandf(const float min, const float max) {
-			return (float)getRand((double)min, (double)max);
-		}
-
-		// 正規分布乱数_double
-		static double getRandNormally(const double center, const double range) {
-			return getInstance()->local_getRandNormally(center, range);
-		}
-		// 正規分布乱数_float
-		static float getRandNormallyf(const float center, const float range) {
-			return (float)getRandNormally((double)center, (double)range);
-		}
-	};
-}
 
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play");
@@ -327,16 +254,16 @@ void PlayScene::fin() {
 void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum) {
 	for (UINT i = 0U; i < particleNum; i++) {
 
-		const float theata = MyRand::getRandf(0, XM_PI);
-		const float phi = MyRand::getRandf(0, XM_PI * 2.f);
-		const float r = MyRand::getRandf(0, 5.f);
+		const float theata = RandomNum::getRandf(0, XM_PI);
+		const float phi = RandomNum::getRandf(0, XM_PI * 2.f);
+		const float r = RandomNum::getRandf(0, 5.f);
 
 		// X,Y,Z全て[-2.5f,+2.5f]でランダムに分布
 		constexpr float rnd_pos = 2.5f;
 		XMFLOAT3 generatePos = pos;
-		/*generatePos.x += MyRand::getRandNormallyf(0.f, rnd_pos);
-		generatePos.y += MyRand::getRandNormallyf(0.f, rnd_pos);
-		generatePos.z += MyRand::getRandNormallyf(0.f, rnd_pos);*/
+		/*generatePos.x += Random::getRandNormallyf(0.f, rnd_pos);
+		generatePos.y += Random::getRandNormallyf(0.f, rnd_pos);
+		generatePos.z += Random::getRandNormallyf(0.f, rnd_pos);*/
 
 		//constexpr float rnd_vel = 0.0625f;
 		const XMFLOAT3 vel{
@@ -349,7 +276,7 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 		XMFLOAT3 acc{};
 
 		/*acc.x = 0.f;
-		acc.y = -MyRand::getRandf(rnd_acc, rnd_acc * 2.f);
+		acc.y = -Random::getRandf(rnd_acc, rnd_acc * 2.f);
 		acc.z = 0.f;*/
 
 

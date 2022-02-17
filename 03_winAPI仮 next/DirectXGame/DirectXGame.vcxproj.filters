@@ -40,6 +40,9 @@
     <Filter Include="Object共通">
       <UniqueIdentifier>{94bc1451-ed14-473b-9b23-b9eff326d1ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Random">
+      <UniqueIdentifier>{dbb5bc90-58d2-406f-8584-3f1bbf586040}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Input.cpp">
@@ -111,6 +114,9 @@
     <ClCompile Include="ObjCommon.cpp">
       <Filter>Object共通</Filter>
     </ClCompile>
+    <ClCompile Include="RandomNum.cpp">
+      <Filter>Random</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Input.h">
@@ -178,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Object共通</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomNum.h">
+      <Filter>Random</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
