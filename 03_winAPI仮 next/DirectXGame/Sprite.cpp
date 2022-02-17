@@ -14,8 +14,8 @@ using namespace Microsoft::WRL;
 
 // スプライト用パイプライン生成
 Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev,
-	const wchar_t* vsPath,
-	const wchar_t* psPath) {
+														 const wchar_t* vsPath, const wchar_t* psPath,
+														 BLEND_MODE blendMode) {
 	HRESULT result;
 
 	ComPtr<ID3DBlob> vsBlob = nullptr; // 頂点シェーダオブジェクト
@@ -103,25 +103,32 @@ Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev,
 	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;      // ソースの値を100% 使う
 	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;    // デストの値を   0% 使う
 
-	//--半透明合成
-	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				//加算
-	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;			//ソースのアルファ値
-	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	//デストの値を100%使う
-
-	//---加算
-	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
-	//blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
-	//blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
-
-	//---減算
-	//blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	//デストからソースを減算
-	//blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
-	//blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
-
-	//---反転
-	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
-	//blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	//1.0 - デストカラーの値
-	//blenddesc.DestBlend = D3D12_BLEND_ZERO;
+	switch (blendMode) {
+	case Sprite::BLEND_MODE::ADD:
+		//---加算
+		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
+		blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
+		blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
+		break;
+	case Sprite::BLEND_MODE::SUB:
+		//---減算
+		blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	//デストからソースを減算
+		blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
+		blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
+		break;
+	case Sprite::BLEND_MODE::REVERSE:
+		//---反転
+		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
+		blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	//1.0 - デストカラーの値
+		blenddesc.DestBlend = D3D12_BLEND_ZERO;
+		break;
+	default:
+		//--半透明合成
+		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				//加算
+		blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;			//ソースのアルファ値
+		blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	//デストの値を100%使う
+		break;
+	}
 
 	// デプスステンシルステートの設定
 	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
@@ -174,13 +181,16 @@ Sprite::PipelineSet Sprite::SpriteCreateGraphicsPipeline(ID3D12Device* dev,
 }
 
 // スプライト共通データ生成
-Sprite::SpriteCommon Sprite::SpriteCommonCreate(ID3D12Device* dev, int window_width, int window_height) {
+Sprite::SpriteCommon Sprite::createSpriteCommon(ID3D12Device* dev,
+												int window_width, int window_height,
+												BLEND_MODE blendMode,
+												const wchar_t* vsPath, const wchar_t* psPath) {
 	HRESULT result = S_FALSE;
 
 	SpriteCommon spriteCommon{};
 
 	// スプライト用パイプライン生成
-	spriteCommon.pipelineSet = SpriteCreateGraphicsPipeline(dev);
+	spriteCommon.pipelineSet = SpriteCreateGraphicsPipeline(dev, vsPath, psPath, blendMode);
 
 	// 並行投影の射影行列生成
 	spriteCommon.matProjection = XMMatrixOrthographicOffCenterLH(
@@ -197,7 +207,7 @@ Sprite::SpriteCommon Sprite::SpriteCommonCreate(ID3D12Device* dev, int window_wi
 }
 
 // スプライト共通テクスチャ読み込み
-void Sprite::SpriteCommonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber, const wchar_t* filename, ID3D12Device* dev) {
+void Sprite::commonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber, const wchar_t* filename, ID3D12Device* dev) {
 	// 異常な番号の指定を検出
 	assert(texnumber <= spriteSRVCount - 1);
 
@@ -261,7 +271,7 @@ void Sprite::SpriteCommonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber,
 }
 
 // スプライト共通グラフィックコマンドのセット
-void Sprite::SpriteCommonBeginDraw(const SpriteCommon& spriteCommon, ID3D12GraphicsCommandList* cmdList) {
+void Sprite::drawStart(const SpriteCommon& spriteCommon, ID3D12GraphicsCommandList* cmdList) {
 	// パイプラインステートの設定
 	cmdList->SetPipelineState(spriteCommon.pipelineSet.pipelinestate.Get());
 	// ルートシグネチャの設定
@@ -336,7 +346,7 @@ void Sprite::SpriteTransferVertexBuffer(const SpriteCommon& spriteCommon) {
 }
 
 // スプライト生成
-void Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int window_height,
+void Sprite::create(ID3D12Device* dev, int window_width, int window_height,
 	UINT texNumber, const SpriteCommon& spriteCommon, XMFLOAT2 anchorpoint,
 	bool isFlipX, bool isFlipY) {
 	HRESULT result = S_FALSE;
@@ -399,7 +409,7 @@ void Sprite::SpriteCreate(ID3D12Device* dev, int window_width, int window_height
 }
 
 // スプライト単体更新
-void Sprite::SpriteUpdate(const SpriteCommon& spriteCommon) {
+void Sprite::update(const SpriteCommon& spriteCommon) {
 	// ワールド行列の更新
 	matWorld = XMMatrixIdentity();
 	// Z軸回転
@@ -416,7 +426,7 @@ void Sprite::SpriteUpdate(const SpriteCommon& spriteCommon) {
 }
 
 // スプライト単体描画
-void Sprite::SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev) {
+void Sprite::draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev) {
 	if (isInvisible) {
 		return;
 	}
@@ -442,8 +452,8 @@ void Sprite::SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& 
 }
 
 // 更新と描画を同時に行う
-void Sprite::SpriteDrawWithUpdate(DirectXCommon* dxCom,
+void Sprite::drawWithUpdate(DirectXCommon* dxCom,
 	const SpriteCommon& spriteCommon) {
-	SpriteUpdate(spriteCommon);
-	SpriteDraw(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
+	update(spriteCommon);
+	draw(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
 }

@@ -42,7 +42,7 @@ class PlayScene :
 	// --------------------
 	// スプライト共通
 	// --------------------
-	Sprite::SpriteCommon spriteCommon;
+	SpriteCommon spriteCommon;
 	// スプライト共通テクスチャ読み込み
 	enum TEX_NUM { TEX1, HOUSE };
 
@@ -50,7 +50,7 @@ class PlayScene :
 	// スプライト個別
 	// --------------------
 	static const int SPRITES_NUM = 1;
-	Sprite sprites[SPRITES_NUM];
+	Sprite sprites[SPRITES_NUM]{};
 
 	// --------------------
 	// デバッグテキスト

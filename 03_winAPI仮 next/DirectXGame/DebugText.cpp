@@ -4,13 +4,13 @@ void DebugText::Initialize(ID3D12Device* dev, int window_width, int window_heigh
 	// 全てのスプライトデータについて
 	for (int i = 0; i < _countof(sprites); i++) {
 		// スプライトを生成する
-		sprites[i].SpriteCreate(dev, window_width, window_height, texnumber, spriteCommon, { 0,0 });
+		sprites[i].create(dev, window_width, window_height, texnumber, spriteCommon, { 0,0 });
 	}
 }
 
 void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, const float x, const float y, const float scale) {
 	// 全ての文字について
-	for (int i = 0; i < text.size(); i++) {
+	for (UINT i = 0; i < text.size(); i++) {
 		// 最大文字数超過
 		if (spriteIndex >= maxCharCount) {
 			break;
@@ -36,7 +36,7 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 		// 頂点バッファ転送
 		sprites[spriteIndex].SpriteTransferVertexBuffer(spriteCommon);
 		// 更新
-		sprites[spriteIndex].SpriteUpdate(spriteCommon);
+		sprites[spriteIndex].update(spriteCommon);
 
 		// 文字を１つ進める
 		spriteIndex++;
@@ -63,7 +63,7 @@ void DebugText::DrawAll(DirectXCommon* dxCom, const Sprite::SpriteCommon& sprite
 	// 全ての文字のスプライトについて
 	for (int i = 0; i < spriteIndex; i++) {
 		// スプライト描画
-		sprites[i].SpriteDraw(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
+		sprites[i].draw(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
 	}
 
 	spriteIndex = 0;

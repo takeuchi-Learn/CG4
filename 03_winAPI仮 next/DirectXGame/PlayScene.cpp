@@ -38,15 +38,15 @@ void PlayScene::init() {
 	// --------------------
 	// スプライト共通
 	// --------------------
-	spriteCommon = Sprite::SpriteCommonCreate(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height);
+	spriteCommon = Sprite::createSpriteCommon(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height);
 
 	// スプライト共通テクスチャ読み込み
-	Sprite::SpriteCommonLoadTexture(spriteCommon, TEX_NUM::TEX1, L"Resources/texture.png", DirectXCommon::getInstance()->getDev());
-	Sprite::SpriteCommonLoadTexture(spriteCommon, TEX_NUM::HOUSE, L"Resources/house.png", DirectXCommon::getInstance()->getDev());
+	Sprite::commonLoadTexture(spriteCommon, TEX_NUM::TEX1, L"Resources/texture.png", DirectXCommon::getInstance()->getDev());
+	Sprite::commonLoadTexture(spriteCommon, TEX_NUM::HOUSE, L"Resources/house.png", DirectXCommon::getInstance()->getDev());
 
 	// スプライトの生成
 	for (int i = 0; i < _countof(sprites); i++) {
-		sprites[i].SpriteCreate(
+		sprites[i].create(
 			DirectXCommon::getInstance()->getDev(),
 			WinAPI::window_width, WinAPI::window_height,
 			TEX_NUM::TEX1, spriteCommon, { 0,0 }, false, false
@@ -66,12 +66,12 @@ void PlayScene::init() {
 	}
 
 	// デバッグテキスト用のテクスチャ読み込み
-	Sprite::SpriteCommonLoadTexture(spriteCommon, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
+	Sprite::commonLoadTexture(spriteCommon, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
 	// デバッグテキスト初期化
 	debugText.Initialize(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height, debugTextTexNumber, spriteCommon);
 
 	// 3Dオブジェクト用パイプライン生成
-	object3dPipelineSet = Object3d::Object3dCreateGraphicsPipeline(DirectXCommon::getInstance()->getDev());
+	object3dPipelineSet = Object3d::createGraphicsPipeline(DirectXCommon::getInstance()->getDev());
 
 
 #pragma endregion スプライト
@@ -91,7 +91,7 @@ void PlayScene::init() {
 
 #pragma endregion 3Dオブジェクト
 
-	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png",camera.get()));
+	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png", camera.get()));
 
 	timer.reset(new Time());
 }
@@ -231,16 +231,16 @@ void PlayScene::draw() {
 	Sphere::sphereCommonBeginDraw(object3dPipelineSet);
 	sphere->drawWithUpdate(camera->getViewMatrix(), dxCom);
 	// 3Dオブジェクトコマンド
-	Object3d::Object3dCommonBeginDraw(dxCom->getCmdList(), object3dPipelineSet);
+	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	obj3d->drawWithUpdate(camera->getViewMatrix(), dxCom);
 
 	particleMgr->drawWithUpdate(dxCom->getCmdList());
 
 	// スプライト共通コマンド
-	Sprite::SpriteCommonBeginDraw(spriteCommon, dxCom->getCmdList());
+	Sprite::drawStart(spriteCommon, dxCom->getCmdList());
 	// スプライト描画
 	for (UINT i = 0; i < _countof(sprites); i++) {
-		sprites[i].SpriteDrawWithUpdate(dxCom, spriteCommon);
+		sprites[i].drawWithUpdate(dxCom, spriteCommon);
 	}
 	// デバッグテキスト描画
 	debugText.DrawAll(dxCom, spriteCommon);

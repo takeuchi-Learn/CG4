@@ -43,7 +43,7 @@ Object3d::Object3d(ID3D12Device* dev, Model* model, const UINT texNum) : texNum(
 	this->model = model;
 }
 
-void Object3d::update(const XMMATRIX & matView) {
+void Object3d::update(const XMMATRIX& matView) {
 	XMMATRIX matScale, matRot, matTrans;
 
 	// スケール、回転、平行移動行列の計算
@@ -81,7 +81,7 @@ void Object3d::draw(DirectXCommon* dxCom) {
 	model->draw(dxCom->getDev(), dxCom->getCmdList(), constBuff.Get(), constantBufferNum, texNum);
 }
 
-void Object3d::drawWithUpdate(const XMMATRIX & matView, DirectXCommon* dxCom) {
+void Object3d::drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom) {
 	update(matView);
 	draw(dxCom);
 }
@@ -90,20 +90,21 @@ Object3d::~Object3d() {}
 
 
 
-void Object3d::Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet, D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology) {
+void Object3d::startDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet, D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology) {
 	cmdList->SetPipelineState(ppSet.pipelinestate.Get());
 	cmdList->SetGraphicsRootSignature(ppSet.rootsignature.Get());
 	//プリミティブ形状を設定
 	cmdList->IASetPrimitiveTopology(PrimitiveTopology);
 }
 
-Object3d::PipelineSet Object3d::Object3dCreateGraphicsPipeline(ID3D12Device* dev,
-	const wchar_t* vsShaderPath, const wchar_t* psShaderPath) {
-	HRESULT result;
+Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
+													   BLEND_MODE blendMode,
+													   const wchar_t* vsShaderPath, const wchar_t* psShaderPath) {
+	HRESULT result = S_FALSE;
 
-	ComPtr<ID3DBlob> vsBlob; // 頂点シェーダオブジェクト
-	ComPtr<ID3DBlob>psBlob; // ピクセルシェーダオブジェクト
-	ComPtr<ID3DBlob>errorBlob; // エラーオブジェクト
+	ComPtr<ID3DBlob> vsBlob;	// 頂点シェーダオブジェクト
+	ComPtr<ID3DBlob> psBlob;		// ピクセルシェーダオブジェクト
+	ComPtr<ID3DBlob> errorBlob;	// エラーオブジェクト
 
 	//頂点シェーダーの読み込みとコンパイル
 	result = D3DCompileFromFile(
@@ -181,30 +182,37 @@ Object3d::PipelineSet Object3d::Object3dCreateGraphicsPipeline(ID3D12Device* dev
 	//レンダ―ターゲットのブレンド設定
 	D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = gpipeline.BlendState.RenderTarget[0];
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; //標準設定
-	blenddesc.BlendEnable = true; //ブレンドを有効にする
-	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD; //加算
-	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE; //ソースの値を100%使う
-	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO; //デストの値を0%使う
+	blenddesc.BlendEnable = true;	//ブレンドを有効にする
+	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;	//加算
+	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;		//ソースの値を100%使う
+	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;	//デストの値を0%使う
 
-	//--半透明合成
-	blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				//加算
-	blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;			//ソースのアルファ値
-	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	//デストの値を100%使う
-
-	//---加算
-	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
-	//blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
-	//blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
-
-	//---減算
-	//blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	//デストからソースを減算
-	//blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
-	//blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
-
-	//---反転
-	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
-	//blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	//1.0 - デストカラーの値
-	//blenddesc.DestBlend = D3D12_BLEND_ZERO;
+	switch (blendMode) {
+	case Object3d::BLEND_MODE::ADD:
+		//---加算
+		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				// 加算
+		blenddesc.SrcBlend = D3D12_BLEND_ONE;				// ソースの値を100%使う
+		blenddesc.DestBlend = D3D12_BLEND_ONE;				// デストの値を100%使う
+		break;
+	case Object3d::BLEND_MODE::SUB:
+		//---減算
+		blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	// デストからソースを減算
+		blenddesc.SrcBlend = D3D12_BLEND_ONE;				// ソースの値を100%使う
+		blenddesc.DestBlend = D3D12_BLEND_ONE;				// デストの値を100%使う
+		break;
+	case Object3d::BLEND_MODE::REVERSE:
+		//---反転
+		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				// 加算
+		blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	// 1.0 - デストカラーの値
+		blenddesc.DestBlend = D3D12_BLEND_ZERO;
+		break;
+	default:
+		//--半透明合成
+		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				// 加算
+		blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;			// ソースのアルファ値
+		blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	// デストの値を100%使う
+		break;
+	}
 
 	gpipeline.InputLayout.pInputElementDescs = inputLayout;
 	gpipeline.InputLayout.NumElements = _countof(inputLayout);

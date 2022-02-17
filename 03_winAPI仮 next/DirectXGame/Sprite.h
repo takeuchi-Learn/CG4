@@ -10,6 +10,13 @@ private:
 	using XMFLOAT2 = DirectX::XMFLOAT2;
 
 public:
+	enum class BLEND_MODE : short {
+		ALPHA,
+		ADD,
+		SUB,
+		REVERSE
+	};
+
 	// 頂点データ
 	struct VertexPosUv {
 		XMFLOAT3 pos; // xyz座標
@@ -75,17 +82,22 @@ public:
 
 	// スプライト用パイプライン生成
 	static PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device* dev,
-		const wchar_t* vsPath = L"Resources/Shaders/SpriteVS.hlsl",
-		const wchar_t* psPath = L"Resources/Shaders/SpritePS.hlsl");
+													const wchar_t* vsPath, const wchar_t* psPath,
+													BLEND_MODE blendMode);
 
 	// スプライト共通データ生成
-	static SpriteCommon SpriteCommonCreate(ID3D12Device* dev, int window_width, int window_height);
+	static SpriteCommon createSpriteCommon(ID3D12Device* dev, int window_width, int window_height,
+										   BLEND_MODE blendMode = BLEND_MODE::ALPHA,
+										   const wchar_t* vsPath = L"Resources/Shaders/SpriteVS.hlsl",
+										   const wchar_t* psPath = L"Resources/Shaders/SpritePS.hlsl");
 
 	// スプライト共通テクスチャ読み込み
-	static void SpriteCommonLoadTexture(SpriteCommon& spriteCommon, UINT texnumber, const wchar_t* filename, ID3D12Device* dev);
+	static void commonLoadTexture(SpriteCommon& spriteCommon,
+								  UINT texnumber, const wchar_t* filename,
+								  ID3D12Device* dev);
 
 	// スプライト共通グラフィックコマンドのセット
-	static void SpriteCommonBeginDraw(const SpriteCommon& spriteCommon, ID3D12GraphicsCommandList* cmdList);
+	static void drawStart(const SpriteCommon& spriteCommon, ID3D12GraphicsCommandList* cmdList);
 
 	// --------------------
 	// 個別
@@ -95,17 +107,20 @@ public:
 	void SpriteTransferVertexBuffer(const SpriteCommon& spriteCommon);
 
 	// スプライト生成
-	void SpriteCreate(ID3D12Device* dev, int window_width, int window_height,
+	void create(ID3D12Device* dev, int window_width, int window_height,
 		UINT texNumber, const SpriteCommon& spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f },
 		bool isFlipX = false, bool isFlipY = false);
 
 	// スプライト単体更新
-	void SpriteUpdate(const SpriteCommon& spriteCommon);
+	void update(const SpriteCommon& spriteCommon);
 
 	// スプライト単体描画
-	void SpriteDraw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev);
+	void draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon& spriteCommon, ID3D12Device* dev);
 
 	// 更新と描画を同時に行う
-	void Sprite::SpriteDrawWithUpdate(DirectXCommon* dxCom, const SpriteCommon& spriteCommon);
+	void Sprite::drawWithUpdate(DirectXCommon* dxCom, const SpriteCommon& spriteCommon);
 };
 
+#ifndef MY_UNDEFINED_SPRITE_SPRITECOMMON
+using SpriteCommon = Sprite::SpriteCommon;
+#endif

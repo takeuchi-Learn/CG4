@@ -18,6 +18,13 @@ class Object3d {
 	using XMMATRIX = DirectX::XMMATRIX;
 
 public:
+	enum class BLEND_MODE : short {
+		ALPHA,
+		ADD,
+		SUB,
+		REVERSE
+	};
+
 	//パイプラインセット
 	struct PipelineSet {
 		//パイプラインステートオブジェクト
@@ -49,14 +56,15 @@ public:
 	// 頂点バッファの最大数
 	static const int constantBufferNum = 128;
 
-	static void Object3dCommonBeginDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet,
+	static void startDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet,
 										D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology = D3D12_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//3Dオブジェクト用パイプライン生成
 	// シェーダーモデル指定は "*s_5_0"
-	static Object3d::PipelineSet Object3dCreateGraphicsPipeline(ID3D12Device* dev,
-		const wchar_t* vsShaderPath = L"Resources/Shaders/BasicVS.hlsl",
-		const wchar_t* psShaderPath = L"Resources/Shaders/BasicPS.hlsl");
+	static Object3d::PipelineSet createGraphicsPipeline(ID3D12Device* dev,
+														BLEND_MODE blendMode = BLEND_MODE::ALPHA,
+														const wchar_t* vsShaderPath = L"Resources/Shaders/BasicVS.hlsl",
+														const wchar_t* psShaderPath = L"Resources/Shaders/BasicPS.hlsl");
 
 	// --------------------
 	// (動的)メンバ
@@ -91,11 +99,11 @@ public:
 	// モデルデータもここで渡す(deleteは手動)
 	Object3d(ID3D12Device* dev, Model* model, const UINT texNum);
 
-	void update(const XMMATRIX & matView);
+	void update(const XMMATRIX& matView);
 
 	void draw(DirectXCommon* dxCom);
 
-	void drawWithUpdate(const XMMATRIX & matView, DirectXCommon* dxCom);
+	void drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom);
 
 
 	~Object3d();
