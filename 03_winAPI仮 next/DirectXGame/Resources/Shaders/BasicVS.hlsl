@@ -6,7 +6,7 @@ VSOutput main(float4 pos : POSITION, float3 normal : NORMAL, float2 uv : TEXCOOR
     output.svpos = mul(mat, pos); // 座標に行列を乗算
     output.normal = normal;
     output.uv = uv;
-    // 右下奥　向きのライト
+    // 右下奥へ進む向きのライト
     output.light = normalize(float3(1, -1, 1));
     return output;
 }
