@@ -1,14 +1,13 @@
 #include "WinAPI.h"
 
-WinAPI* WinAPI::winApi = nullptr;
 
 
+WinAPI::WinAPI() {
+	constexpr auto winTitleDef = L"DirectXGame";
 
-WinAPI::WinAPI( const wchar_t* windowTitle) {
-	
 	w.cbSize = sizeof(WNDCLASSEX);
 	w.lpfnWndProc = (WNDPROC)WindowProc; // ウィンドウプロシージャを設定
-	w.lpszClassName = windowTitle; // ウィンドウクラス名
+	w.lpszClassName = winTitleDef; // ウィンドウクラス名
 	w.hInstance = GetModuleHandle(nullptr); // ウィンドウハンドル
 	w.hCursor = LoadCursor(NULL, IDC_ARROW); // カーソル指定
 
@@ -20,7 +19,7 @@ WinAPI::WinAPI( const wchar_t* windowTitle) {
 
 	// ウィンドウオブジェクトの生成
 	hwnd = CreateWindow(w.lpszClassName, // クラス名
-		windowTitle,         // タイトルバーの文字
+		winTitleDef,         // タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,        // 標準的なウィンドウスタイル
 		CW_USEDEFAULT,              // 表示X座標（OSに任せる）
 		CW_USEDEFAULT,              // 表示Y座標（OSに任せる）
@@ -50,23 +49,9 @@ LRESULT WinAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	return DefWindowProc(hwnd, msg, wparam, lparam); // 標準の処理を行う
 }
 
-
-
-void WinAPI::create(const wchar_t* windowTitle) {
-	if (winApi == nullptr) {
-		winApi = new WinAPI(windowTitle);
-	}
-}
-
-void WinAPI::destroy() {
-	if (winApi != nullptr) {
-		delete winApi;
-		winApi = nullptr;
-	}
-}
-
 WinAPI* WinAPI::getInstance() {
-	return winApi;
+	static WinAPI winApi{};
+	return &winApi;
 }
 
 HWND WinAPI::getHwnd() { return hwnd; }

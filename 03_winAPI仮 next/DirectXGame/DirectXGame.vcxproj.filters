@@ -16,18 +16,6 @@
     <Filter Include="シェーダーファイル">
       <UniqueIdentifier>{7e5584a5-2895-4181-9eaf-f65622106b57}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\System">
-      <UniqueIdentifier>{cf4331a4-35dd-4e1d-81de-d7a044e43b65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\System">
-      <UniqueIdentifier>{8b98904a-a1b0-4725-b4d7-ee9da33a9606}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Collision">
-      <UniqueIdentifier>{e719d82b-1664-434e-ba53-8808f315df90}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Collision">
-      <UniqueIdentifier>{88d40c7f-b39d-4d94-b907-3d6b6e57aa0d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sphere">
       <UniqueIdentifier>{9ca9b2da-81fb-4d7b-9aea-7acce23ae854}</UniqueIdentifier>
     </Filter>
@@ -48,6 +36,12 @@
     </Filter>
     <Filter Include="Object共通\3Dオブジェクト">
       <UniqueIdentifier>{a324d5a8-1a00-45fe-ac1a-9d9483e55a32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{e719d82b-1664-434e-ba53-8808f315df90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{8b98904a-a1b0-4725-b4d7-ee9da33a9606}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,25 +64,25 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="System.cpp">
-      <Filter>ソース ファイル\System</Filter>
+      <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="WinAPI.cpp">
-      <Filter>ソース ファイル\System</Filter>
+      <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="DirectXCommon.cpp">
-      <Filter>ソース ファイル\System</Filter>
+      <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="Collision.cpp">
-      <Filter>ソース ファイル\Collision</Filter>
+      <Filter>Collision</Filter>
     </ClCompile>
     <ClCompile Include="CollisionPrimitive.cpp">
-      <Filter>ソース ファイル\Collision</Filter>
+      <Filter>Collision</Filter>
     </ClCompile>
     <ClCompile Include="GameScene.cpp">
-      <Filter>ソース ファイル\System</Filter>
+      <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル\System</Filter>
+      <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="Sphere.cpp">
       <Filter>Sphere</Filter>
@@ -143,24 +137,6 @@
     <ClInclude Include="SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXCommon.h">
-      <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
-    <ClInclude Include="WinAPI.h">
-      <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
-    <ClInclude Include="System.h">
-      <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision.h">
-      <Filter>ヘッダー ファイル\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionPrimitive.h">
-      <Filter>ヘッダー ファイル\Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
     <ClInclude Include="Sphere.h">
       <Filter>Sphere</Filter>
     </ClInclude>
@@ -193,6 +169,24 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Object共通\3Dオブジェクト</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionPrimitive.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXCommon.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="WinAPI.h">
+      <Filter>System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

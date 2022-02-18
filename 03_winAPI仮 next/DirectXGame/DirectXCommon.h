@@ -13,9 +13,7 @@ class DirectXCommon {
 	DirectXCommon(const DirectXCommon& dxcom) = delete;
 	DirectXCommon& operator=(const DirectXCommon& dxcom) = delete;
 
-	static DirectXCommon* dxCom;
-
-	DirectXCommon(WinAPI* winapi);
+	DirectXCommon();
 	~DirectXCommon();
 
 #pragma region privateメンバ変数
@@ -68,8 +66,6 @@ private:
 	void ClearDepthBuffer();
 
 public:
-	static void create(WinAPI* winApi);
-	static void destroy();
 	static DirectXCommon* getInstance();
 
 	// @param clearColor 何もない場所の描画色。既定引数は暗い黄色っぽい色

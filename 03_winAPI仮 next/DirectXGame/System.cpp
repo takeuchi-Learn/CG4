@@ -6,13 +6,9 @@
 #include "Input.h"
 #include "Looper.h"
 
-namespace {
-	constexpr wchar_t* window_title = L"DirectXクラス化";
-}
-
 System::System() {
-	WinAPI::create(window_title);
-	DirectXCommon::create(WinAPI::getInstance());
+	constexpr LPCSTR window_title = "DirectXクラス化";
+	WinAPI::getInstance()->setWindowText(window_title);
 }
 
 void System::update() {
@@ -26,6 +22,4 @@ void System::update() {
 }
 
 System::~System() {
-	DirectXCommon::destroy();
-	WinAPI::destroy();
 }

@@ -11,23 +11,9 @@ using namespace Microsoft::WRL;
 
 #include <DirectXMath.h>
 
-DirectXCommon* DirectXCommon::dxCom = nullptr;
-
 DirectXCommon* DirectXCommon::getInstance() {
-	return dxCom;
-}
-
-void DirectXCommon::create(WinAPI* winApi) {
-	if (dxCom == nullptr) {
-		dxCom = new DirectXCommon(winApi);
-	}
-}
-
-void DirectXCommon::destroy() {
-	if (dxCom != nullptr) {
-		delete dxCom;
-		dxCom = nullptr;
-	}
+	static DirectXCommon dxCom{};
+	return &dxCom;
 }
 
 
@@ -236,9 +222,8 @@ void DirectXCommon::ClearDepthBuffer() {
 	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-DirectXCommon::DirectXCommon(WinAPI* winapi) {
-	assert(winapi);
-	this->winapi = winapi;
+DirectXCommon::DirectXCommon() {
+	this->winapi = WinAPI::getInstance();;
 
 	fps = -1.f;
 	updateFPS();
