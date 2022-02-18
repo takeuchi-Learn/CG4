@@ -69,7 +69,7 @@ public:
 	static DirectXCommon* getInstance();
 
 	// @param clearColor 何もない場所の描画色。既定引数は暗い黄色っぽい色
-	void startDraw(const DirectX::XMFLOAT3& clearColor = DirectX::XMFLOAT3(0.5f, 0.5f, 0.1f));
+	void startDraw(const DirectX::XMFLOAT3& clearColor = DirectX::XMFLOAT3(0.5f, 0.5f, 0.f));
 	void endDraw();
 
 	ID3D12Device* getDev();
