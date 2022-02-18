@@ -7,10 +7,8 @@ float4 main(VSOutput input) : SV_TARGET
 {
     float4 texcolor = float4(tex.Sample(smp, input.uv));
 
-    // 右下奥　向きのライト
-    float3 light = normalize(float3(1,-1,1));
     // 光源へのベクトルと法線ベクトルの内積
-    float diffuse = saturate(dot(-light, input.normal));
+    float diffuse = saturate(dot(-input.light, input.normal));
     // アンビエント光を0.3として計算
     float brightness = diffuse + 0.3f;
     // テクスチャとシェーディングによる色を合成
