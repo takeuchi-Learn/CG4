@@ -219,8 +219,14 @@ void PlayScene::update() {
 	if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
 
 	// Pを押すたびパーティクル50粒追加
-	constexpr UINT particleNum = 50U;
-	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum);
+	constexpr UINT particleNumMax = 50U, particleNumMin = 20U;
+	UINT particleNum = particleNumMin;
+	float startScale = 5.f;
+	if (Input::getInstance()->hitKey(DIK_U)) {
+		particleNum = particleNumMax;
+		startScale = 10.f;
+	}
+	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum, startScale);
 
 	camera->update();
 }
@@ -253,7 +259,7 @@ void PlayScene::fin() {
 	//Sound::SoundStopWave(soundData1.get());
 }
 
-void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum) {
+void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum, const float startScale) {
 	for (UINT i = 0U; i < particleNum; i++) {
 
 		const float theata = RandomNum::getRandf(0, XM_PI);
@@ -284,7 +290,7 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 
 		constexpr auto startCol = XMFLOAT3(1, 1, 0.25f), endCol = XMFLOAT3(1, 0, 1);
 		constexpr int life = Time::oneSec / 4;
-		constexpr float startScale = 10.f, endScale = 0.f;
+		constexpr float endScale = 0.f;
 		constexpr float startRota = 0.f, endRota = 0.f;
 
 		// 追加

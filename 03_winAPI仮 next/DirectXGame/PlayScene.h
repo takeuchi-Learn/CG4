@@ -88,7 +88,7 @@ class PlayScene :
 	DirectXCommon* dxCom = nullptr;
 
 private:
-	void createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum = 10U);
+	void createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum = 10U, const float startScale = 1.f);
 
 public:
 	void init() override;
