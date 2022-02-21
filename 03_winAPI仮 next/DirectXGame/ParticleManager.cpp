@@ -506,3 +506,10 @@ void ParticleManager::CreateModel() {
 	vbView.SizeInBytes = sizeof(VertexPos) * vertexCount;
 	vbView.StrideInBytes = sizeof(VertexPos);
 }
+
+void ParticleManager::startDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet, D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology) {
+	cmdList->SetPipelineState(ppSet.pipelinestate.Get());
+	cmdList->SetGraphicsRootSignature(ppSet.rootsignature.Get());
+	//プリミティブ形状を設定
+	cmdList->IASetPrimitiveTopology(PrimitiveTopology);
+}

@@ -234,7 +234,9 @@ void PlayScene::draw() {
 	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	obj3d->drawWithUpdate(camera->getViewMatrix(), dxCom);
 
+	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	particleMgr->drawWithUpdate(dxCom->getCmdList());
+
 
 	// スプライト共通コマンド
 	Sprite::drawStart(spriteCommon, dxCom->getCmdList());

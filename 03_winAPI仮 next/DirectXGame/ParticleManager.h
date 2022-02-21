@@ -9,6 +9,8 @@
 #include "Camera.h"
 #include "Time.h"
 
+#include "Object3d.h"
+
 class ParticleManager {
 private:
 	// エイリアス
@@ -110,6 +112,10 @@ private:
 
 	// メンバ関数
 public:
+	static void ParticleManager::startDraw(ID3D12GraphicsCommandList* cmdList,
+										   Object3d::PipelineSet& ppSet,
+										   D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology = D3D12_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	// 初期化なし
 	ParticleManager();
 
