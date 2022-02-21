@@ -69,7 +69,7 @@ void Object3d::update(const XMMATRIX& matView) {
 	// 定数バッファへデータ転送
 	ConstBufferData* constMap = nullptr;
 	if (SUCCEEDED(constBuff->Map(0, nullptr, (void**)&constMap))) {
-		constMap->color = XMFLOAT4(1, 1, 1, 1); // RGBA
+		constMap->color = color; // RGBA
 		constMap->mat = matWorld * matView * model->getMatProjection();
 		constBuff->Unmap(0, nullptr);
 	}

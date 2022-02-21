@@ -18,7 +18,7 @@ using namespace DirectX;
 using namespace Microsoft::WRL;
 
 namespace {
-	constexpr float nearZ = 0.1f, farZ = 1000.f;
+	constexpr float nearZ = 0.1f, farZ = 1000.f, fog = XM_PI / 3.f;
 }
 
 void Model::loadModel(ID3D12Device* dev,
@@ -164,7 +164,7 @@ void Model::loadModel(ID3D12Device* dev,
 
 	//射影変換行列(透視投影)
 	matProjection = XMMatrixPerspectiveFovLH(
-		XMConvertToRadians(60.0f), // 上下画角60度
+		fog, // 上下画角60度
 		(float)window_width / window_height, // アスペクト比（画面横幅 / 画面縦幅）
 		nearZ, farZ // 前端、奥端
 	);
@@ -285,7 +285,7 @@ void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width,
 
 	//射影変換行列(透視投影)
 	matProjection = XMMatrixPerspectiveFovLH(
-		XM_PI / 3.f, // 上下画角60度
+		fog, // 上下画角60度
 		(float)window_width / window_height, // アスペクト比（画面横幅 / 画面縦幅）
 		nearZ, farZ // 前端、奥端
 	);
@@ -414,7 +414,7 @@ Model::Model(ID3D12Device* dev,
 
 #pragma region クラス化で削除
 
-void Model::update(const XMMATRIX & matView) {
+void Model::update(const XMMATRIX& matView) {
 	// UpdateObject3d(&obj3d, matView, matProjection);
 }
 

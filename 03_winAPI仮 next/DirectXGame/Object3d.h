@@ -78,6 +78,8 @@ private:
 public:
 	UINT texNum = 0;
 
+	XMFLOAT4 color = { 1, 1, 1, 1 };
+
 	// ƒAƒtƒBƒ“•ÏŠ·î•ñ
 	XMFLOAT3 scale = { 1,1,1 };
 	XMFLOAT3 rotation = { 0,0,0 };
