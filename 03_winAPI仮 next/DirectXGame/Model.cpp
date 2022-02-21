@@ -12,7 +12,9 @@
 #include <sstream>
 #include <fstream>
 
-using namespace std;
+//using namespace std;
+template<class T> using vector = std::vector<T>;
+using string = std::string;
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -89,9 +91,9 @@ void Model::loadModel(ID3D12Device* dev,
 				std::istringstream index_stream(index_string);
 				unsigned short indexPosition, indexNormal, indexTexcoord;
 				index_stream >> indexPosition;
-				index_stream.seekg(1, ios_base::cur);//スラッシュをとばす
+				index_stream.seekg(1, std::ios_base::cur);//スラッシュをとばす
 				index_stream >> indexTexcoord;
-				index_stream.seekg(1, ios_base::cur);//スラッシュをとばす
+				index_stream.seekg(1, std::ios_base::cur);//スラッシュをとばす
 				index_stream >> indexNormal;
 
 				//頂点データの追加
