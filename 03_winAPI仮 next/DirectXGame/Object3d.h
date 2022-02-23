@@ -101,6 +101,10 @@ public:
 	// モデルデータもここで渡す(deleteは手動)
 	Object3d(ID3D12Device* dev, Model* model, const UINT texNum);
 
+	// ライト->オブジェクト
+	inline void setLightDir(XMFLOAT3 light) { model->setLightDir(light); }
+	inline XMFLOAT3 getLightDir() { return model->getLightDir(); }
+
 	void update(const XMMATRIX& matView);
 
 	void draw(DirectXCommon* dxCom);

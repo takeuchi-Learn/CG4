@@ -115,22 +115,7 @@ void Model::loadModel(ID3D12Device* dev,
 
 	HRESULT result = S_FALSE;
 
-	//頂点バッファの生成
-	result = dev->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&vertBuff));
-
-	//GPU上のバッファに対応した仮想メモリを取得
-	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
-
-	std::copy(vertices.begin(), vertices.end(), vertMap);
-
-	//マップを解除
-	vertBuff->Unmap(0, nullptr);
+	transVertBuff(dev);
 
 	//頂点バッファビューの作成
 	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
@@ -236,22 +221,7 @@ void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width,
 
 	HRESULT result = S_FALSE;
 
-	//頂点バッファの生成
-	result = dev->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&vertBuff));
-
-	//GPU上のバッファに対応した仮想メモリを取得
-	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
-
-	std::copy(vertices.begin(), vertices.end(), vertMap);
-
-	//マップを解除
-	vertBuff->Unmap(0, nullptr);
+	transVertBuff(dev);
 
 	//頂点バッファビューの作成
 	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
@@ -291,6 +261,30 @@ void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width,
 		(float)window_width / window_height, // アスペクト比（画面横幅 / 画面縦幅）
 		nearZ, farZ // 前端、奥端
 	);
+}
+
+void Model::transVertBuff(ID3D12Device* dev) {
+	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
+	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * vertices.size());
+
+	HRESULT result = S_FALSE;
+
+	//頂点バッファの生成
+	result = dev->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&vertBuff));
+
+	//GPU上のバッファに対応した仮想メモリを取得
+	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+
+	std::copy(vertices.begin(), vertices.end(), vertMap);
+
+	//マップを解除
+	vertBuff->Unmap(0, nullptr);
 }
 
 XMMATRIX Model::getMatProjection() { return matProjection; }
@@ -418,10 +412,19 @@ Model::Model(ID3D12Device* dev,
 
 void Model::update(const XMMATRIX& matView) {
 	// UpdateObject3d(&obj3d, matView, matProjection);
+
+	if (dirtyFlag) {
+		for (UINT i = 0; i < vertices.size(); i++) {
+			vertices[i].light = light;
+		}
+		dirtyFlag = false;
+	}
 }
 
 #pragma endregion クラス化で削除
 void Model::draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum) {
+	transVertBuff(dev);
+
 	// デスクリプタヒープの配列
 	ID3D12DescriptorHeap* ppHeaps[] = { descHeap.Get() };
 	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);

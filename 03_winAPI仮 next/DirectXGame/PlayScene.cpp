@@ -234,6 +234,16 @@ void PlayScene::update() {
 
 #pragma endregion カメラ移動回転
 
+#pragma region ライト
+	{
+		// 一秒で一周(2PI[rad])
+		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
+		obj3d->setLightDir(XMFLOAT3(sin(timeAngle), cos(timeAngle), obj3d->getLightDir().z));
+	}
+#pragma endregion ライト
+
+#pragma region スプライト
+
 	if (input->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (input->hitKey(DIK_K)) sprites[0].position.y += 10;
 	if (input->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (input->hitKey(DIK_L)) sprites[0].position.x += 10;
 
@@ -252,6 +262,9 @@ void PlayScene::update() {
 
 		Sound::SoundPlayWave(soundCommon.get(), particleSE.get());
 	}
+
+#pragma endregion スプライト
+
 	camera->update();
 }
 
