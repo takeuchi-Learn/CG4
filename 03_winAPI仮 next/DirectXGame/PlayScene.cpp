@@ -122,7 +122,7 @@ void PlayScene::update() {
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
 		}
-		debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 2, 1.f, "BGM_STATE : %s", stateStr.c_str());
+		debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 2, 1.f, XMFLOAT4(1, 1, 1, 1), "BGM_STATE : %s", stateStr.c_str());
 
 		debugText.Print(spriteCommon, "0 : Play/Stop BGM", 0, debugText.fontHeight * 3);
 
@@ -168,16 +168,26 @@ void PlayScene::update() {
 #pragma region ŠÔ
 
 
-	debugText.formatPrint(spriteCommon, 0, 0, 1.f, "FPS : %f", dxCom->getFPS());
+	debugText.formatPrint(spriteCommon, 0, 0, 1.f,
+						  XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxCom->getFPS());
 
 	if (input->hitKey(DIK_R)) timer->reset();
 
 	debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 15, 1.f,
+						  XMFLOAT4(1, 1, 1, 1),
 						  "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
 
 #pragma endregion ŠÔ
+	if (input->triggerKey(DIK_T)) {
+		debugText.tabSize++;
+		if (input->hitKey(DIK_LSHIFT)) debugText.tabSize = 4U;
+	}
 
-	debugText.Print(spriteCommon, "SPACE : end", 0, debugText.fontHeight * 6);
+	debugText.formatPrint(spriteCommon, debugText.fontWidth * 2, debugText.fontHeight * 17, 1.f,
+						  XMFLOAT4(1, 1, 1, 1),
+						  "newLine\ntab(size %u)\tendString", debugText.tabSize);
+
+	debugText.Print(spriteCommon, "SPACE : end", 0, debugText.fontHeight * 6, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
 
 	debugText.Print(spriteCommon, "WASD : move camera", 0, debugText.fontHeight * 8);
 	debugText.Print(spriteCommon, "arrow : rotation camera", 0, debugText.fontHeight * 9);
@@ -239,7 +249,7 @@ void PlayScene::update() {
 			startScale = 10.f;
 		}
 		createParticle(obj3d->position, particleNum, startScale);
-		
+
 		Sound::SoundPlayWave(soundCommon.get(), particleSE.get());
 	}
 	camera->update();

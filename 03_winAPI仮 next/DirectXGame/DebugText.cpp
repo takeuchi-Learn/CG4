@@ -1,5 +1,7 @@
 #include "DebugText.h"
 
+#include <DirectXMath.h>
+
 void DebugText::Initialize(ID3D12Device* dev,
 						   int window_width, int window_height,
 						   UINT texnumber, const Sprite::SpriteCommon& spriteCommon,
@@ -12,22 +14,29 @@ void DebugText::Initialize(ID3D12Device* dev,
 	}
 }
 
-void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, const float x, const float y, const float scale) {
+void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text,
+					  const float x, const float y, const float scale,
+					  DirectX::XMFLOAT4 color) {
 	std::string textLocal = text;
 
+	int posNumX = 0, posNumY = 0;
+
 	// 全ての文字について
-	for (UINT i = 0, posNumX = 0, posNumY = 0; i < text.size(); i++, posNumX++) {
+	for (UINT i = 0; i < text.size(); i++, posNumX++) {
 
 		// 最大文字数超過
 		if (spriteIndex >= maxCharCount) {
 			break;
 		}
 
+		auto drawCol = color;
+
 		if (i < maxCharCount - 1) {
 			if (strncmp(&textLocal[i], "\n", 1) == 0) {
-				posNumX = 0;
+				posNumX = -1;
 				posNumY++;
 				textLocal[i] = ' ';
+				drawCol.w = 0.f;
 			}  if (strncmp(&textLocal[i], "\t", 1) == 0) {
 				posNumX += tabSize - 1;
 				textLocal[i] = ' ';
@@ -51,6 +60,7 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 		sprites[spriteIndex].texLeftTop = { (float)fontIndexX * fontWidth, (float)fontIndexY * fontHeight };
 		sprites[spriteIndex].texSize = { fontWidth, fontHeight };
 		sprites[spriteIndex].size = { fontWidth * scale, fontHeight * scale };
+		sprites[spriteIndex].color = drawCol;
 		// 頂点バッファ転送
 		sprites[spriteIndex].SpriteTransferVertexBuffer(spriteCommon);
 		// 更新
@@ -61,7 +71,9 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 	}
 }
 
-int DebugText::formatPrint(const Sprite::SpriteCommon& spriteCommon, const float x, const float y, const float scale, const char* fmt, ...) {
+int DebugText::formatPrint(const Sprite::SpriteCommon& spriteCommon,
+						   const float x, const float y, const float scale,
+						   DirectX::XMFLOAT4 color, const char* fmt, ...) {
 
 	char outStrChar[maxCharCount]{};
 
@@ -70,7 +82,7 @@ int DebugText::formatPrint(const Sprite::SpriteCommon& spriteCommon, const float
 	va_start(args, fmt);
 	const int ret = vsnprintf(outStrChar, maxCharCount - 1, fmt, args);
 
-	Print(spriteCommon, outStrChar, x, y, scale);
+	Print(spriteCommon, outStrChar, x, y, scale, color);
 	va_end(args);
 
 	return ret;
