@@ -52,6 +52,12 @@ public:
 private:
 	static void createTransferBuffer(ID3D12Device* dev, ComPtr<ID3D12Resource>& constBuff);
 
+	inline XMFLOAT3 subFloat3(const XMFLOAT3& left, const XMFLOAT3& right) {
+		return XMFLOAT3(left.x - right.x,
+						left.y - right.y,
+						left.z - right.z);
+	}
+
 public:
 	// 頂点バッファの最大数
 	static const int constantBufferNum = 128;
@@ -104,6 +110,10 @@ public:
 	// ライト->オブジェクト
 	inline void setLightDir(XMFLOAT3 light) { model->setLightDir(light); }
 	inline XMFLOAT3 getLightDir() { return model->getLightDir(); }
+
+	inline void setLightPos(XMFLOAT3 lightPos) {
+		setLightDir(subFloat3(position, lightPos));
+	}
 
 	void update(const XMMATRIX& matView);
 

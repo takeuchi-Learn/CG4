@@ -82,6 +82,8 @@ class PlayScene :
 
 #pragma endregion 3Dオブジェクト
 
+	DirectX::XMFLOAT3 light{};
+
 	Input* input = nullptr;
 
 	std::unique_ptr<Time> timer;

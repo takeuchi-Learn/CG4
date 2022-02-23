@@ -93,13 +93,23 @@ void PlayScene::init() {
 
 #pragma endregion 3Dオブジェクト
 
+#pragma region ライト
+
+	light = obj3d->position;
+	light.x += obj3d->scale.y * 2;	// 仮
+
+#pragma endregion ライト
+
+	// パーティクル初期化
 	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png", camera.get()));
 
+	// 時間初期化
 	timer.reset(new Time());
 }
 
 void PlayScene::update() {
 
+	// SPACEでENDシーンへ
 	if (input->triggerKey(DIK_SPACE)) {
 		SceneManager::getInstange()->changeScene(SCENE_NUM::END);
 	}
@@ -167,7 +177,6 @@ void PlayScene::update() {
 
 #pragma region 時間
 
-
 	debugText.formatPrint(spriteCommon, 0, 0, 1.f,
 						  XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxCom->getFPS());
 
@@ -178,6 +187,9 @@ void PlayScene::update() {
 						  "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
 
 #pragma endregion 時間
+
+#pragma region 情報表示
+
 	if (input->triggerKey(DIK_T)) {
 		debugText.tabSize++;
 		if (input->hitKey(DIK_LSHIFT)) debugText.tabSize = 4U;
@@ -191,6 +203,8 @@ void PlayScene::update() {
 
 	debugText.Print(spriteCommon, "WASD : move camera", 0, debugText.fontHeight * 8);
 	debugText.Print(spriteCommon, "arrow : rotation camera", 0, debugText.fontHeight * 9);
+
+#pragma endregion 情報表示
 
 #pragma region カメラ移動回転
 
@@ -238,7 +252,15 @@ void PlayScene::update() {
 	{
 		// 一秒で一周(2PI[rad])
 		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
-		obj3d->setLightDir(XMFLOAT3(sin(timeAngle), cos(timeAngle), obj3d->getLightDir().z));
+
+		constexpr float lightR = 20.f;
+		light = obj3d->position;
+		light.x += sin(timeAngle) * lightR;
+		light.z += cos(timeAngle) * lightR;
+
+		obj3d->setLightPos(light);
+
+		sphere->pos = light;
 	}
 #pragma endregion ライト
 
