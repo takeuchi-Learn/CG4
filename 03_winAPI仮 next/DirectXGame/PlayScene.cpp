@@ -11,7 +11,7 @@
 using namespace DirectX;
 
 void PlayScene::init() {
-	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play");
+	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 
 	dxCom = DirectXCommon::getInstance();
 
@@ -30,6 +30,8 @@ void PlayScene::init() {
 
 	soundCommon.reset(new Sound::SoundCommon());
 	soundData1.reset(new Sound("Resources/BGM.wav", soundCommon.get()));
+
+	particleSE.reset(new Sound("Resources/SE/Sys_Set03-click.wav", soundCommon.get()));
 
 #pragma endregion 音
 
@@ -120,9 +122,11 @@ void PlayScene::update() {
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
 		}
-		debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 2, 1.f, "SOUND_PLAY_STATE : %s", stateStr.c_str());
+		debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 2, 1.f, "BGM_STATE : %s", stateStr.c_str());
 
-		debugText.Print(spriteCommon, "Press 0 to Play/Stop Sound", 0, debugText.fontHeight * 3);
+		debugText.Print(spriteCommon, "0 : Play/Stop BGM", 0, debugText.fontHeight * 3);
+
+		debugText.Print(spriteCommon, "P : create particle(play SE)", 0, debugText.fontHeight * 4);
 	}
 
 #pragma endregion 音
@@ -168,10 +172,15 @@ void PlayScene::update() {
 
 	if (input->hitKey(DIK_R)) timer->reset();
 
-	debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 5, 1.f,
+	debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 15, 1.f,
 						  "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
 
 #pragma endregion 時間
+
+	debugText.Print(spriteCommon, "SPACE : end", 0, debugText.fontHeight * 6);
+
+	debugText.Print(spriteCommon, "WASD : move camera", 0, debugText.fontHeight * 8);
+	debugText.Print(spriteCommon, "arrow : rotation camera", 0, debugText.fontHeight * 9);
 
 #pragma region カメラ移動回転
 
@@ -219,15 +228,20 @@ void PlayScene::update() {
 	if (input->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (input->hitKey(DIK_L)) sprites[0].position.x += 10;
 
 	// Pを押すたびパーティクル50粒追加
-	constexpr UINT particleNumMax = 50U, particleNumMin = 20U;
-	UINT particleNum = particleNumMin;
-	float startScale = 5.f;
-	if (input->hitKey(DIK_U)) {
-		particleNum = particleNumMax;
-		startScale = 10.f;
-	}
-	if (input->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum, startScale);
+	if (input->triggerKey(DIK_P)) {
+		constexpr UINT particleNumMax = 50U, particleNumMin = 20U;
+		UINT particleNum = particleNumMin;
 
+		float startScale = 5.f;
+
+		if (input->hitKey(DIK_U)) {
+			particleNum = particleNumMax;
+			startScale = 10.f;
+		}
+		createParticle(obj3d->position, particleNum, startScale);
+		
+		Sound::SoundPlayWave(soundCommon.get(), particleSE.get());
+	}
 	camera->update();
 }
 

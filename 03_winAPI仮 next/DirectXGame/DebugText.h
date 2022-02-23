@@ -11,9 +11,14 @@ public: // 定数の宣言
 	static const int fontHeight = 18 * 2;       // フォント画像内1文字分の縦幅
 	static const int fontLineCount = 14;    // フォント画像内1行分の文字数
 
-public: // メンバ関数
-	void Initialize(ID3D12Device* dev, int window_width, int window_height, UINT texnumber, const Sprite::SpriteCommon& spriteCommon);
+public:
+	UINT tabSize = 4;	// 初期値はSPACE4つ分
 
+	// メンバ関数
+	void Initialize(ID3D12Device* dev, int window_width, int window_height, UINT texnumber, const Sprite::SpriteCommon& spriteCommon, UINT tabSIze = 4);
+
+	// ￥n : X座標をして位置に戻し、Y座標を文字の高さ分加算する
+	// ￥t : tabSize-1文字分右にずらし、SPACE一つ表示
 	void Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text, const float x, const float y, const float scale = 1.0f);
 
 	// 内部でvsnprintfを使用

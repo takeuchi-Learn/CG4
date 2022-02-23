@@ -38,6 +38,8 @@ class PlayScene :
 
 	std::unique_ptr<Sound> soundData1;
 
+	std::unique_ptr<Sound> particleSE;
+
 #pragma endregion 音
 
 #pragma region スプライト
