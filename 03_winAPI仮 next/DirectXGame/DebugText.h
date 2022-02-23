@@ -20,7 +20,7 @@ public:
 	void Initialize(ID3D12Device* dev, int window_width, int window_height, UINT texnumber, const Sprite::SpriteCommon& spriteCommon, UINT tabSIze = 4);
 
 	// ￥n : X座標をして位置に戻し、Y座標を文字の高さ分加算する
-	// ￥t : tabSize-1文字分右にずらし、SPACE一つ表示
+	// ￥t : tabSize文字分右にずらす
 	void Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text,
 			   const float x, const float y, const float scale = 1.0f,
 			   DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1));

@@ -40,6 +40,7 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 			}  if (strncmp(&textLocal[i], "\t", 1) == 0) {
 				posNumX += tabSize - 1;
 				textLocal[i] = ' ';
+				drawCol.w = 0.f;
 			}
 		}
 
