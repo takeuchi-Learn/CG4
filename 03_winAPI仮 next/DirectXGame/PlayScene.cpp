@@ -2,8 +2,6 @@
 
 #include "SceneManager.h"
 
-#include "Input.h"
-
 #include <sstream>
 #include <iomanip>
 
@@ -16,6 +14,8 @@ void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play");
 
 	dxCom = DirectXCommon::getInstance();
+
+	input = Input::getInstance();
 
 #pragma region ビュー変換
 
@@ -98,14 +98,14 @@ void PlayScene::init() {
 
 void PlayScene::update() {
 
-	if (Input::getInstance()->triggerKey(DIK_SPACE)) {
+	if (input->triggerKey(DIK_SPACE)) {
 		SceneManager::getInstange()->changeScene(SCENE_NUM::END);
 	}
 
 #pragma region 音
 
 	// 数字の0キーが押された瞬間音を再生しなおす
-	if (Input::getInstance()->triggerKey(DIK_0)) {
+	if (input->triggerKey(DIK_0)) {
 		//Sound::SoundStopWave(soundData1);
 
 		if (Sound::checkPlaySound(soundData1.get())) {
@@ -129,34 +129,34 @@ void PlayScene::update() {
 
 #pragma region マウス
 
-	if (Input::getInstance()->hitMouseBotton(Input::MOUSE::LEFT)) {
+	if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
 		debugText.Print(spriteCommon, "input mouse left",
-		Input::getInstance()->getMousePos().x, Input::getInstance()->getMousePos().y, 0.75f);
+		input->getMousePos().x, input->getMousePos().y, 0.75f);
 	}
-	if (Input::getInstance()->hitMouseBotton(Input::MOUSE::RIGHT)) {
+	if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
 		debugText.Print(spriteCommon, "input mouse right",
-		Input::getInstance()->getMousePos().x,
-		Input::getInstance()->getMousePos().y + debugText.fontHeight, 0.75f);
+		input->getMousePos().x,
+		input->getMousePos().y + debugText.fontHeight, 0.75f);
 	}
-	if (Input::getInstance()->hitMouseBotton(Input::MOUSE::WHEEL)) {
+	if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
 		debugText.Print(spriteCommon, "input mouse wheel",
-		Input::getInstance()->getMousePos().x,
-		Input::getInstance()->getMousePos().y + debugText.fontHeight * 2, 0.75f);
+		input->getMousePos().x,
+		input->getMousePos().y + debugText.fontHeight * 2, 0.75f);
 	}
-	if (Input::getInstance()->hitMouseBotton(VK_LSHIFT)) {
+	if (input->hitMouseBotton(VK_LSHIFT)) {
 		debugText.Print(spriteCommon, "LSHIFT(WinAPI)", 0, 0, 2);
 	}
 
 	// Rを押すたびマウスカーソルの表示非表示を切り替え
-	if (Input::getInstance()->triggerKey(DIK_R)) {
+	if (input->triggerKey(DIK_R)) {
 		static bool mouseDispFlag = true;
 		mouseDispFlag = !mouseDispFlag;
-		Input::getInstance()->changeDispMouseCursorFlag(mouseDispFlag);
+		input->changeDispMouseCursorFlag(mouseDispFlag);
 	}
 
 	// Mキーでマウスカーソル位置を0,0に移動
-	if (Input::getInstance()->triggerKey(DIK_M)) {
-		Input::getInstance()->setMousePos(0, 0);
+	if (input->triggerKey(DIK_M)) {
+		input->setMousePos(0, 0);
 	}
 
 #pragma endregion マウス
@@ -166,7 +166,7 @@ void PlayScene::update() {
 
 	debugText.formatPrint(spriteCommon, 0, 0, 1.f, "FPS : %f", dxCom->getFPS());
 
-	if (Input::getInstance()->hitKey(DIK_R)) timer->reset();
+	if (input->hitKey(DIK_R)) timer->reset();
 
 	debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 5, 1.f,
 						  "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
@@ -179,17 +179,17 @@ void PlayScene::update() {
 
 		const float rotaVal = XM_PIDIV2 / DirectXCommon::getInstance()->getFPS();	// 毎秒四半周
 
-		if (Input::getInstance()->hitKey(DIK_RIGHT)) {
+		if (input->hitKey(DIK_RIGHT)) {
 			angle.y += rotaVal;
 			if (angle.y > XM_PI * 2) { angle.y = 0; }
-		} else if (Input::getInstance()->hitKey(DIK_LEFT)) {
+		} else if (input->hitKey(DIK_LEFT)) {
 			angle.y -= rotaVal;
 			if (angle.y < 0) { angle.y = XM_PI * 2; }
 		}
 
-		if (Input::getInstance()->hitKey(DIK_UP)) {
+		if (input->hitKey(DIK_UP)) {
 			if (angle.x + rotaVal < XM_PIDIV2) angle.x += rotaVal;
-		} else if (Input::getInstance()->hitKey(DIK_DOWN)) {
+		} else if (input->hitKey(DIK_DOWN)) {
 			if (angle.x - rotaVal > -XM_PIDIV2) angle.x -= rotaVal;
 		}
 
@@ -201,32 +201,32 @@ void PlayScene::update() {
 		// 移動量
 		const float moveSpeed = 75.f / dxCom->getFPS();
 		// 視点移動
-		if (Input::getInstance()->hitKey(DIK_W)) {
+		if (input->hitKey(DIK_W)) {
 			camera->moveForward(moveSpeed);
-		} else if (Input::getInstance()->hitKey(DIK_S)) {
+		} else if (input->hitKey(DIK_S)) {
 			camera->moveForward(-moveSpeed);
 		}
-		if (Input::getInstance()->hitKey(DIK_A)) {
+		if (input->hitKey(DIK_A)) {
 			camera->moveRight(-moveSpeed);
-		} else if (Input::getInstance()->hitKey(DIK_D)) {
+		} else if (input->hitKey(DIK_D)) {
 			camera->moveRight(moveSpeed);
 		}
 	}
 
 #pragma endregion カメラ移動回転
 
-	if (Input::getInstance()->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (Input::getInstance()->hitKey(DIK_K)) sprites[0].position.y += 10;
-	if (Input::getInstance()->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (Input::getInstance()->hitKey(DIK_L)) sprites[0].position.x += 10;
+	if (input->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (input->hitKey(DIK_K)) sprites[0].position.y += 10;
+	if (input->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (input->hitKey(DIK_L)) sprites[0].position.x += 10;
 
 	// Pを押すたびパーティクル50粒追加
 	constexpr UINT particleNumMax = 50U, particleNumMin = 20U;
 	UINT particleNum = particleNumMin;
 	float startScale = 5.f;
-	if (Input::getInstance()->hitKey(DIK_U)) {
+	if (input->hitKey(DIK_U)) {
 		particleNum = particleNumMax;
 		startScale = 10.f;
 	}
-	if (Input::getInstance()->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum, startScale);
+	if (input->triggerKey(DIK_P)) createParticle(obj3d->position, particleNum, startScale);
 
 	camera->update();
 }

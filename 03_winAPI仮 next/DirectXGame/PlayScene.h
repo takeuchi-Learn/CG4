@@ -18,6 +18,8 @@
 
 #include "DirectXCommon.h"
 
+#include "Input.h"
+
 class PlayScene :
 	public GameScene {
 
@@ -78,6 +80,7 @@ class PlayScene :
 
 #pragma endregion 3Dオブジェクト
 
+	Input* input = nullptr;
 
 	std::unique_ptr<Time> timer;
 
