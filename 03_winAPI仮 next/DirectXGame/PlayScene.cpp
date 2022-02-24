@@ -10,6 +10,76 @@
 
 using namespace DirectX;
 
+namespace {
+	// @return 0 <= ret[rad] < 2PI
+	float angleRoundRad(float rad) {
+		float angle = rad;
+
+		if (angle >= 0.f && angle < XM_2PI) return angle;
+
+		while (angle >= XM_2PI) {
+			angle -= XM_2PI;
+		}
+		while (angle < 0) {
+			angle += XM_2PI;
+		}
+		return angle;
+	}
+
+	float nearSin(float rad) {
+		constexpr auto a = +0.005859483;
+		constexpr auto b = +0.005587939;
+		constexpr auto c = -0.171570726;
+		constexpr auto d = +0.0018185485;
+		constexpr auto e = +0.9997773594;
+
+		double x = angleRoundRad(rad);
+
+		// 0 ~ PI/2‚ª‚í‚©‚ê‚Î‹‚ß‚ç‚ê‚é
+		if (x < XM_PIDIV2) {
+			// ‚»‚Ì‚Ü‚Ü
+		} else if (x >= XM_PIDIV2 && x < XM_PI) {
+			x = XM_PI - x;
+		} else if (x < XM_PI * 1.5f) {
+			x = -(x - XM_PI);
+		} else if (x < XM_2PI) {
+			x = -(XM_2PI - x);
+		}
+
+		return x * (x * (x * (x * (a * x + b) + c) + d) + e);
+	}
+
+	float nearCos(float rad) {
+		return nearSin(rad + XM_PIDIV2);
+	}
+
+	float nearTan(float rad) {
+		return nearSin(rad) / nearCos(rad);
+	}
+
+	float mySin(float rad) {
+		float ret = angleRoundRad(rad);
+
+		if (rad < XM_PIDIV2) {
+			ret = nearSin(rad);
+		} else if (rad < XM_PI) {
+			ret = nearSin(XM_PI - rad);
+		} else if (rad < XM_PI * 1.5f) {
+			ret = -nearSin(rad - XM_PI);
+		} else if (rad < XM_2PI) {
+			ret = -nearSin(XM_2PI - rad);
+		} else {
+			ret = nearSin(rad);
+		}
+
+		return ret;
+	}
+
+	float myCos(float rad) {
+		return mySin(rad + XM_PIDIV2);
+	}
+}
+
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 
@@ -251,12 +321,18 @@ void PlayScene::update() {
 #pragma region ƒ‰ƒCƒg
 	{
 		// ˆê•b‚ÅˆêŽü(2PI[rad])
-		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
+		auto timeAngle = angleRoundRad((float)timer->getNowTime() / Time::oneSec * XM_2PI);
+
+		debugText.formatPrint(spriteCommon,
+							  debugText.fontWidth * 16, debugText.fontHeight * 16, 1.f,
+							  XMFLOAT4(1, 1, 1, 1),
+							  "light angle : %f PI [rad]",
+							  timeAngle / XM_PI);
 
 		constexpr float lightR = 20.f;
 		light = obj3d->position;
-		light.x += sin(timeAngle) * lightR;
-		light.z += cos(timeAngle) * lightR;
+		light.x += mySin(timeAngle) * lightR;
+		light.z += myCos(timeAngle) * lightR;
 
 		obj3d->setLightPos(light);
 
