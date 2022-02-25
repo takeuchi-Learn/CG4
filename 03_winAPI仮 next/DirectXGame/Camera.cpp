@@ -246,7 +246,7 @@ void Camera::moveForward(const float speed) {
 void Camera::moveRight(const float speed) {
 	const auto moveVal = getLook() * speed;
 
-	const XMFLOAT3 val{ moveVal.z, moveVal.y, -moveVal.x };
+	const XMFLOAT3 val{ moveVal.z, /*moveVal.y*/0, -moveVal.x };
 
 	moveCamera(val);
 }

@@ -48,7 +48,7 @@ class PlayScene :
 	// --------------------
 	SpriteCommon spriteCommon;
 	// スプライト共通テクスチャ読み込み
-	enum TEX_NUM { TEX1, HOUSE };
+	enum TEX_NUM { TEX1 };
 
 	// --------------------
 	// スプライト個別

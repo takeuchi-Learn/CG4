@@ -114,7 +114,6 @@ void PlayScene::init() {
 
 	// スプライト共通テクスチャ読み込み
 	Sprite::commonLoadTexture(spriteCommon, TEX_NUM::TEX1, L"Resources/texture.png", DirectXCommon::getInstance()->getDev());
-	Sprite::commonLoadTexture(spriteCommon, TEX_NUM::HOUSE, L"Resources/house.png", DirectXCommon::getInstance()->getDev());
 
 	// スプライトの生成
 	for (int i = 0; i < _countof(sprites); i++) {
