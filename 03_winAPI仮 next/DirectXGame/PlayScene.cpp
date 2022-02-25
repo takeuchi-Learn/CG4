@@ -57,26 +57,51 @@ namespace {
 		return nearSin(rad) / nearCos(rad);
 	}
 
-	float mySin(float rad) {
-		float ret = angleRoundRad(rad);
+	double near_atan2(double _y, double _x) {
 
-		if (rad < XM_PIDIV2) {
-			ret = nearSin(rad);
-		} else if (rad < XM_PI) {
-			ret = nearSin(XM_PI - rad);
-		} else if (rad < XM_PI * 1.5f) {
-			ret = -nearSin(rad - XM_PI);
-		} else if (rad < XM_2PI) {
-			ret = -nearSin(XM_2PI - rad);
+		const double x = abs(_x);
+		const double y = abs(_y);
+
+		const bool bigX = y < x;
+
+		double slope{};
+		if (bigX) slope = (double)y / x;
+		else  slope = (double)x / y;
+
+		constexpr auto a = -0.05026472;
+		constexpr auto b = +0.26603324;
+		constexpr auto c = -0.45255286;
+		constexpr auto d = +0.02385002;
+		constexpr auto e = +0.99836359;
+
+		auto ret = slope * (slope * (slope * (slope * (a * slope + b) + c) + d) + e); //5ŽŸ‹Èü‹ßŽ—
+
+		constexpr auto plane = XM_PI;
+		constexpr auto rightAngle = plane / 2;	// ’¼Šp
+
+		if (bigX) {
+			if (_x > 0) {
+				if (_y < 0) ret = -ret;
+			} else {
+				if (_y > 0) ret = plane - ret;
+				if (_y < 0) ret = ret - plane;
+			}
 		} else {
-			ret = nearSin(rad);
+			if (_x > 0) {
+				if (_y > 0) ret = rightAngle - ret;
+				if (_y < 0) ret = ret - rightAngle;
+			}
+			if (_x < 0) {
+				if (_y > 0) ret = ret + rightAngle;
+				if (_y < 0) ret = -ret - rightAngle;
+			}
 		}
 
 		return ret;
 	}
 
-	float myCos(float rad) {
-		return mySin(rad + XM_PIDIV2);
+	float near_atan2(float y, float x) {
+		return (float)near_atan2((double)y, (double)x);
 	}
 }
 
@@ -323,18 +348,19 @@ void PlayScene::update() {
 #pragma region ƒ‰ƒCƒg
 	{
 		// ˆê•b‚ÅˆêŽü(2PI[rad])
-		auto timeAngle = angleRoundRad((float)timer->getNowTime() / Time::oneSec * XM_2PI);
+		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
 
 		debugText.formatPrint(spriteCommon,
-							  debugText.fontWidth * 16, debugText.fontHeight * 16, 1.f,
-							  XMFLOAT4(1, 1, 1, 1),
-							  "light angle : %f PI [rad]",
-							  timeAngle / XM_PI);
+							  WinAPI::window_width / 2, debugText.fontHeight * 16, 1.f,
+							  XMFLOAT4(1, 1, 0, 1),
+							  "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
+							  timeAngle / XM_PI,
+							  angleRoundRad(timeAngle) / XM_PI);
 
 		constexpr float lightR = 20.f;
 		light = obj3d[0].position;
-		light.x += mySin(timeAngle) * lightR;
-		light.z += myCos(timeAngle) * lightR;
+		light.x += nearSin(timeAngle) * lightR;
+		light.z += nearCos(timeAngle) * lightR;
 
 		for (UINT i = 0; i < obj3d.size(); i++) {
 			obj3d[i].setLightPos(light);
