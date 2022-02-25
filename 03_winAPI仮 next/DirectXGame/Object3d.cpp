@@ -71,6 +71,7 @@ void Object3d::update(const XMMATRIX& matView) {
 	if (SUCCEEDED(constBuff->Map(0, nullptr, (void**)&constMap))) {
 		constMap->color = color; // RGBA
 		constMap->mat = matWorld * matView * model->getMatProjection();
+		constMap->light = light;
 		constBuff->Unmap(0, nullptr);
 	}
 
@@ -166,9 +167,6 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 		},
 		{
 			"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
-		},
-		{
-			"LIGHT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0
 		}
 	};	// 1çsÇ≈èëÇ¢ÇΩÇŸÇ§Ç™å©Ç‚Ç∑Ç¢
 

@@ -20,6 +20,8 @@
 
 #include "Input.h"
 
+#include <vector>
+
 class PlayScene :
 	public GameScene {
 
@@ -71,7 +73,7 @@ class PlayScene :
 
 	const UINT obj3dTexNum = 0U;
 	std::unique_ptr<Model> model;
-	std::unique_ptr<Object3d> obj3d;
+	std::vector<Object3d> obj3d;
 	const float obj3dScale = 10.f;
 
 	DirectX::XMFLOAT2 angle{};	// ŠeŽ²Žü‚è‚Ì‰ñ“]Šp

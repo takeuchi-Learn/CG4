@@ -412,13 +412,6 @@ Model::Model(ID3D12Device* dev,
 
 void Model::update(const XMMATRIX& matView) {
 	// UpdateObject3d(&obj3d, matView, matProjection);
-
-	if (dirtyFlag) {
-		for (UINT i = 0; i < vertices.size(); i++) {
-			vertices[i].light = light;
-		}
-		dirtyFlag = false;
-	}
 }
 
 #pragma endregion ƒNƒ‰ƒX‰»‚Åíœ

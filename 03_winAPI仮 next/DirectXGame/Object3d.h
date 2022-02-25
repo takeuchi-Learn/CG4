@@ -44,6 +44,7 @@ public:
 	struct ConstBufferData {
 		XMFLOAT4 color; // 色
 		XMMATRIX mat; // 行列
+		XMFLOAT3 light;// 光源->オブジェクト
 	};
 
 	// --------------------
@@ -81,6 +82,8 @@ private:
 	// ワールド変換行列
 	XMMATRIX matWorld;
 
+	XMFLOAT3 light = XMFLOAT3(1, -1, 1);
+
 public:
 	UINT texNum = 0;
 
@@ -108,8 +111,8 @@ public:
 	Object3d(ID3D12Device* dev, Model* model, const UINT texNum);
 
 	// ライト->オブジェクト
-	inline void setLightDir(XMFLOAT3 light) { model->setLightDir(light); }
-	inline XMFLOAT3 getLightDir() { return model->getLightDir(); }
+	inline void setLightDir(XMFLOAT3 light) { this->light = light; }
+	inline XMFLOAT3 getLightDir() const { return light; }
 
 	inline void setLightPos(XMFLOAT3 lightPos) {
 		setLightDir(subFloat3(position, lightPos));

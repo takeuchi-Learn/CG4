@@ -57,51 +57,26 @@ namespace {
 		return nearSin(rad) / nearCos(rad);
 	}
 
-	double near_atan2(double _y, double _x) {
+	float mySin(float rad) {
+		float ret = angleRoundRad(rad);
 
-		const double x = abs(_x);
-		const double y = abs(_y);
-
-		const bool bigX = y < x;
-
-		double slope{};
-		if (bigX) slope = (double)y / x;
-		else  slope = (double)x / y;
-
-		constexpr auto a = -0.05026472;
-		constexpr auto b = +0.26603324;
-		constexpr auto c = -0.45255286;
-		constexpr auto d = +0.02385002;
-		constexpr auto e = +0.99836359;
-
-		auto ret = slope * (slope * (slope * (slope * (a * slope + b) + c) + d) + e); //5次曲線近似
-
-		constexpr auto plane = XM_PI;
-		constexpr auto rightAngle = plane / 2;	// 直角
-
-		if (bigX) {
-			if (_x > 0) {
-				if (_y < 0) ret = -ret;
-			} else {
-				if (_y > 0) ret = plane - ret;
-				if (_y < 0) ret = ret - plane;
-			}
+		if (rad < XM_PIDIV2) {
+			ret = nearSin(rad);
+		} else if (rad < XM_PI) {
+			ret = nearSin(XM_PI - rad);
+		} else if (rad < XM_PI * 1.5f) {
+			ret = -nearSin(rad - XM_PI);
+		} else if (rad < XM_2PI) {
+			ret = -nearSin(XM_2PI - rad);
 		} else {
-			if (_x > 0) {
-				if (_y > 0) ret = rightAngle - ret;
-				if (_y < 0) ret = ret - rightAngle;
-			}
-			if (_x < 0) {
-				if (_y > 0) ret = ret + rightAngle;
-				if (_y < 0) ret = -ret - rightAngle;
-			}
+			ret = nearSin(rad);
 		}
 
 		return ret;
 	}
 
-	float near_atan2(float y, float x) {
-		return (float)near_atan2((double)y, (double)x);
+	float myCos(float rad) {
+		return mySin(rad + XM_PIDIV2);
 	}
 }
 
@@ -179,9 +154,12 @@ void PlayScene::init() {
 						  WinAPI::window_width, WinAPI::window_height,
 						  Object3d::constantBufferNum, obj3dTexNum));
 
-	obj3d.reset(new Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
-	obj3d->scale = { obj3dScale, obj3dScale, obj3dScale };
-	obj3d->position = { 0, 0, obj3dScale };
+	constexpr UINT obj3dNum = 2;
+	for (UINT i = 0; i < obj3dNum; i++) {
+		obj3d.emplace_back(Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
+		obj3d[i].scale = { obj3dScale, obj3dScale, obj3dScale };
+		obj3d[i].position = { i * 4.f * obj3dScale, 0, obj3dScale };
+	}
 
 	sphere.reset(new Sphere(DirectXCommon::getInstance()->getDev(), 2.f, L"Resources/red.png", 0));
 
@@ -189,8 +167,8 @@ void PlayScene::init() {
 
 #pragma region ライト
 
-	light = obj3d->position;
-	light.x += obj3d->scale.y * 2;	// 仮
+	light = obj3d[0].position;
+	light.x += obj3d[0].scale.y * 2;	// 仮
 
 #pragma endregion ライト
 
@@ -345,21 +323,22 @@ void PlayScene::update() {
 #pragma region ライト
 	{
 		// 一秒で一周(2PI[rad])
-		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
+		auto timeAngle = angleRoundRad((float)timer->getNowTime() / Time::oneSec * XM_2PI);
 
 		debugText.formatPrint(spriteCommon,
-							  WinAPI::window_width / 2, debugText.fontHeight * 16, 1.f,
-							  XMFLOAT4(1, 1, 0, 1),
-							  "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
-							  timeAngle / XM_PI,
-							  angleRoundRad(timeAngle) / XM_PI);
+							  debugText.fontWidth * 16, debugText.fontHeight * 16, 1.f,
+							  XMFLOAT4(1, 1, 1, 1),
+							  "light angle : %f PI [rad]",
+							  timeAngle / XM_PI);
 
 		constexpr float lightR = 20.f;
-		light = obj3d->position;
-		light.x += nearSin(timeAngle) * lightR;
-		light.z += nearCos(timeAngle) * lightR;
+		light = obj3d[0].position;
+		light.x += mySin(timeAngle) * lightR;
+		light.z += myCos(timeAngle) * lightR;
 
-		obj3d->setLightPos(light);
+		for (UINT i = 0; i < obj3d.size(); i++) {
+			obj3d[i].setLightPos(light);
+		}
 
 		sphere->pos = light;
 	}
@@ -381,7 +360,7 @@ void PlayScene::update() {
 			particleNum = particleNumMax;
 			startScale = 10.f;
 		}
-		createParticle(obj3d->position, particleNum, startScale);
+		createParticle(obj3d[0].position, particleNum, startScale);
 
 		Sound::SoundPlayWave(soundCommon.get(), particleSE.get());
 	}
@@ -398,7 +377,9 @@ void PlayScene::draw() {
 	sphere->drawWithUpdate(camera->getViewMatrix(), dxCom);
 	// 3Dオブジェクトコマンド
 	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
-	obj3d->drawWithUpdate(camera->getViewMatrix(), dxCom);
+	for (UINT i = 0; i < obj3d.size(); i++) {
+		obj3d[i].drawWithUpdate(camera->getViewMatrix(), dxCom);
+	}
 
 	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	particleMgr->drawWithUpdate(dxCom->getCmdList());
