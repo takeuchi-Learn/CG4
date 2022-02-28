@@ -1,5 +1,0 @@
-C:\K020G1187\CG3\★★DLしたやつ\GE3_Start\DirectXGame\x64\Debug\DirectXGame.exe
-C:\K020G1187\GE3\GE3_Start\DirectXGame\x64\Debug\DirectXGame.exe
-C:\K020G1187\GE3\winAPI仮\DirectXGame\x64\Debug\DirectXGame.exe
-C:\K020G1187\GE3\03_winAPI仮 next\DirectXGame\x64\Debug\DirectXGame.exe
-C:\K020G1187\GE3\github\DirectX12_MAKE_myEngine\03_winAPI仮 next\DirectXGame\x64\Debug\DirectXGame.exe
