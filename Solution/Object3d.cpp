@@ -43,7 +43,7 @@ Object3d::Object3d(ID3D12Device* dev, Model* model, const UINT texNum) : texNum(
 	this->model = model;
 }
 
-void Object3d::update(const XMMATRIX& matView) {
+void Object3d::update(const XMMATRIX& matView, ID3D12Device* dev) {
 	XMMATRIX matScale, matRot, matTrans;
 
 	// スケール、回転、平行移動行列の計算
@@ -75,7 +75,7 @@ void Object3d::update(const XMMATRIX& matView) {
 		constBuff->Unmap(0, nullptr);
 	}
 
-	model->update(matView);
+	model->update(dev);
 }
 
 void Object3d::draw(DirectXCommon* dxCom) {
@@ -83,7 +83,7 @@ void Object3d::draw(DirectXCommon* dxCom) {
 }
 
 void Object3d::drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom) {
-	update(matView);
+	update(matView, dxCom->getDev());
 	draw(dxCom);
 }
 

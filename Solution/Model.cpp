@@ -24,14 +24,12 @@ namespace {
 }
 
 void Model::loadModel(ID3D12Device* dev,
-	std::vector<Vertex>& vertices, std::vector<unsigned short>& indices,
 	const wchar_t* objPath,
-	const int window_width, const int window_height,
-	ComPtr<ID3D12Resource>& vertBuff, Vertex* vertMap, D3D12_VERTEX_BUFFER_VIEW& vbView,
-	ComPtr<ID3D12Resource>& indexBuff, D3D12_INDEX_BUFFER_VIEW& ibView,
-	XMMATRIX& matProjection) {
+	const int window_width, const int window_height) {
 
 	std::ifstream file;
+
+	std::vector<Vertex> tmpVertices;
 
 	file.open(objPath);
 
@@ -101,7 +99,7 @@ void Model::loadModel(ID3D12Device* dev,
 				vertex.pos = positions[indexPosition - 1];
 				vertex.normal = normals[indexNormal - 1];
 				vertex.uv = texcoords[indexTexcoord - 1];
-				vertices.emplace_back(vertex);
+				tmpVertices.emplace_back(vertex);
 				//インデックスデータの追加
 				indices.emplace_back((unsigned short)indices.size());
 			}
@@ -109,6 +107,8 @@ void Model::loadModel(ID3D12Device* dev,
 	}
 
 	file.close();
+
+	setVertices(tmpVertices);
 
 	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
 	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * vertices.size());
@@ -194,15 +194,17 @@ void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width,
 		}
 	}
 
+	vertDirty = true;
+
 	for (UINT i = 0; i < indices.size() / 3; i++) {// 三角形１つごとに計算していく
 	// 三角形のインデックスを取り出して、一時的な変数に入れる
 		USHORT index0 = indices[i * 3 + 0];
 		USHORT index1 = indices[i * 3 + 1];
 		USHORT index2 = indices[i * 3 + 2];
 		// 三角形を構成する頂点座標をベクトルに代入
-		XMVECTOR p0 = XMLoadFloat3(&vertices[index0].pos);
-		XMVECTOR p1 = XMLoadFloat3(&vertices[index1].pos);
-		XMVECTOR p2 = XMLoadFloat3(&vertices[index2].pos);
+		XMVECTOR p0 = XMLoadFloat3(&getVertices()[index0].pos);
+		XMVECTOR p1 = XMLoadFloat3(&getVertices()[index1].pos);
+		XMVECTOR p2 = XMLoadFloat3(&getVertices()[index2].pos);
 		// p0→p1ベクトル、p0→p2ベクトルを計算（ベクトルの減算）
 		XMVECTOR v1 = XMVectorSubtract(p1, p0);
 		XMVECTOR v2 = XMVectorSubtract(p2, p0);
@@ -217,7 +219,7 @@ void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width,
 	}
 
 	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * vertices.size());
+	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * getVertices().size());
 
 	HRESULT result = S_FALSE;
 
@@ -264,27 +266,31 @@ void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width,
 }
 
 void Model::transVertBuff(ID3D12Device* dev) {
-	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * vertices.size());
+	if (vertDirty) {
+		//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
+		UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * getVertices().size());
 
-	HRESULT result = S_FALSE;
+		HRESULT result = S_FALSE;
 
-	//頂点バッファの生成
-	result = dev->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&vertBuff));
+		//頂点バッファの生成
+		result = dev->CreateCommittedResource(
+			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+			D3D12_HEAP_FLAG_NONE,
+			&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&vertBuff));
 
-	//GPU上のバッファに対応した仮想メモリを取得
-	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+		//GPU上のバッファに対応した仮想メモリを取得
+		result = vertBuff->Map(0, nullptr, (void**)&vertMap);
 
-	std::copy(vertices.begin(), vertices.end(), vertMap);
+		std::copy(vertices.begin(), vertices.end(), vertMap);
 
-	//マップを解除
-	vertBuff->Unmap(0, nullptr);
+		//マップを解除
+		vertBuff->Unmap(0, nullptr);
+
+		vertDirty = false;
+	}
 }
 
 XMMATRIX Model::getMatProjection() { return matProjection; }
@@ -373,10 +379,8 @@ Model::Model(ID3D12Device* dev,
 	// 生成
 	HRESULT result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
 
-	loadModel(dev, vertices, indices, objPath,
-		window_width, window_height,
-		vertBuff, vertMap, vbView,
-		indexBuff, ibView, matProjection
+	loadModel(dev, objPath,
+		window_width, window_height
 	);
 
 
@@ -410,14 +414,13 @@ Model::Model(ID3D12Device* dev,
 
 #pragma region クラス化で削除
 
-void Model::update(const XMMATRIX& matView) {
+void Model::update(ID3D12Device* dev) {
 	// UpdateObject3d(&obj3d, matView, matProjection);
+	transVertBuff(dev);
 }
 
 #pragma endregion クラス化で削除
 void Model::draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum) {
-	transVertBuff(dev);
-
 	// デスクリプタヒープの配列
 	ID3D12DescriptorHeap* ppHeaps[] = { descHeap.Get() };
 	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);

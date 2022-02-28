@@ -118,7 +118,7 @@ public:
 		setLightDir(subFloat3(position, lightPos));
 	}
 
-	void update(const XMMATRIX& matView);
+	void update(const XMMATRIX& matView, ID3D12Device* dev);
 
 	void draw(DirectXCommon* dxCom);
 

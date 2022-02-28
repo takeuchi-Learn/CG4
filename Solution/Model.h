@@ -55,6 +55,7 @@ private:
 	// obj3d•ª‚¯ ƒ‚ƒfƒ‹
 	// --------------------
 	std::vector<Vertex> vertices{};
+	bool vertDirty = false;
 	ComPtr<ID3D12Resource> vertBuff;
 	D3D12_VERTEX_BUFFER_VIEW vbView;
 	Vertex* vertMap{};
@@ -69,11 +70,12 @@ private:
 	XMMATRIX matProjection;
 
 
-	void loadModel(ID3D12Device* dev, std::vector<Vertex>& vertices, std::vector<unsigned short>& indices, const wchar_t* objPath,
-		const int window_width, const int window_height,
-		ComPtr<ID3D12Resource>& vertBuff, Vertex* vertMap, D3D12_VERTEX_BUFFER_VIEW& vbView,
-		ComPtr<ID3D12Resource>& indexBuff, D3D12_INDEX_BUFFER_VIEW& ibView,
-		XMMATRIX& matProjection);
+	inline std::vector<Vertex> getVertices() const { return vertices; }
+	inline void setVertices(const std::vector<Vertex> vertices) { this->vertices = vertices; vertDirty = true; }
+
+	void loadModel(ID3D12Device* dev,
+				   const wchar_t* objPath,
+				   const int window_width, const int window_height);
 
 	void loadSphere(ID3D12Device* dev, const float r, const int window_width, const int window_height);
 
@@ -100,7 +102,7 @@ public:
 
 	XMMATRIX getMatProjection();
 
-	void update(const XMMATRIX& matView);
+	void update(ID3D12Device* dev);
 
 	void draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum);
 };
