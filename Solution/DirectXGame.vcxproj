@@ -152,6 +152,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjCommon.cpp" />
     <ClCompile Include="Object3d.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Looper.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ObjCommon.h" />
     <ClInclude Include="Object3d.h" />
