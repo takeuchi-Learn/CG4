@@ -1,6 +1,7 @@
 #include "Material.h"
 #include <DirectXTex.h>
 #include <cassert>
+#include "ObjCommon.h"
 
 using namespace DirectX;
 
@@ -9,17 +10,16 @@ void Material::staticInit(ID3D12Device* dev) {
 	Material::dev = dev;
 }
 
-Material::Material() : ambient({ 0.3f,0.3f,0.3f }),
-diffuse({ 0.f,0.f,0.f }),
-specular({ 0.f,0.f,0.f }),
-alpha(1.f) {
-	diffuse = { 0.0f, 0.0f, 0.0f };
-	specular = { 0.0f, 0.0f, 0.0f };
-	alpha = 1.0f;
+Material::Material()
+	: ambient({ 0.3f,0.3f,0.3f }),
+	diffuse({ 0.f,0.f,0.f }),
+	specular({ 0.f,0.f,0.f }),
+	alpha(1.f) {
 	createConstBuff();
+	texbuff.resize(Material::maxTexNum);
 }
 
-void Material::loadTexture(const std::string& texFilePath,
+void Material::loadTexture(const std::string& directoryPath, UINT texNum,
 						   CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle,
 						   CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle) {
 
@@ -32,9 +32,11 @@ void Material::loadTexture(const std::string& texFilePath,
 	TexMetadata metadata{};
 	ScratchImage scratchImg{};
 
+	std::string filepath = directoryPath + texFileName;
+
 	constexpr size_t wfilePathSize = 128;
 	wchar_t wfilepath[wfilePathSize];
-	MultiByteToWideChar(CP_ACP, 0, texFilePath.c_str(), -1, wfilepath, wfilePathSize);
+	MultiByteToWideChar(CP_ACP, 0, filepath.c_str(), -1, wfilepath, wfilePathSize);
 
 	result = LoadFromWICFile(
 		wfilepath, WIC_FLAGS_NONE,
@@ -61,13 +63,13 @@ void Material::loadTexture(const std::string& texFilePath,
 		&texresDesc,
 		D3D12_RESOURCE_STATE_GENERIC_READ, // テクスチャ用指定
 		nullptr,
-		IID_PPV_ARGS(&texbuff));
+		IID_PPV_ARGS(&texbuff[texNum]));
 	if (FAILED(result)) {
 		assert(0);
 	}
 
 	// テクスチャバッファにデータ転送
-	result = texbuff->WriteToSubresource(
+	result = texbuff[texNum]->WriteToSubresource(
 		0,
 		nullptr, // 全領域へコピー
 		img->pixels,    // 元データアドレス
@@ -80,14 +82,14 @@ void Material::loadTexture(const std::string& texFilePath,
 
 	// シェーダリソースビュー作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{}; // 設定構造体
-	D3D12_RESOURCE_DESC resDesc = texbuff->GetDesc();
+	D3D12_RESOURCE_DESC resDesc = texbuff[texNum]->GetDesc();
 
 	srvDesc.Format = resDesc.Format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = 1;
 
-	dev->CreateShaderResourceView(texbuff.Get(), //ビューと関連付けるバッファ
+	dev->CreateShaderResourceView(texbuff[texNum].Get(), //ビューと関連付けるバッファ
 		&srvDesc, //テクスチャ設定情報
 		cpuDescHandleSRV
 	);

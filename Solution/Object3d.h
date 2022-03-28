@@ -51,6 +51,9 @@ public:
 	// staticメンバ
 	// --------------------
 private:
+	static ID3D12Device* dev;
+	static PipelineSet ppSetDef;
+
 	static void createTransferBuffer(ID3D12Device* dev, ComPtr<ID3D12Resource>& constBuff);
 
 	inline XMFLOAT3 subFloat3(const XMFLOAT3& left, const XMFLOAT3& right) {
@@ -63,8 +66,12 @@ public:
 	// 頂点バッファの最大数
 	static const int constantBufferNum = 128;
 
+	static PipelineSet& getGraphicsPipeline() { return ppSetDef; }
+
 	static void startDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineSet& ppSet,
 										D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology = D3D12_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	static void staticInit(ID3D12Device* device);
 
 	//3Dオブジェクト用パイプライン生成
 	// シェーダーモデル指定は "*s_5_0"

@@ -11,15 +11,16 @@ class Material {
 public:
 	// 定数バッファ用データ構造体B1
 	struct ConstBufferDataB1 {
-		DirectX::XMFLOAT3 ambient; // アンビエント
-		float pad1; // パディング
-		DirectX::XMFLOAT3 diffuse; // ディフューズ
-		float pad2; // パディング
-		DirectX::XMFLOAT3 specular; // スペキュラー
+		DirectX::XMFLOAT3 ambient;	// アンビエント
+		float pad1;		// パディング
+		DirectX::XMFLOAT3 diffuse;	// ディフューズ
+		float pad2;		// パディング
+		DirectX::XMFLOAT3 specular;	// スペキュラー
 		float alpha;	// アルファ
 	};
 
 public:
+	static const UINT maxTexNum = 128;
 	static void staticInit(ID3D12Device* dev);
 
 private:
@@ -28,7 +29,7 @@ private:
 
 
 	// テクスチャバッファ
-	Microsoft::WRL::ComPtr<ID3D12Resource> texbuff;
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> texbuff;
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuff;
 	// シェーダリソースビューのハンドル(CPU)
@@ -37,18 +38,18 @@ private:
 	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV;
 
 public:
-	std::string name;
-	DirectX::XMFLOAT3 ambient;
-	DirectX::XMFLOAT3 diffuse;
-	DirectX::XMFLOAT3 specular;
+	std::string name;			// マテリアル名
+	DirectX::XMFLOAT3 ambient;	// アンビエント影響度
+	DirectX::XMFLOAT3 diffuse;	// ディフューズ影響度
+	DirectX::XMFLOAT3 specular;	// スぺキュラー影響度
 	float alpha;
-	std::string texFilePath;
+	std::string texFileName;	// テクスチャファイル名
 
 	Material();
 
 	inline ID3D12Resource* getConstBuff() const { return constBuff.Get(); }
 
-	void loadTexture(const std::string& texFilePath, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle);
+	void loadTexture(const std::string& directoryPath, UINT texNum, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 
 	void update();
 

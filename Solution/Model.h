@@ -3,7 +3,8 @@
 #include <wrl.h>
 #include <DirectXMath.h>
 #include <vector>
-#include <d3d12.h>
+#include <unordered_map>
+#include "Mesh.h"
 
 class Model {
 	// Microsoft::WRL::を省略
@@ -14,96 +15,75 @@ class Model {
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
 
-	// 頂点データ構造体
-	struct Vertex {
-		XMFLOAT3 pos;		// xyz座標
-		XMFLOAT3 normal;	// 法線ベクトル
-		XMFLOAT2 uv;		// uv座標
-	};
-
-	// --------------------
-	// 2d3d共通構造体
-	// --------------------
-
-	// パイプラインセット
-	struct PipelineSet {
-		// パイプラインステートオブジェクト
-		ComPtr<ID3D12PipelineState> pipelinestate;
-		// ルートシグネチャ
-		ComPtr<ID3D12RootSignature> rootsignature;
-	};
-
-
-
 	// --------------------
 	// static
 	// --------------------
 public:
 
+private:
+	static ID3D12Device* dev;
+	static std::string baseDir;
+	// デスクリプタサイズ
+	static UINT descriptorHandleIncrementSize;
 
 	// --------------------
 	// メンバ変数
 	// --------------------
 private:
-	// --------------------
-	// obj3d分け 不明(多分モデル)
-	// --------------------
-	// 定数バッファ用デスクリプターヒープ(デスクリプタを管理する)
-	ComPtr<ID3D12DescriptorHeap> descHeap = nullptr;
+	std::string name;
+	std::vector<Mesh*> meshes;
+	std::unordered_map<std::string, Material*> materials;
+	// デフォルトマテリアル
+	Material* defaultMaterial = nullptr;
+	// デスクリプタヒープ
+	ComPtr<ID3D12DescriptorHeap> descHeap;
 
-	// --------------------
-	// obj3d分け モデル
-	// --------------------
-	std::vector<Vertex> vertices{};
-	bool vertDirty = false;
-	ComPtr<ID3D12Resource> vertBuff;
-	D3D12_VERTEX_BUFFER_VIEW vbView;
-	Vertex* vertMap{};
+	/// <summary>
+	/// マテリアル読み込み
+	/// </summary>
+	void loadMaterial(const std::string& directoryPath, const std::string& filename);
 
-	std::vector<unsigned short> indices{};
-	ComPtr<ID3D12Resource> indexBuff;
-	D3D12_INDEX_BUFFER_VIEW ibView;
+	/// <summary>
+	/// マテリアル登録
+	/// </summary>
+	void addMaterial(Material* material);
 
-	std::vector<ComPtr<ID3D12Resource>> texBuff;
+	/// <summary>
+	/// デスクリプタヒープの生成
+	/// </summary>
+	void createDescriptorHeap();
 
-	// 射影変換行列
-	XMMATRIX matProjection;
-
-
-	inline std::vector<Vertex> getVertices() const { return vertices; }
-	inline void setVertices(const std::vector<Vertex> vertices) { this->vertices = vertices; vertDirty = true; }
-
-	void loadModel(ID3D12Device* dev,
-				   const wchar_t* objPath,
-				   const int window_width, const int window_height);
-
-	void loadSphere(ID3D12Device* dev, const float r, const int window_width, const int window_height);
-
-	void transVertBuff(ID3D12Device* dev);
+	/// <summary>
+	/// テクスチャ読み込み
+	/// </summary>
+	void loadTextures();
 
 public:
-	void loadTexture(ID3D12Device* dev, const wchar_t* texPath, const UINT texNum);
+	// ----------
+	// static
+	// ----------
 
-	void setTexture(ID3D12Device* dev, UINT newTexNum);
+	static void changeBaseDir(const std::string& newDir) { baseDir = newDir; }
 
-	Model(ID3D12Device* dev,
-		const wchar_t* objPath, const wchar_t* texPath,
-		const int window_width, const int window_height,
-		const unsigned int constantBufferNum,
-		const int texNum);
+	// 静的初期化
+	static void staticInit(ID3D12Device* device);
 
-	// 球体
-	Model(ID3D12Device* dev,
-		  const wchar_t* texPath,
-		  const float r,
-		  const int window_width, const int window_height,
-		  const unsigned int constantBufferNum,
-		  const int texNum);
 
-	XMMATRIX getMatProjection();
+	// メンバ
 
-	void update(ID3D12Device* dev);
+	Model(const std::string& objModelName);
+	~Model();
 
-	void draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum);
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	/// <param name="modelname">モデル名(例 : Resources/player.obj)</param>
+	void init(const std::string& modelname);
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// <param name="cmdList">命令発行先コマンドリスト</param>
+	void draw(ID3D12GraphicsCommandList* cmdList);
 };
 

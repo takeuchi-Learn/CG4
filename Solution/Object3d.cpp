@@ -8,6 +8,9 @@
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
+ID3D12Device* Object3d::dev = nullptr;
+Object3d::PipelineSet Object3d::ppSetDef{};
+
 void Object3d::createTransferBuffer(ID3D12Device* dev, ComPtr<ID3D12Resource>& constBuff) {
 	// 定数バッファの生成
 	HRESULT result = dev->CreateCommittedResource(
@@ -75,11 +78,11 @@ void Object3d::update(const XMMATRIX& matView, ID3D12Device* dev) {
 		constBuff->Unmap(0, nullptr);
 	}
 
-	model->update(dev);
+	//model->update(dev);
 }
 
 void Object3d::draw(DirectXCommon* dxCom) {
-	model->draw(dxCom->getDev(), dxCom->getCmdList(), constBuff.Get(), constantBufferNum, texNum);
+	model->draw(dxCom->getCmdList());
 }
 
 void Object3d::drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom) {
@@ -96,6 +99,20 @@ void Object3d::startDraw(ID3D12GraphicsCommandList* cmdList, Object3d::PipelineS
 	cmdList->SetGraphicsRootSignature(ppSet.rootsignature.Get());
 	//プリミティブ形状を設定
 	cmdList->IASetPrimitiveTopology(PrimitiveTopology);
+}
+
+void Object3d::staticInit(ID3D12Device* device) {
+	// 再初期化チェック
+	assert(!Object3d::dev);
+
+	// nullptrチェック
+	assert(device);
+
+	Object3d::dev = device;
+
+	ppSetDef = createGraphicsPipeline(device);
+
+	Model::staticInit(device);
 }
 
 Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,

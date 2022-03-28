@@ -12,436 +12,404 @@
 #include <sstream>
 #include <fstream>
 
-//using namespace std;
-template<class T> using vector = std::vector<T>;
-using string = std::string;
+
+#include <algorithm>
+
+using namespace std;
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
+
+std::string Model::baseDir = "Resources/";
 
 namespace {
 	constexpr float nearZ = 0.1f, farZ = 1000.f, fog = XM_PI / 3.f;
 }
 
-void Model::loadModel(ID3D12Device* dev,
-	const wchar_t* objPath,
-	const int window_width, const int window_height) {
 
+void Model::loadTextures() {
+	int textureIndex = 0;
+	string directoryPath = baseDir + name + "/";
+
+	for (auto& m : materials) {
+		Material* material = m.second;
+
+		// テクスチャあり
+		if (material->texFileName.size() > 0) {
+			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV = CD3DX12_CPU_DESCRIPTOR_HANDLE(descHeap->GetCPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
+			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV = CD3DX12_GPU_DESCRIPTOR_HANDLE(descHeap->GetGPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
+			// マテリアルにテクスチャ読み込み
+			material->loadTexture(directoryPath, cpuDescHandleSRV, gpuDescHandleSRV);
+			textureIndex++;
+		}
+		// テクスチャなし
+		else {
+			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV = CD3DX12_CPU_DESCRIPTOR_HANDLE(descHeap->GetCPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
+			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV = CD3DX12_GPU_DESCRIPTOR_HANDLE(descHeap->GetGPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
+			// マテリアルにテクスチャ読み込み
+			material->loadTexture(baseDir, cpuDescHandleSRV, gpuDescHandleSRV);
+			textureIndex++;
+		}
+	}
+}
+
+void Model::createDescriptorHeap() {
+	HRESULT result = S_FALSE;
+
+	// マテリアルの数
+	size_t count = materials.size();
+
+	// デスクリプタヒープを生成	
+	if (count > 0) {
+		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
+		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;//シェーダから見えるように
+		descHeapDesc.NumDescriptors = (UINT)count; // シェーダーリソースビューの数
+		result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));//生成
+		if (FAILED(result)) {
+			assert(0);
+		}
+	}
+
+	// デスクリプタサイズを取得
+	descriptorHandleIncrementSize = dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+}
+
+void Model::addMaterial(Material* material) {
+	// コンテナに登録
+	materials.emplace(material->name, material);
+}
+
+
+void Model::loadMaterial(const std::string& directoryPath, const std::string& filename) {
+	// ファイルストリーム
 	std::ifstream file;
-
-	std::vector<Vertex> tmpVertices;
-
-	file.open(objPath);
-
+	// マテリアルファイルを開く
+	file.open(directoryPath + filename);
+	// ファイルオープン失敗をチェック
 	if (file.fail()) {
 		assert(0);
 	}
-	vector<XMFLOAT3> positions;	//頂点座標
-	vector<XMFLOAT3> normals;	//法線ベクトル
-	vector<XMFLOAT2> texcoords;	//テクスチャUV
-	//1行ずつ読み込む
+
+	Material* material = nullptr;
+
+	// 1行ずつ読み込む
 	string line;
 	while (getline(file, line)) {
 
-		//1行分の文字列をストリームに変換して解析しやすくする
+		// 1行分の文字列をストリームに変換して解析しやすくする
 		std::istringstream line_stream(line);
 
-		//半角スペース区切りで行の先頭を文字列を取得
+		// 半角スペース区切りで行の先頭文字列を取得
 		string key;
 		getline(line_stream, key, ' ');
 
+		// 先頭のタブ文字は無視する
+		if (key[0] == '\t') {
+			key.erase(key.begin()); // 先頭の文字を削除
+		}
+
+		// 先頭文字列がnewmtlならマテリアル名
+		if (key == "newmtl") {
+
+			// 既にマテリアルがあれば
+			if (material) {
+				// マテリアルをコンテナに登録
+				addMaterial(material);
+			}
+
+			// 新しいマテリアルを生成
+			material = new Material();
+			// マテリアル名読み込み
+			line_stream >> material->name;
+		}
+		// 先頭文字列がKaならアンビエント色
+		if (key == "Ka") {
+			line_stream >> material->ambient.x;
+			line_stream >> material->ambient.y;
+			line_stream >> material->ambient.z;
+		}
+		// 先頭文字列がKdならディフューズ色
+		if (key == "Kd") {
+			line_stream >> material->diffuse.x;
+			line_stream >> material->diffuse.y;
+			line_stream >> material->diffuse.z;
+		}
+		// 先頭文字列がKsならスペキュラー色
+		if (key == "Ks") {
+			line_stream >> material->specular.x;
+			line_stream >> material->specular.y;
+			line_stream >> material->specular.z;
+		}
+		// 先頭文字列がmap_Kdならテクスチャファイル名
+		// todo テクスチャ画像パス指定を此処の値とbaseDirで行うようにする
+		if (key == "map_Kd") {
+			// テクスチャのファイル名読み込み
+			line_stream >> material->texFileName;
+
+			// フルパスからファイル名を取り出す
+			size_t pos1;
+			pos1 = material->texFileName.rfind('\\');
+			if (pos1 != string::npos) {
+				material->texFileName = material->texFileName.substr(pos1 + 1, material->texFileName.size() - pos1 - 1);
+			}
+
+			pos1 = material->texFileName.rfind('/');
+			if (pos1 != string::npos) {
+				material->texFileName = material->texFileName.substr(pos1 + 1, material->texFileName.size() - pos1 - 1);
+			}
+		}
+	}
+	// ファイルを閉じる
+	file.close();
+
+	if (material) {
+		// マテリアルを登録
+		addMaterial(material);
+	}
+}
+
+void Model::staticInit(ID3D12Device* device) {
+	// 再初期化チェック
+	assert(!Model::dev);
+
+	Model::dev = device;
+
+	// メッシュの静的初期化
+	Mesh::staticInit(device);
+}
+
+Model::Model(const std::string& objModelName) {
+	init(objModelName);
+}
+
+Model::~Model() {
+	for (auto m : meshes) {
+		delete m;
+	}
+	meshes.clear();
+
+	for (auto m : materials) {
+		delete m.second;
+	}
+	materials.clear();
+}
+
+void Model::init(const std::string& modelname) {
+	const string filename = modelname + ".obj";
+	const string directoryPath = baseDir + modelname + "/";
+
+	// ファイルストリーム
+	std::ifstream file;
+	// .objファイルを開く
+	file.open(modelname);
+	// ファイルオープン失敗をチェック
+	if (file.fail()) {
+		assert(0);
+	}
+
+	name = modelname;
+
+	// メッシュ生成
+	Mesh* mesh = new Mesh;
+	int indexCountTex = 0;
+	int indexCountNoTex = 0;
+
+	vector<XMFLOAT3> positions;	// 頂点座標
+	vector<XMFLOAT3> normals;	// 法線ベクトル
+	vector<XMFLOAT2> texcoords;	// テクスチャUV
+	// 1行ずつ読み込む
+	string line;
+	while (getline(file, line)) {
+
+		// 1行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		// 半角スペース区切りで行の先頭文字列を取得
+		string key;
+		getline(line_stream, key, ' ');
+
+		//マテリアル
+		if (key == "mtllib") {
+			// マテリアルのファイル名読み込み
+			string filename;
+			line_stream >> filename;
+			// マテリアル読み込み
+			loadMaterial(directoryPath, filename);
+		}
+		// 先頭文字列がgならグループの開始
+		if (key == "g") {
+			// カレントメッシュの情報が揃っているなら
+			if (mesh->getName().size() > 0 && mesh->getVertexCount() > 0) {
+				// コンテナに登録
+				meshes.emplace_back(mesh);
+				// 次のメッシュ生成
+				mesh = new Mesh;
+				indexCountTex = 0;
+			}
+
+			// グループ名読み込み
+			string groupName;
+			line_stream >> groupName;
+
+			// メッシュに名前をセット
+			mesh->setName(groupName);
+		}
+		// 先頭文字列がvなら頂点座標
 		if (key == "v") {
-			//X,Y,Z座標読み込み
+			// X,Y,Z座標読み込み
 			XMFLOAT3 position{};
 			line_stream >> position.x;
 			line_stream >> position.y;
 			line_stream >> position.z;
-			//座標データに追加
 			positions.emplace_back(position);
 		}
-
+		// 先頭文字列がvtならテクスチャ
 		if (key == "vt") {
-			//U,V成分読み込み
+			// U,V成分読み込み
 			XMFLOAT2 texcoord{};
 			line_stream >> texcoord.x;
 			line_stream >> texcoord.y;
-			//V方向反転
+			// V方向反転
 			texcoord.y = 1.0f - texcoord.y;
-			//テクスチャ座標データに追加
+			// テクスチャ座標データに追加
 			texcoords.emplace_back(texcoord);
 		}
-
+		// 先頭文字列がvnなら法線ベクトル
 		if (key == "vn") {
-			//X,Y,Z成分読み込み
+			// X,Y,Z成分読み込み
 			XMFLOAT3 normal{};
 			line_stream >> normal.x;
 			line_stream >> normal.y;
 			line_stream >> normal.z;
-			//法線ベクトルデータに追加
+			// 法線ベクトルデータに追加
 			normals.emplace_back(normal);
 		}
+		// 先頭文字列がusemtlならマテリアルを割り当てる
+		if (key == "usemtl") {
+			if (mesh->getMaterial() == nullptr) {
+				// マテリアルの名読み込み
+				string materialName;
+				line_stream >> materialName;
 
+				// マテリアル名で検索し、マテリアルを割り当てる
+				auto itr = materials.find(materialName);
+				if (itr != materials.end()) {
+					mesh->setMaterial(itr->second);
+				}
+			}
+		}
+		// 先頭文字列がfならポリゴン（三角形）
 		if (key == "f") {
-			//半角スペース区切りで行の続きを読み込む
+			int faceIndexCount = 0;
+			// 半角スペース区切りで行の続きを読み込む
 			string index_string;
 			while (getline(line_stream, index_string, ' ')) {
-				//頂点インデックス1個分の文字列をストリームに変換して解析しやすくする
+				// 頂点インデックス1個分の文字列をストリームに変換して解析しやすくする
 				std::istringstream index_stream(index_string);
 				unsigned short indexPosition, indexNormal, indexTexcoord;
+				// 頂点番号
 				index_stream >> indexPosition;
-				index_stream.seekg(1, std::ios_base::cur);//スラッシュをとばす
-				index_stream >> indexTexcoord;
-				index_stream.seekg(1, std::ios_base::cur);//スラッシュをとばす
-				index_stream >> indexNormal;
 
-				//頂点データの追加
-				Vertex vertex{};
-				vertex.pos = positions[indexPosition - 1];
-				vertex.normal = normals[indexNormal - 1];
-				vertex.uv = texcoords[indexTexcoord - 1];
-				tmpVertices.emplace_back(vertex);
-				//インデックスデータの追加
-				indices.emplace_back((unsigned short)indices.size());
+				Material* material = mesh->getMaterial();
+				index_stream.seekg(1, ios_base::cur); // スラッシュを飛ばす
+				// マテリアル、テクスチャがある場合
+				if (material && material->texFileName.size() > 0) {
+					index_stream >> indexTexcoord;
+					index_stream.seekg(1, ios_base::cur); // スラッシュを飛ばす
+					index_stream >> indexNormal;
+					// 頂点データの追加
+					Mesh::VertexPosNormalUv vertex{};
+					vertex.pos = positions[indexPosition - 1];
+					vertex.normal = normals[indexNormal - 1];
+					vertex.uv = texcoords[indexTexcoord - 1];
+					mesh->addVertex(vertex);
+				} else {
+					char c;
+					index_stream >> c;
+					// スラッシュ2連続の場合、頂点番号のみ
+					if (c == '/') {
+						// 頂点データの追加
+						Mesh::VertexPosNormalUv vertex{};
+						vertex.pos = positions[indexPosition - 1];
+						vertex.normal = { 0, 0, 1 };
+						vertex.uv = { 0, 0 };
+						mesh->addVertex(vertex);
+					} else {
+						index_stream.seekg(-1, ios_base::cur); // 1文字戻る
+						index_stream >> indexTexcoord;
+						index_stream.seekg(1, ios_base::cur); // スラッシュを飛ばす
+						index_stream >> indexNormal;
+						// 頂点データの追加
+						Mesh::VertexPosNormalUv vertex{};
+						vertex.pos = positions[indexPosition - 1];
+						vertex.normal = normals[indexNormal - 1];
+						vertex.uv = { 0, 0 };
+						mesh->addVertex(vertex);
+					}
+				}
+				// インデックスデータの追加
+				if (faceIndexCount >= 3) {
+					// 四角形ポリゴンの4点目なので、
+					// 四角形の0,1,2,3の内 2,3,0で三角形を構築する
+					mesh->addIndex(indexCountTex - 1);
+					mesh->addIndex(indexCountTex);
+					mesh->addIndex(indexCountTex - 3);
+				} else {
+					mesh->addIndex(indexCountTex);
+				}
+				indexCountTex++;
+				faceIndexCount++;
 			}
 		}
 	}
-
 	file.close();
 
-	setVertices(tmpVertices);
+	// コンテナに登録
+	meshes.emplace_back(mesh);
 
-	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * vertices.size());
-
-	HRESULT result = S_FALSE;
-
-	transVertBuff(dev);
-
-	//頂点バッファビューの作成
-	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
-	vbView.SizeInBytes = sizeVB;
-	vbView.StrideInBytes = sizeof(Vertex);
-
-	//インデックスデータ全体のサイズ
-	UINT sizeIB = static_cast<UINT>(sizeof(unsigned short) * indices.size());
-
-	//インデックスバッファの生成
-	result = dev->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(sizeIB),
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&indexBuff)
-	);
-
-	//インデックスバッファビューの作成
-	ibView.BufferLocation = indexBuff->GetGPUVirtualAddress();
-	ibView.Format = DXGI_FORMAT_R16_UINT;
-	ibView.SizeInBytes = sizeIB;
-
-	//GPU上のバッファに対応した仮想メモリを取得
-	unsigned short* indexMap = nullptr;
-	result = indexBuff->Map(0, nullptr, (void**)&indexMap);
-
-	std::copy(indices.begin(), indices.end(), indexMap);
-	//繋がりを解除
-	indexBuff->Unmap(0, nullptr);
-
-
-	//射影変換行列(透視投影)
-	matProjection = XMMatrixPerspectiveFovLH(
-		fog, // 上下画角60度
-		(float)window_width / window_height, // アスペクト比（画面横幅 / 画面縦幅）
-		nearZ, farZ // 前端、奥端
-	);
-}
-
-void Model::loadSphere(ID3D12Device* dev, const float r, const int window_width, const int window_height) {
-
-	constexpr UINT vMax = 32, uMax = 32;
-
-	constexpr int vertexNum = uMax * (vMax + 1);
-	constexpr int indexNum = 2 * vMax * (uMax + 1);
-
-	vertices.resize(vertexNum);
-	indices.resize(indexNum);
-
-	for (UINT v = 0; v <= vMax; v++) {
-		for (UINT u = 0; u < uMax; u++) {
-			float theata = XM_PI * v / vMax;
-			float phi = (XM_PI * 2) * u / uMax;
-			float fX = r * sin(theata) * cos(phi);
-			float fY = r * cos(theata);
-			float fZ = r * sin(theata) * sin(phi);
-			vertices[uMax * v + u].pos = XMFLOAT3(fX, fY, fZ);
-		}
-	}
-
-	for (UINT v = 0, i = 0; v < vMax; v++) {
-		for (UINT u = 0; u <= uMax; u++) {
-			if (u == uMax) {
-				indices[i] = v * uMax;
-				i++;
-				indices[i] = (v + 1) * uMax;
-				i++;
-			} else {
-				indices[i] = (v * uMax) + u;
-				i++;
-				indices[i] = indices[i - 1] + uMax;
-				i++;
+	// メッシュのマテリアルチェック
+	for (auto& m : meshes) {
+		// マテリアルの割り当てがない
+		if (m->getMaterial() == nullptr) {
+			if (defaultMaterial == nullptr) {
+				// デフォルトマテリアルを生成
+				defaultMaterial = new Material();
+				defaultMaterial->name = "no material";
+				materials.emplace(defaultMaterial->name, defaultMaterial);
 			}
+			// デフォルトマテリアルをセット
+			m->setMaterial(defaultMaterial);
 		}
 	}
 
-	vertDirty = true;
-
-	for (UINT i = 0; i < indices.size() / 3; i++) {// 三角形１つごとに計算していく
-	// 三角形のインデックスを取り出して、一時的な変数に入れる
-		USHORT index0 = indices[i * 3 + 0];
-		USHORT index1 = indices[i * 3 + 1];
-		USHORT index2 = indices[i * 3 + 2];
-		// 三角形を構成する頂点座標をベクトルに代入
-		XMVECTOR p0 = XMLoadFloat3(&getVertices()[index0].pos);
-		XMVECTOR p1 = XMLoadFloat3(&getVertices()[index1].pos);
-		XMVECTOR p2 = XMLoadFloat3(&getVertices()[index2].pos);
-		// p0→p1ベクトル、p0→p2ベクトルを計算（ベクトルの減算）
-		XMVECTOR v1 = XMVectorSubtract(p1, p0);
-		XMVECTOR v2 = XMVectorSubtract(p2, p0);
-		// 外積は両方から垂直なベクトル
-		XMVECTOR normal = XMVector3Cross(v1, v2);
-		// 正規化（長さを1にする)
-		normal = XMVector3Normalize(normal);
-		// 求めた法線を頂点データに代入
-		XMStoreFloat3(&vertices[index0].normal, normal);
-		XMStoreFloat3(&vertices[index1].normal, normal);
-		XMStoreFloat3(&vertices[index2].normal, normal);
+	// メッシュのバッファ生成
+	for (auto& m : meshes) {
+		m->createBuffers();
 	}
 
-	//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-	UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * getVertices().size());
-
-	HRESULT result = S_FALSE;
-
-	transVertBuff(dev);
-
-	//頂点バッファビューの作成
-	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
-	vbView.SizeInBytes = sizeVB;
-	vbView.StrideInBytes = sizeof(Vertex);
-
-	//インデックスデータ全体のサイズ
-	UINT sizeIB = static_cast<UINT>(sizeof(unsigned short) * indices.size());
-
-	//インデックスバッファの生成
-	result = dev->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(sizeIB),
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&indexBuff)
-	);
-
-	//インデックスバッファビューの作成
-	ibView.BufferLocation = indexBuff->GetGPUVirtualAddress();
-	ibView.Format = DXGI_FORMAT_R16_UINT;
-	ibView.SizeInBytes = sizeIB;
-
-	//GPU上のバッファに対応した仮想メモリを取得
-	unsigned short* indexMap = nullptr;
-	result = indexBuff->Map(0, nullptr, (void**)&indexMap);
-
-	std::copy(indices.begin(), indices.end(), indexMap);
-	//繋がりを解除
-	indexBuff->Unmap(0, nullptr);
-
-
-	//射影変換行列(透視投影)
-	matProjection = XMMatrixPerspectiveFovLH(
-		fog, // 上下画角60度
-		(float)window_width / window_height, // アスペクト比（画面横幅 / 画面縦幅）
-		nearZ, farZ // 前端、奥端
-	);
-}
-
-void Model::transVertBuff(ID3D12Device* dev) {
-	if (vertDirty) {
-		//頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-		UINT sizeVB = static_cast<UINT>(sizeof(Vertex) * getVertices().size());
-
-		HRESULT result = S_FALSE;
-
-		//頂点バッファの生成
-		result = dev->CreateCommittedResource(
-			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-			D3D12_HEAP_FLAG_NONE,
-			&CD3DX12_RESOURCE_DESC::Buffer(sizeVB),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&vertBuff));
-
-		//GPU上のバッファに対応した仮想メモリを取得
-		result = vertBuff->Map(0, nullptr, (void**)&vertMap);
-
-		std::copy(vertices.begin(), vertices.end(), vertMap);
-
-		//マップを解除
-		vertBuff->Unmap(0, nullptr);
-
-		vertDirty = false;
+	// マテリアルの数値を定数バッファに反映
+	for (auto& m : materials) {
+		m.second->update();
 	}
+
+	// デスクリプタヒープ生成
+	createDescriptorHeap();
+
+	// テクスチャの読み込み
+	loadTextures();
 }
 
-XMMATRIX Model::getMatProjection() { return matProjection; }
-
-void Model::setTexture(ID3D12Device* dev, UINT newTexNum) {
-	TexMetadata metadata{};
-
-	//シェーダーリソースビュー設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
-
-	//ヒープの二番目にシェーダーリソースビュー作成
-	dev->CreateShaderResourceView(texBuff[newTexNum].Get(),
-		&srvDesc,
-		CD3DX12_CPU_DESCRIPTOR_HANDLE(
-			descHeap->GetCPUDescriptorHandleForHeapStart(),
-			newTexNum,
-			dev->GetDescriptorHandleIncrementSize(
-				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-			)
-		)
-	);
-}
-
-void Model::loadTexture(ID3D12Device* dev, const wchar_t* texPath, const UINT texNum) {
-	assert(texNum <= texBuff.size() - 1);
-
-	//WICテクスチャのロード
-	TexMetadata metadata{};
-	ScratchImage scratchImg{};
-
-	HRESULT result = LoadFromWICFile(
-		texPath,
-		WIC_FLAGS_NONE,
-		&metadata, scratchImg);
-
-	const Image* img = scratchImg.GetImage(0, 0, 0);
-
-	//テクスチャバッファのリソース設定
-	CD3DX12_RESOURCE_DESC texresDesc = CD3DX12_RESOURCE_DESC::Tex2D(
-		metadata.format,
-		metadata.width,
-		(UINT)metadata.height,
-		(UINT16)metadata.arraySize,
-		(UINT16)metadata.mipLevels
-	);
-
-	//テクスチャバッファの生成
-	result = dev->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK, D3D12_MEMORY_POOL_L0),
-		D3D12_HEAP_FLAG_NONE,
-		&texresDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&texBuff[texNum]));
-
-	//テクスチャバッファへのデータ転送
-	result = texBuff[texNum]->WriteToSubresource(
-		0,
-		nullptr,
-		img->pixels,
-		(UINT)img->rowPitch,
-		(UINT)img->slicePitch
-	);
-
-	setTexture(dev, texNum);
-}
-
-Model::Model(ID3D12Device* dev,
-	const wchar_t* objPath, const wchar_t* texPath,
-	const int window_width, const int window_height,
-	const unsigned int constantBufferNum,
-	const int texNum = 0) {
-
-	texBuff.resize(constantBufferNum);
-
-	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
-	descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	descHeapDesc.NumDescriptors = constantBufferNum + 1;
-
-
-	// 生成
-	HRESULT result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
-
-	loadModel(dev, objPath,
-		window_width, window_height
-	);
-
-
-	//InitializeObject3d(&obj3d, 0, dev, descHeap.Get());
-
-	loadTexture(dev, texPath, texNum);
-	//setTexture(dev, texNum, constantBufferNum);
-}
-
-Model::Model(ID3D12Device* dev,
-			 const wchar_t* texPath,
-			 const float r,
-			 const int window_width, const int window_height,
-			 const unsigned int constantBufferNum,
-			 const int texNum) {
-	texBuff.resize(constantBufferNum);
-
-	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc{};
-	descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	descHeapDesc.NumDescriptors = constantBufferNum + 1;
-
-
-	// 生成
-	HRESULT result = dev->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
-
-	loadSphere(dev, r, window_width, window_height);
-
-	loadTexture(dev, texPath, texNum);
-}
-
-#pragma region クラス化で削除
-
-void Model::update(ID3D12Device* dev) {
-	// UpdateObject3d(&obj3d, matView, matProjection);
-	transVertBuff(dev);
-}
-
-#pragma endregion クラス化で削除
-void Model::draw(ID3D12Device* dev, ID3D12GraphicsCommandList* cmdList, ComPtr<ID3D12Resource> constBuff, const int constantBufferNum, const UINT texNum) {
+void Model::draw(ID3D12GraphicsCommandList* cmdList) {
 	// デスクリプタヒープの配列
-	ID3D12DescriptorHeap* ppHeaps[] = { descHeap.Get() };
-	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	if (descHeap) {
+		ID3D12DescriptorHeap* ppHeaps[] = { descHeap.Get() };
+		cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+	}
 
-	// 頂点バッファの設定
-	cmdList->IASetVertexBuffers(0, 1, &vbView);
-	// インデックスバッファの設定
-	cmdList->IASetIndexBuffer(&ibView);
-
-	// 定数バッファビューをセット
-	cmdList->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
-
-	// シェーダリソースビューをセット
-	cmdList->SetGraphicsRootDescriptorTable(1,
-		CD3DX12_GPU_DESCRIPTOR_HANDLE(
-			descHeap->GetGPUDescriptorHandleForHeapStart(),
-			texNum,
-			dev->GetDescriptorHandleIncrementSize(
-				D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
-		)
-	);
-	// 描画コマンド
-	cmdList->DrawIndexedInstanced(indices.size(), 1, 0, 0, 0);
+	// 全メッシュを描画
+	for (auto& mesh : meshes) {
+		mesh->draw(cmdList);
+	}
 }
+
