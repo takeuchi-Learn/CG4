@@ -20,16 +20,22 @@ using namespace std;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
-std::string Model::baseDir = "Resources/";
+ID3D12Device* Model::dev = nullptr;
+UINT Model::descriptorHandleIncrementSize = 0u;
 
 namespace {
 	constexpr float nearZ = 0.1f, farZ = 1000.f, fog = XM_PI / 3.f;
 }
 
 
-void Model::loadTextures() {
+void Model::loadTextures(const std::string& dirPath, UINT texNum) {
 	int textureIndex = 0;
-	string directoryPath = baseDir + name + "/";
+	string directoryPath = dirPath;
+	if (dirPath[dirPath.size() - 1] != '/') {
+		if (dirPath[dirPath.size() - 1] != '\\') {
+			directoryPath += '/';
+		}
+	}
 
 	for (auto& m : materials) {
 		Material* material = m.second;
@@ -39,7 +45,7 @@ void Model::loadTextures() {
 			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV = CD3DX12_CPU_DESCRIPTOR_HANDLE(descHeap->GetCPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
 			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV = CD3DX12_GPU_DESCRIPTOR_HANDLE(descHeap->GetGPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
 			// マテリアルにテクスチャ読み込み
-			material->loadTexture(directoryPath, cpuDescHandleSRV, gpuDescHandleSRV);
+			material->loadTexture(directoryPath, texNum, cpuDescHandleSRV, gpuDescHandleSRV);
 			textureIndex++;
 		}
 		// テクスチャなし
@@ -47,7 +53,7 @@ void Model::loadTextures() {
 			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV = CD3DX12_CPU_DESCRIPTOR_HANDLE(descHeap->GetCPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
 			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV = CD3DX12_GPU_DESCRIPTOR_HANDLE(descHeap->GetGPUDescriptorHandleForHeapStart(), textureIndex, descriptorHandleIncrementSize);
 			// マテリアルにテクスチャ読み込み
-			material->loadTexture(baseDir, cpuDescHandleSRV, gpuDescHandleSRV);
+			material->loadTexture(directoryPath, texNum, cpuDescHandleSRV, gpuDescHandleSRV);
 			textureIndex++;
 		}
 	}
@@ -179,8 +185,14 @@ void Model::staticInit(ID3D12Device* device) {
 	Mesh::staticInit(device);
 }
 
-Model::Model(const std::string& objModelName) {
-	init(objModelName);
+Model::Model(const std::string& dirPath, const std::string& objModelName, UINT texNum) {
+	string directoryPath = dirPath;
+	if (dirPath[dirPath.size() - 1] != '/') {
+		if (dirPath[dirPath.size() - 1] != '\\') {
+			directoryPath += '/';
+		}
+	}
+	init(directoryPath, objModelName, texNum);
 }
 
 Model::~Model() {
@@ -195,14 +207,19 @@ Model::~Model() {
 	materials.clear();
 }
 
-void Model::init(const std::string& modelname) {
+void Model::init(const std::string& dirPath, const std::string& modelname, UINT texNum) {
 	const string filename = modelname + ".obj";
-	const string directoryPath = baseDir + modelname + "/";
+	string directoryPath = dirPath;
+	if (dirPath[dirPath.size() - 1] != '/') {
+		if (dirPath[dirPath.size() - 1] != '\\') {
+			directoryPath += '/';
+		}
+	}
 
 	// ファイルストリーム
 	std::ifstream file;
 	// .objファイルを開く
-	file.open(modelname);
+	file.open(directoryPath + filename);
 	// ファイルオープン失敗をチェック
 	if (file.fail()) {
 		assert(0);
@@ -397,7 +414,7 @@ void Model::init(const std::string& modelname) {
 	createDescriptorHeap();
 
 	// テクスチャの読み込み
-	loadTextures();
+	loadTextures(directoryPath, texNum);
 }
 
 void Model::draw(ID3D12GraphicsCommandList* cmdList) {

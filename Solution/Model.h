@@ -22,7 +22,6 @@ public:
 
 private:
 	static ID3D12Device* dev;
-	static std::string baseDir;
 	// デスクリプタサイズ
 	static UINT descriptorHandleIncrementSize;
 
@@ -56,29 +55,29 @@ private:
 	/// <summary>
 	/// テクスチャ読み込み
 	/// </summary>
-	void loadTextures();
+	void loadTextures(const std::string& dirPath, UINT texNum);
 
 public:
 	// ----------
 	// static
 	// ----------
 
-	static void changeBaseDir(const std::string& newDir) { baseDir = newDir; }
-
 	// 静的初期化
 	static void staticInit(ID3D12Device* device);
 
 
 	// メンバ
-
-	Model(const std::string& objModelName);
+	// @param dirPath : objファイルのある場所のパス(例 : Resources/player/)
+	// @param objModelName : objファイルのファイル名(拡張子なし。例 : player.obj -> player)
+	Model(const std::string& dirPath, const std::string& objModelName, UINT texNum = 0u);
 	~Model();
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
+	/// <param name="dirPath">モデルファイルのあるパス</param>
 	/// <param name="modelname">モデル名(例 : Resources/player.obj)</param>
-	void init(const std::string& modelname);
+	void init(const std::string& dirPath, const std::string& modelname, UINT texNum = 0u);
 
 	/// <summary>
 	/// 描画

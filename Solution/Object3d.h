@@ -7,6 +7,7 @@
 
 #include "Model.h"
 #include "DirectXCommon.h"
+#include "Camera.h"
 
 class Object3d {
 	// Microsoft::WRL::を省略
@@ -40,9 +41,9 @@ public:
 	//	XMFLOAT2 uv; // uv座標
 	//};
 
-	// 定数バッファ用データ構造体
-	struct ConstBufferData {
-		XMFLOAT4 color; // 色
+	// 定数バッファ用データ構造体B0
+	struct ConstBufferDataB0 {
+		//XMFLOAT4 color; // 色
 		XMMATRIX mat; // 行列
 		XMFLOAT3 light;// 光源->オブジェクト
 	};
@@ -53,8 +54,9 @@ public:
 private:
 	static ID3D12Device* dev;
 	static PipelineSet ppSetDef;
+	static Camera* camera;
 
-	static void createTransferBuffer(ID3D12Device* dev, ComPtr<ID3D12Resource>& constBuff);
+	static void createTransferBufferB0(ID3D12Device* dev, ComPtr<ID3D12Resource>& constBuff);
 
 	inline XMFLOAT3 subFloat3(const XMFLOAT3& left, const XMFLOAT3& right) {
 		return XMFLOAT3(left.x - right.x,
@@ -85,7 +87,7 @@ public:
 	// --------------------
 private:
 	// 定数バッファ
-	ComPtr<ID3D12Resource> constBuff;
+	ComPtr<ID3D12Resource> constBuffB0;
 	// ワールド変換行列
 	XMMATRIX matWorld;
 
@@ -106,16 +108,19 @@ public:
 	//モデルデータ
 	Model* model = nullptr;
 
+	bool isBillboard = false;
+	bool isBillBoardY = false;// isBillboardがfalseの場合のみ機能する
+
 	XMMATRIX getMatWorld() const;
 
 	//void setTexture(ID3D12Device* dev, const UINT newTexNum);
 
 
 	// モデルは後から手動で読み込む(deleteも手動)
-	Object3d(ID3D12Device* dev);
+	Object3d(ID3D12Device* dev, Camera* camera);
 
 	// モデルデータもここで渡す(deleteは手動)
-	Object3d(ID3D12Device* dev, Model* model, const UINT texNum);
+	Object3d(ID3D12Device* dev, Camera* camera, Model* model, const UINT texNum);
 
 	// ライト->オブジェクト
 	inline void setLightDir(XMFLOAT3 light) { this->light = light; }

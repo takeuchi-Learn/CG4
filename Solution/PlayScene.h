@@ -10,8 +10,6 @@
 
 #include <DirectXMath.h>
 
-#include "Sphere.h"
-
 #include "Camera.h"
 
 #include "ParticleManager.h"
@@ -78,13 +76,9 @@ class PlayScene :
 
 	DirectX::XMFLOAT2 angle{};	// 各軸周りの回転角
 
-
-
-	std::unique_ptr<Sphere> sphere;
+	std::unique_ptr<Object3d> lightObj;
 
 #pragma endregion 3Dオブジェクト
-
-	DirectX::XMFLOAT3 light{};
 
 	Input* input = nullptr;
 

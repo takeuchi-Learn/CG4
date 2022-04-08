@@ -5,6 +5,8 @@
 
 using namespace DirectX;
 
+ID3D12Device* Material::dev = nullptr;
+
 void Material::staticInit(ID3D12Device* dev) {
 	assert(!Material::dev);
 	Material::dev = dev;

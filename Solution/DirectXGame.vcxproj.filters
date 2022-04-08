@@ -16,9 +16,6 @@
     <Filter Include="シェーダーファイル">
       <UniqueIdentifier>{7e5584a5-2895-4181-9eaf-f65622106b57}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sphere">
-      <UniqueIdentifier>{9ca9b2da-81fb-4d7b-9aea-7acce23ae854}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Camera">
       <UniqueIdentifier>{a1e0cbaf-3197-4c1d-94b2-278cf0d1c83b}</UniqueIdentifier>
     </Filter>
@@ -84,9 +81,6 @@
     <ClCompile Include="main.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>Sphere</Filter>
-    </ClCompile>
     <ClCompile Include="ParticleManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -142,9 +136,6 @@
     </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>Sphere</Filter>
     </ClInclude>
     <ClInclude Include="ParticleManager.h">
       <Filter>ヘッダー ファイル</Filter>

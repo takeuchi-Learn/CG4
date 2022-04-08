@@ -10,16 +10,17 @@ using namespace Microsoft::WRL;
 
 ID3D12Device* Object3d::dev = nullptr;
 Object3d::PipelineSet Object3d::ppSetDef{};
+Camera* Object3d::camera = nullptr;
 
-void Object3d::createTransferBuffer(ID3D12Device* dev, ComPtr<ID3D12Resource>& constBuff) {
+void Object3d::createTransferBufferB0(ID3D12Device* dev, ComPtr<ID3D12Resource>& constBuffB0) {
 	// 定数バッファの生成
 	HRESULT result = dev->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),   // アップロード可能
 		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff) & ~0xff),
+		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataB0) + 0xff) & ~0xff),
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(&constBuff)
+		IID_PPV_ARGS(&constBuffB0)
 	);
 }
 
@@ -30,20 +31,21 @@ XMMATRIX Object3d::getMatWorld() const { return matWorld; }
 //	//model->setTexture(dev, newTexNum, constantBufferNum);
 //}
 
-Object3d::Object3d(ID3D12Device* dev) {
+Object3d::Object3d(ID3D12Device* dev, Camera* camera) {
 
 	matWorld = {};
 
 	// 定数バッファの生成
-	createTransferBuffer(dev, constBuff);
+	createTransferBufferB0(dev, constBuffB0);
 }
-Object3d::Object3d(ID3D12Device* dev, Model* model, const UINT texNum) : texNum(texNum) {
+Object3d::Object3d(ID3D12Device* dev, Camera* camera, Model* model, const UINT texNum) : texNum(texNum) {
 	matWorld = {};
 
 	// 定数バッファの生成
-	createTransferBuffer(dev, constBuff);
+	createTransferBufferB0(dev, constBuffB0);
 
 	this->model = model;
+	this->camera = camera;
 }
 
 void Object3d::update(const XMMATRIX& matView, ID3D12Device* dev) {
@@ -61,6 +63,13 @@ void Object3d::update(const XMMATRIX& matView, ID3D12Device* dev) {
 	matWorld = XMMatrixIdentity(); // 変形をリセット
 	matWorld *= matScale; // ワールド行列にスケーリングを反映
 	matWorld *= matRot; // ワールド行列に回転を反映
+	if (isBillboard) {
+		const XMMATRIX& matBillBoard = camera->getBillboardMatrix();
+		matWorld *= matBillBoard;
+	} else if (isBillBoardY) {
+		const XMMATRIX& matBillBoardY = camera->getBillboardMatrixY();
+		matWorld *= matBillBoardY;
+	}
 	matWorld *= matTrans; // ワールド行列に平行移動を反映
 
 	// 親オブジェクトがあれば
@@ -70,18 +79,28 @@ void Object3d::update(const XMMATRIX& matView, ID3D12Device* dev) {
 	}
 
 	// 定数バッファへデータ転送
-	ConstBufferData* constMap = nullptr;
-	if (SUCCEEDED(constBuff->Map(0, nullptr, (void**)&constMap))) {
-		constMap->color = color; // RGBA
-		constMap->mat = matWorld * matView * model->getMatProjection();
-		constMap->light = light;
-		constBuff->Unmap(0, nullptr);
+	ConstBufferDataB0* constMapB0 = nullptr;
+	if (SUCCEEDED(constBuffB0->Map(0, nullptr, (void**)&constMapB0))) {
+		//constMap->color = color; // RGBA
+		constMapB0->mat = matWorld /** matView*/ * camera->getViewProjectionMatrix();
+		constMapB0->light = light;
+		constBuffB0->Unmap(0, nullptr);
 	}
+	/*ConstBufferDataB1* constMapB1 = nullptr;
+	HRESULT result = constBuffB1->Map(0, nullptr, (void**)&constMapB1);
+	constMapB1->ambient = material.ambient;
+	constMapB1->diffuse = material.diffuse;
+	constMapB1->specular = material.specular;
+	constMapB1->alpha = material.alpha;
+	constBuffB1->Unmap(0, nullptr);*/
 
 	//model->update(dev);
 }
 
 void Object3d::draw(DirectXCommon* dxCom) {
+	// 定数バッファビューをセット
+	dxCom->getCmdList()->SetGraphicsRootConstantBufferView(0, constBuffB0->GetGPUVirtualAddress());
+
 	model->draw(dxCom->getCmdList());
 }
 
@@ -140,8 +159,8 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 		errstr.resize(errorBlob->GetBufferSize());
 
 		std::copy_n((char*)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			errstr.begin());
+					errorBlob->GetBufferSize(),
+					errstr.begin());
 		errstr += "\n";
 		// エラー内容を出力ウィンドウに表示
 		OutputDebugStringA(errstr.c_str());
@@ -165,8 +184,8 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 		errstr.resize(errorBlob->GetBufferSize());
 
 		std::copy_n((char*)errorBlob->GetBufferPointer(),
-			errorBlob->GetBufferSize(),
-			errstr.begin());
+					errorBlob->GetBufferSize(),
+					errstr.begin());
 		errstr += "\n";
 		// エラー内容を出力ウィンドウに表示
 		OutputDebugStringA(errstr.c_str());
@@ -198,10 +217,15 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 	//ラスタライザステート
 	gpipeline.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 
+	//デプスステンシルステートの設定
+	//標準的な設定(深度テストを行う、書き込み許可、深度が小さければ合格)
+	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+
 	//レンダ―ターゲットのブレンド設定
 	D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = gpipeline.BlendState.RenderTarget[0];
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; //標準設定
 	blenddesc.BlendEnable = true;	//ブレンドを有効にする
+
 	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;	//加算
 	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;		//ソースの値を100%使う
 	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;	//デストの値を0%使う
@@ -233,31 +257,32 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 		break;
 	}
 
+	// 深度バッファのフォーマット
+	gpipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
 	gpipeline.InputLayout.pInputElementDescs = inputLayout;
 	gpipeline.InputLayout.NumElements = _countof(inputLayout);
+
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
 	gpipeline.NumRenderTargets = 1; // 描画対象は1つ
 	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
-
-	//デプスステンシルステートの設定
-	//標準的な設定(深度テストを行う、書き込み許可、深度が小さければ合格)
-	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	gpipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
 	//デスクリプタテーブルの設定
 	CD3DX12_DESCRIPTOR_RANGE descRangeSRV{};
 	descRangeSRV.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);//t0レジスタ
 
 	//ルートパラメータの設定
-	CD3DX12_ROOT_PARAMETER rootparams[2]{};
+	CD3DX12_ROOT_PARAMETER rootparams[3]{};
 	rootparams[0].InitAsConstantBufferView(0); //定数バッファビューとして初期化(b0レジスタ)
-	rootparams[1].InitAsDescriptorTable(1, &descRangeSRV); //テクスチャ用
+	rootparams[1].InitAsConstantBufferView(1); //定数バッファビューとして初期化(b0レジスタ)
+	rootparams[2].InitAsDescriptorTable(1, &descRangeSRV); //テクスチャ用
 
 	//テクスチャサンプラーの設定
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
-	Object3d::PipelineSet pipelineSet;
+	Object3d::PipelineSet pipelineSet{};
 
 	//ルートシグネチャの設定
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc{};
@@ -267,11 +292,18 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 	result = D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &rootSigBlob, &errorBlob);
 	//ルートシグネチャの生成
 	result = dev->CreateRootSignature(0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&pipelineSet.rootsignature));
+	if (FAILED(result)) {
+		assert(0);
+	}
 	// パイプラインにルートシグネチャをセット
 	gpipeline.pRootSignature = pipelineSet.rootsignature.Get();
 
 	//パイプラインステートの生成
 	result = dev->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&pipelineSet.pipelinestate));
+
+	if (FAILED(result)) {
+		assert(0);
+	}
 
 	return pipelineSet;
 }

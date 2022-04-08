@@ -20,7 +20,7 @@ public:
 	};
 
 public:
-	static const UINT maxTexNum = 128;
+	static const uint16_t maxTexNum = 128;
 	static void staticInit(ID3D12Device* dev);
 
 private:
@@ -47,7 +47,7 @@ public:
 
 	Material();
 
-	inline ID3D12Resource* getConstBuff() const { return constBuff.Get(); }
+	inline ID3D12Resource* getConstBuff() { return constBuff.Get(); }
 
 	void loadTexture(const std::string& directoryPath, UINT texNum, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 

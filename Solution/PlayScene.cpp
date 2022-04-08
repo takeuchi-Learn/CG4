@@ -107,8 +107,8 @@ namespace {
 
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
-
 	dxCom = DirectXCommon::getInstance();
+	Object3d::staticInit(dxCom->getDev());
 
 	input = Input::getInstance();
 
@@ -118,6 +118,7 @@ void PlayScene::init() {
 	camera->setEye(XMFLOAT3(0, 0, -175));	// 視点座標
 	camera->setTarget(XMFLOAT3(0, 0, 0));	// 注視点座標
 	camera->setUp(XMFLOAT3(0, 1, 0));		// 上方向
+	camera->update();
 
 #pragma endregion ビュー変換
 
@@ -167,35 +168,32 @@ void PlayScene::init() {
 	debugText.Initialize(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height, debugTextTexNumber, spriteCommon);
 
 	// 3Dオブジェクト用パイプライン生成
-	object3dPipelineSet = Object3d::createGraphicsPipeline(DirectXCommon::getInstance()->getDev());
+	object3dPipelineSet = Object3d::createGraphicsPipeline(dxCom->getDev());
 
 
 #pragma endregion スプライト
 
 #pragma region 3Dオブジェクト
 
-	model.reset(new Model(DirectXCommon::getInstance()->getDev(),
+	/*model.reset(new Model(DirectXCommon::getInstance()->getDev(),
 						  L"Resources/model/model.obj", L"Resources/model/tex.png",
 						  WinAPI::window_width, WinAPI::window_height,
-						  Object3d::constantBufferNum, obj3dTexNum));
+						  Object3d::constantBufferNum, obj3dTexNum));*/
+	model.reset(new Model("Resources/model/", "model", obj3dTexNum));
 
-	constexpr UINT obj3dNum = 2;
+	constexpr UINT obj3dNum = 1;
 	for (UINT i = 0; i < obj3dNum; i++) {
-		obj3d.emplace_back(Object3d(DirectXCommon::getInstance()->getDev(), model.get(), obj3dTexNum));
+		obj3d.emplace_back(Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
 		obj3d[i].scale = { obj3dScale, obj3dScale, obj3dScale };
-		obj3d[i].position = { i * 4.f * obj3dScale, 0, obj3dScale };
+		obj3d[i].position = { i * obj3dScale, 0, 0 };
 	}
 
-	sphere.reset(new Sphere(DirectXCommon::getInstance()->getDev(), 2.f, L"Resources/red.png", 0));
+	lightObj.reset(new Object3d(Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum)));
+	const float lightObjScale = obj3dScale * 0.5f;
+	lightObj->scale = XMFLOAT3(lightObjScale, lightObjScale, lightObjScale);
+	lightObj->position = obj3d[0].position;
 
 #pragma endregion 3Dオブジェクト
-
-#pragma region ライト
-
-	light = obj3d[0].position;
-	light.x += obj3d[0].scale.y * 2;	// 仮
-
-#pragma endregion ライト
 
 	// パーティクル初期化
 	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png", camera.get()));
@@ -242,17 +240,17 @@ void PlayScene::update() {
 
 	if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
 		debugText.Print(spriteCommon, "input mouse left",
-		input->getMousePos().x, input->getMousePos().y, 0.75f);
+						input->getMousePos().x, input->getMousePos().y, 0.75f);
 	}
 	if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
 		debugText.Print(spriteCommon, "input mouse right",
-		input->getMousePos().x,
-		input->getMousePos().y + debugText.fontHeight, 0.75f);
+						input->getMousePos().x,
+						input->getMousePos().y + debugText.fontHeight, 0.75f);
 	}
 	if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
 		debugText.Print(spriteCommon, "input mouse wheel",
-		input->getMousePos().x,
-		input->getMousePos().y + debugText.fontHeight * 2, 0.75f);
+						input->getMousePos().x,
+						input->getMousePos().y + debugText.fontHeight * 2, 0.75f);
 	}
 	if (input->hitMouseBotton(VK_LSHIFT)) {
 		debugText.Print(spriteCommon, "LSHIFT(WinAPI)", 0, 0, 2);
@@ -358,15 +356,14 @@ void PlayScene::update() {
 							  angleRoundRad(timeAngle) / XM_PI);
 
 		constexpr float lightR = 20.f;
-		light = obj3d[0].position;
-		light.x += nearSin(timeAngle) * lightR;
-		light.z += nearCos(timeAngle) * lightR;
+		lightObj->position = obj3d[0].position;
+		lightObj->position.x += nearSin(timeAngle) * lightR;
+		lightObj->position.y += nearSin(timeAngle) * lightR;
+		lightObj->position.z += nearCos(timeAngle) * lightR;
 
-		for (UINT i = 0; i < obj3d.size(); i++) {
-			obj3d[i].setLightPos(light);
+		for (auto& i : obj3d) {
+			i.setLightPos(lightObj->position);
 		}
-
-		sphere->pos = light;
 	}
 #pragma endregion ライト
 
@@ -397,21 +394,20 @@ void PlayScene::update() {
 }
 
 void PlayScene::draw() {
-	// ４．描画コマンドここから
-	// 球体コマンド
-	Sphere::sphereCommonBeginDraw(object3dPipelineSet);
-	sphere->drawWithUpdate(camera->getViewMatrix(), dxCom);
-	// 3Dオブジェクトコマンド
+
+#pragma region 3D描画
 	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	for (UINT i = 0; i < obj3d.size(); i++) {
 		obj3d[i].drawWithUpdate(camera->getViewMatrix(), dxCom);
 	}
+	lightObj->drawWithUpdate(camera->getViewMatrix(), dxCom);
 
 	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	particleMgr->drawWithUpdate(dxCom->getCmdList());
+#pragma endregion 3D描画
 
+#pragma region 前景スプライト描画
 
-	// スプライト共通コマンド
 	Sprite::drawStart(spriteCommon, dxCom->getCmdList());
 	// スプライト描画
 	for (UINT i = 0; i < _countof(sprites); i++) {
@@ -419,7 +415,8 @@ void PlayScene::draw() {
 	}
 	// デバッグテキスト描画
 	debugText.DrawAll(dxCom, spriteCommon);
-	// ４．描画コマンドここまで
+
+#pragma endregion 前景スプライト描画
 }
 
 void PlayScene::fin() {
