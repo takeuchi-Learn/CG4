@@ -108,7 +108,6 @@ namespace {
 void PlayScene::init() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 	dxCom = DirectXCommon::getInstance();
-	Object3d::staticInit(dxCom->getDev());
 
 	input = Input::getInstance();
 
