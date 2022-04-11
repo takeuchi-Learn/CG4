@@ -8,6 +8,8 @@
 #include <xaudio2.h>
 #include "RandomNum.h"
 
+#include "FbxLoader.h"
+
 using namespace DirectX;
 
 namespace {
@@ -193,6 +195,8 @@ void PlayScene::init() {
 	lightObj->position = obj3d[0].position;
 
 #pragma endregion 3Dオブジェクト
+
+	FbxLoader::GetInstance()->loadModelFromFile("cube");
 
 	// パーティクル初期化
 	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png", camera.get()));

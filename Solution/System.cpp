@@ -8,11 +8,15 @@
 
 #include "Object3d.h"
 
+#include "FbxLoader.h"
+
 System::System() {
 	constexpr LPCSTR window_title = "DirectXƒNƒ‰ƒX‰»";
 	WinAPI::getInstance()->setWindowText(window_title);
 
 	Object3d::staticInit(DirectXCommon::getInstance()->getDev());
+
+	FbxLoader::GetInstance()->init(DirectXCommon::getInstance()->getDev());
 }
 
 void System::update() {
@@ -26,4 +30,5 @@ void System::update() {
 }
 
 System::~System() {
+	FbxLoader::GetInstance()->fin();
 }
