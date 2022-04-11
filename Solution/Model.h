@@ -67,6 +67,7 @@ public:
 
 
 	// メンバ
+
 	// @param dirPath : objファイルのある場所のパス(例 : Resources/player/)
 	// @param objModelName : objファイルのファイル名(拡張子なし。例 : player.obj -> player)
 	Model(const std::string& dirPath, const std::string& objModelName, UINT texNum = 0u);

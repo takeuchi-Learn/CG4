@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "FbxModel.h"
+
 class FbxLoader {
 public:
 	/// <summary>
@@ -41,4 +43,11 @@ private:
 	ID3D12Device* dev = nullptr;
 	FbxManager* fbxManager = nullptr;
 	FbxImporter* fbxImporter = nullptr;
+
+	/// <summary>
+	/// 再帰的にノード構成を解析
+	/// </summary>
+	/// <param name="model">読み込み先のモデルオブジェクト</param>
+	/// <param name="fbxNode">解析対象のノード</param>
+	void parseNodeRecursive(FbxModel* model, FbxNode* fbxNode, FbxModel::Node* parent = nullptr);
 };
