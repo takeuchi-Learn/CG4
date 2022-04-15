@@ -44,10 +44,34 @@ private:
 	FbxManager* fbxManager = nullptr;
 	FbxImporter* fbxImporter = nullptr;
 
+	// テクスチャがない場合の標準テクスチャファイル名
+	static const std::string defaultTextureFileName;
+
 	/// <summary>
 	/// 再帰的にノード構成を解析
 	/// </summary>
 	/// <param name="model">読み込み先のモデルオブジェクト</param>
 	/// <param name="fbxNode">解析対象のノード</param>
 	void parseNodeRecursive(FbxModel* model, FbxNode* fbxNode, FbxModel::Node* parent = nullptr);
+
+	/// <summary>
+	/// メッシュの読み取り
+	/// </summary>
+	/// <param name="model">読み込み先のモデルオブジェクト</param>
+	/// <param name="fbxNode">解析対象のノード</param>
+	void parseMesh(FbxModel* model, FbxNode* fbxNode);
+
+	// 頂点座標
+	void parseMeshVertices(FbxModel* model, FbxMesh* fbxMesh);
+
+	// 面情報
+	void parseMeshFaces(FbxModel* model, FbxMesh* fbxMesh);
+
+	// マテリアル
+	void parseMaterial(FbxModel* model, FbxNode* fbxNode);
+
+	// テクスチャ
+	void loadTexture(FbxModel* model, const std::string& fullPath);
+
+	std::string ExtractFileName(const std::string& path);
 };
