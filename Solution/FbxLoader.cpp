@@ -62,6 +62,8 @@ void FbxLoader::loadModelFromFile(const std::string& modelName) {
 
 	// シーン解放
 	fbxScene->Destroy();
+
+	model->createBuffers(dev);
 }
 
 void FbxLoader::parseNodeRecursive(FbxModel* model,

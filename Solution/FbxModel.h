@@ -8,7 +8,23 @@
 
 #include <DirectXTex.h>
 
+#include <Windows.h>
+#include <wrl.h>
+#include <d3d12.h>
+#include <d3dx12.h>
+
 class FbxModel {
+private:
+	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
+	using XMFLOAT2 = DirectX::XMFLOAT2;
+	using XMFLOAT3 = DirectX::XMFLOAT3;
+	using XMFLOAT4 = DirectX::XMFLOAT4;
+	using XMMATRIX = DirectX::XMMATRIX;
+	using TexMetadata = DirectX::TexMetadata;
+	using ScratchImage = DirectX::ScratchImage;
+	using string = std::string;
+	template <class T> using vector = std::vector<T>;
+
 public:
 	friend class FbxLoader;
 
@@ -51,5 +67,19 @@ private:
 	DirectX::XMFLOAT3 diffuse = { 1, 1, 1 };
 	DirectX::TexMetadata metadata = {};
 	DirectX::ScratchImage scratchImg = {};
+
+	ComPtr<ID3D12Resource> vertBuff;
+	ComPtr<ID3D12Resource> indexBuff;
+	ComPtr<ID3D12Resource> texBuff;
+	D3D12_VERTEX_BUFFER_VIEW vbView = {};
+	D3D12_INDEX_BUFFER_VIEW ibView = {};
+	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
+
+public:
+	void createBuffers(ID3D12Device* dev);
+
+	void draw(ID3D12GraphicsCommandList* cmdList);
+
+	const XMMATRIX& GetModelTransform() { return meshNode->globalTransform; }
 };
 
