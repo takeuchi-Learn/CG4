@@ -157,8 +157,10 @@
     <ClCompile Include="EndScene.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="FbxModel.cpp" />
+    <ClCompile Include="FbxObj3d.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -191,8 +193,10 @@
     <ClInclude Include="EndScene.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="FbxModel.h" />
+    <ClInclude Include="FbxObj3d.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Looper.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
@@ -222,6 +226,20 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\FBXVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\ParticleGS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
@@ -256,6 +274,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Basic.hlsli" />
+    <None Include="Resources\Shaders\FBX.hlsli" />
     <None Include="Resources\Shaders\Particle.hlsli" />
     <None Include="Resources\Shaders\Sprite.hlsli" />
   </ItemGroup>

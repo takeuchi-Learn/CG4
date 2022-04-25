@@ -10,11 +10,15 @@
 
 #include "FbxLoader.h"
 
+#include "Light.h"
+
 System::System() {
 	constexpr LPCSTR window_title = "DirectXƒNƒ‰ƒX‰»";
 	WinAPI::getInstance()->setWindowText(window_title);
 
 	Object3d::staticInit(DirectXCommon::getInstance()->getDev());
+
+	Light::staticInit(DirectXCommon::getInstance()->getDev());
 
 	FbxLoader::GetInstance()->init(DirectXCommon::getInstance()->getDev());
 }

@@ -20,6 +20,10 @@
 
 #include <vector>
 
+#include "Light.h"
+
+#include "FbxObj3d.h"
+
 class PlayScene :
 	public GameScene {
 
@@ -64,6 +68,13 @@ class PlayScene :
 	const UINT debugTextTexNumber = Sprite::spriteSRVCount - 1;
 #pragma endregion スプライト
 
+#pragma region ライト
+
+	std::unique_ptr<Light> light;
+
+#pragma endregion ライト
+
+
 #pragma region 3Dオブジェクト
 
 	// 3Dオブジェクト用パイプライン生成
@@ -79,6 +90,14 @@ class PlayScene :
 	std::unique_ptr<Object3d> lightObj;
 
 #pragma endregion 3Dオブジェクト
+
+#pragma region FBXオブジェクト
+
+	std::unique_ptr<FbxModel> fbxModel;
+	std::unique_ptr<FbxObj3d> fbxObj3d;
+
+#pragma endregion FBXオブジェクト
+
 
 	Input* input = nullptr;
 

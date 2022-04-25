@@ -82,8 +82,9 @@ void Object3d::update(const XMMATRIX& matView, ID3D12Device* dev) {
 	ConstBufferDataB0* constMapB0 = nullptr;
 	if (SUCCEEDED(constBuffB0->Map(0, nullptr, (void**)&constMapB0))) {
 		//constMap->color = color; // RGBA
-		constMapB0->mat = matWorld /** matView*/ * camera->getViewProjectionMatrix();
-		constMapB0->light = light;
+		constMapB0->viewProj = camera->getViewProjectionMatrix();
+		constMapB0->world = matWorld;
+		constMapB0->cameraPos = camera->getEye();
 		constBuffB0->Unmap(0, nullptr);
 	}
 	/*ConstBufferDataB1* constMapB1 = nullptr;
@@ -97,16 +98,18 @@ void Object3d::update(const XMMATRIX& matView, ID3D12Device* dev) {
 	//model->update(dev);
 }
 
-void Object3d::draw(DirectXCommon* dxCom) {
+void Object3d::draw(DirectXCommon* dxCom, Light* light) {
 	// 定数バッファビューをセット
 	dxCom->getCmdList()->SetGraphicsRootConstantBufferView(0, constBuffB0->GetGPUVirtualAddress());
+
+	light->draw(dxCom, 3);
 
 	model->draw(dxCom->getCmdList());
 }
 
-void Object3d::drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom) {
+void Object3d::drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom, Light* light) {
 	update(matView, dxCom->getDev());
-	draw(dxCom);
+	draw(dxCom, light);
 }
 
 Object3d::~Object3d() {}
@@ -274,10 +277,11 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 	descRangeSRV.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);//t0レジスタ
 
 	//ルートパラメータの設定
-	CD3DX12_ROOT_PARAMETER rootparams[3]{};
+	CD3DX12_ROOT_PARAMETER rootparams[4]{};
 	rootparams[0].InitAsConstantBufferView(0); //定数バッファビューとして初期化(b0レジスタ)
 	rootparams[1].InitAsConstantBufferView(1); //定数バッファビューとして初期化(b0レジスタ)
 	rootparams[2].InitAsDescriptorTable(1, &descRangeSRV); //テクスチャ用
+	rootparams[3].InitAsConstantBufferView(2);
 
 	//テクスチャサンプラーの設定
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);

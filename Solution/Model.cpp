@@ -185,14 +185,14 @@ void Model::staticInit(ID3D12Device* device) {
 	Mesh::staticInit(device);
 }
 
-Model::Model(const std::string& dirPath, const std::string& objModelName, UINT texNum) {
+Model::Model(const std::string& dirPath, const std::string& objModelName, UINT texNum, bool smoothing) {
 	string directoryPath = dirPath;
 	if (dirPath[dirPath.size() - 1] != '/') {
 		if (dirPath[dirPath.size() - 1] != '\\') {
 			directoryPath += '/';
 		}
 	}
-	init(directoryPath, objModelName, texNum);
+	init(directoryPath, objModelName, texNum, smoothing);
 }
 
 Model::~Model() {
@@ -207,7 +207,7 @@ Model::~Model() {
 	materials.clear();
 }
 
-void Model::init(const std::string& dirPath, const std::string& modelname, UINT texNum) {
+void Model::init(const std::string& dirPath, const std::string& modelname, UINT texNum, bool smoothing) {
 	const string filename = modelname + ".obj";
 	string directoryPath = dirPath;
 	if (dirPath[dirPath.size() - 1] != '/') {
@@ -258,6 +258,8 @@ void Model::init(const std::string& dirPath, const std::string& modelname, UINT 
 		if (key == "g") {
 			// カレントメッシュの情報が揃っているなら
 			if (mesh->getName().size() > 0 && mesh->getVertexCount() > 0) {
+				// 頂点法線の平均によるエッジ平滑化
+				if (smoothing) mesh->calculateSmoothedVertexNormals();
 				// コンテナに登録
 				meshes.emplace_back(mesh);
 				// 次のメッシュ生成
@@ -341,6 +343,11 @@ void Model::init(const std::string& dirPath, const std::string& modelname, UINT 
 					vertex.normal = normals[indexNormal - 1];
 					vertex.uv = texcoords[indexTexcoord - 1];
 					mesh->addVertex(vertex);
+					// エッジ平滑化用データ追加
+					if (smoothing) {
+						// 座標データ(vキー)の番号と、全て合計した張横店のインデックスをセットで登録する
+						mesh->addSmoothData(indexPosition, (unsigned short)mesh->getVertexCount() - 1);
+					}
 				} else {
 					char c;
 					index_stream >> c;
@@ -381,6 +388,9 @@ void Model::init(const std::string& dirPath, const std::string& modelname, UINT 
 		}
 	}
 	file.close();
+
+	// 頂点法線の平均によるエッジ平滑化
+	if (smoothing) mesh->calculateSmoothedVertexNormals();
 
 	// コンテナに登録
 	meshes.emplace_back(mesh);

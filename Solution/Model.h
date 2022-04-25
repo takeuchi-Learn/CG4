@@ -70,7 +70,7 @@ public:
 
 	// @param dirPath : objファイルのある場所のパス(例 : Resources/player/)
 	// @param objModelName : objファイルのファイル名(拡張子なし。例 : player.obj -> player)
-	Model(const std::string& dirPath, const std::string& objModelName, UINT texNum = 0u);
+	Model(const std::string& dirPath, const std::string& objModelName, UINT texNum = 0u, bool smoothing = false);
 	~Model();
 
 	/// <summary>
@@ -78,7 +78,7 @@ public:
 	/// </summary>
 	/// <param name="dirPath">モデルファイルのあるパス</param>
 	/// <param name="modelname">モデル名(例 : Resources/player.obj)</param>
-	void init(const std::string& dirPath, const std::string& modelname, UINT texNum = 0u);
+	void init(const std::string& dirPath, const std::string& modelname, UINT texNum = 0u, bool smoothing = false);
 
 	/// <summary>
 	/// 描画

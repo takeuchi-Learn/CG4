@@ -9,6 +9,8 @@
 #include "DirectXCommon.h"
 #include "Camera.h"
 
+#include "Light.h"
+
 class Object3d {
 	// Microsoft::WRL::を省略
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -43,9 +45,9 @@ public:
 
 	// 定数バッファ用データ構造体B0
 	struct ConstBufferDataB0 {
-		//XMFLOAT4 color; // 色
-		XMMATRIX mat; // 行列
-		XMFLOAT3 light;// 光源->オブジェクト
+		XMMATRIX viewProj;
+		XMMATRIX world;	// ワールド行列
+		XMFLOAT3 cameraPos;	// カメラ位置(ワールド座標)
 	};
 
 	// --------------------
@@ -91,8 +93,6 @@ private:
 	// ワールド変換行列
 	XMMATRIX matWorld;
 
-	XMFLOAT3 light = XMFLOAT3(1, -1, 1);
-
 public:
 	UINT texNum = 0;
 
@@ -122,19 +122,11 @@ public:
 	// モデルデータもここで渡す(deleteは手動)
 	Object3d(ID3D12Device* dev, Camera* camera, Model* model, const UINT texNum);
 
-	// ライト->オブジェクト
-	inline void setLightDir(XMFLOAT3 light) { this->light = light; }
-	inline XMFLOAT3 getLightDir() const { return light; }
-
-	inline void setLightPos(XMFLOAT3 lightPos) {
-		setLightDir(subFloat3(position, lightPos));
-	}
-
 	void update(const XMMATRIX& matView, ID3D12Device* dev);
 
-	void draw(DirectXCommon* dxCom);
+	void draw(DirectXCommon* dxCom, Light* light);
 
-	void drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom);
+	void drawWithUpdate(const XMMATRIX& matView, DirectXCommon* dxCom, Light* light);
 
 
 	~Object3d();

@@ -8,6 +8,8 @@
 #include "Material.h"
 #include <vector>
 
+#include <unordered_map>
+
 /// <summary>
 /// 形状データ
 /// </summary>
@@ -108,6 +110,16 @@ public: // メンバ関数
 	/// <param name="cmdList">命令発行先コマンドリスト</param>
 	void draw(ID3D12GraphicsCommandList* cmdList);
 
+	/// <summary>
+	/// エッジ平滑化データ追加
+	/// </summary>
+	/// <param name="indexPosition">座標インデックス</param>
+	/// <param name="indexVertex">頂点インデックス</param>
+	void addSmoothData(unsigned short indexPosition, unsigned short indexVertex);
+
+	// 平滑化された頂点法線の計算
+	void calculateSmoothedVertexNormals();
+
 private: // メンバ変数
 	// 名前
 	std::string name;
@@ -125,5 +137,6 @@ private: // メンバ変数
 	std::vector<unsigned short> indices;
 	// マテリアル
 	Material* material = nullptr;
+	std::unordered_map<unsigned short, std::vector<unsigned short>> smoothData;
 };
 

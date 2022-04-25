@@ -10,6 +10,8 @@
 
 #include "FbxLoader.h"
 
+#include "FbxObj3d.h"
+
 using namespace DirectX;
 
 namespace {
@@ -113,6 +115,8 @@ void PlayScene::init() {
 
 	input = Input::getInstance();
 
+	FbxObj3d::setDevice(dxCom->getDev());
+
 #pragma region ビュー変換
 
 	camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
@@ -122,6 +126,16 @@ void PlayScene::init() {
 	camera->update();
 
 #pragma endregion ビュー変換
+
+	FbxObj3d::setCamera(camera.get());
+	FbxObj3d::createGraphicsPipeline();
+
+#pragma region ライト
+
+	light.reset(new Light());
+
+#pragma endregion ライト
+
 
 #pragma region 音
 
@@ -180,13 +194,14 @@ void PlayScene::init() {
 						  L"Resources/model/model.obj", L"Resources/model/tex.png",
 						  WinAPI::window_width, WinAPI::window_height,
 						  Object3d::constantBufferNum, obj3dTexNum));*/
-	model.reset(new Model("Resources/model/", "model", obj3dTexNum));
+	model.reset(new Model("Resources/model/", "model", obj3dTexNum, true));
 
 	constexpr UINT obj3dNum = 1;
 	for (UINT i = 0; i < obj3dNum; i++) {
 		obj3d.emplace_back(Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
 		obj3d[i].scale = { obj3dScale, obj3dScale, obj3dScale };
 		obj3d[i].position = { i * obj3dScale, 0, 0 };
+		obj3d[i].rotation.y = 180.f;
 	}
 
 	lightObj.reset(new Object3d(Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum)));
@@ -195,6 +210,18 @@ void PlayScene::init() {
 	lightObj->position = obj3d[0].position;
 
 #pragma endregion 3Dオブジェクト
+
+#pragma region FBX
+
+	constexpr char fbxName[] = "cube";
+	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
+
+	fbxObj3d.reset(new FbxObj3d());
+	fbxObj3d->init();
+	fbxObj3d->setModel(fbxModel.get());
+
+#pragma endregion FBX
+
 
 	FbxLoader::GetInstance()->loadModelFromFile("cube");
 
@@ -344,6 +371,8 @@ void PlayScene::update() {
 		}
 	}
 
+	//obj3d[0].rotation.y++;
+
 #pragma endregion カメラ移動回転
 
 #pragma region ライト
@@ -364,9 +393,16 @@ void PlayScene::update() {
 		lightObj->position.y += nearSin(timeAngle) * lightR;
 		lightObj->position.z += nearCos(timeAngle) * lightR;
 
-		for (auto& i : obj3d) {
+		/*for (auto& i : obj3d) {
 			i.setLightPos(lightObj->position);
-		}
+		}*/
+
+		light->setLightDir(XMVectorSet(obj3d[0].position.x - lightObj->position.x,
+									   obj3d[0].position.y - lightObj->position.y,
+									   obj3d[0].position.z - lightObj->position.z,
+									   1.f));
+
+		light->update();
 	}
 #pragma endregion ライト
 
@@ -394,19 +430,24 @@ void PlayScene::update() {
 #pragma endregion スプライト
 
 	camera->update();
+
+	fbxObj3d->update();
 }
 
 void PlayScene::draw() {
 
 #pragma region 3D描画
-	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
-	for (UINT i = 0; i < obj3d.size(); i++) {
-		obj3d[i].drawWithUpdate(camera->getViewMatrix(), dxCom);
-	}
-	lightObj->drawWithUpdate(camera->getViewMatrix(), dxCom);
 
 	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	particleMgr->drawWithUpdate(dxCom->getCmdList());
+
+	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
+	lightObj->drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
+	for (UINT i = 0; i < obj3d.size(); i++) {
+		obj3d[i].drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
+	}
+
+	fbxObj3d->draw(dxCom->getCmdList());
 #pragma endregion 3D描画
 
 #pragma region 前景スプライト描画

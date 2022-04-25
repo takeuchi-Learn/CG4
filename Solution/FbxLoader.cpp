@@ -29,7 +29,7 @@ void FbxLoader::fin() {
 	fbxManager->Destroy();
 }
 
-void FbxLoader::loadModelFromFile(const std::string& modelName) {
+FbxModel* FbxLoader::loadModelFromFile(const std::string& modelName) {
 	const std::string dirPath = baseDir + modelName + "/";
 	// 拡張子を付加
 	const std::string fileName = modelName + ".fbx";
@@ -64,6 +64,8 @@ void FbxLoader::loadModelFromFile(const std::string& modelName) {
 	fbxScene->Destroy();
 
 	model->createBuffers(dev);
+
+	return model;
 }
 
 void FbxLoader::parseNodeRecursive(FbxModel* model,

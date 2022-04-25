@@ -37,7 +37,7 @@ public:
 	void fin();
 
 	// @param modelName ファイル名の拡張子を含まないもの
-	void loadModelFromFile(const std::string& modelName);
+	FbxModel* loadModelFromFile(const std::string& modelName);
 
 private:
 	ID3D12Device* dev = nullptr;
