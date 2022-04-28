@@ -164,8 +164,8 @@ void PlayScene::init() {
 			TEX_NUM::TEX1, spriteCommon, { 0,0 }, false, false
 		);
 		// スプライトの座標変更
-		sprites[i].position.x = 1280 / 10;
-		sprites[i].position.y = 720 / 10;
+		sprites[i].position.x = 1280.f / 10;
+		sprites[i].position.y = 720.f / 10;
 		//sprites[i].isInvisible = true;
 		//sprites[i].position.x = (float)(rand() % 1280);
 		//sprites[i].position.y = (float)(rand() % 720);
@@ -216,14 +216,9 @@ void PlayScene::init() {
 	constexpr char fbxName[] = "cube";
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
 
-	fbxObj3d.reset(new FbxObj3d());
-	fbxObj3d->init();
-	fbxObj3d->setModel(fbxModel.get());
+	fbxObj3d.reset(new FbxObj3d(fbxModel.get()));
 
 #pragma endregion FBX
-
-
-	FbxLoader::GetInstance()->loadModelFromFile("cube");
 
 	// パーティクル初期化
 	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png", camera.get()));
@@ -381,7 +376,7 @@ void PlayScene::update() {
 		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
 
 		debugText.formatPrint(spriteCommon,
-							  WinAPI::window_width / 2, debugText.fontHeight * 16, 1.f,
+							  WinAPI::window_width / 2.f, debugText.fontHeight * 16, 1.f,
 							  XMFLOAT4(1, 1, 0, 1),
 							  "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
 							  timeAngle / XM_PI,
@@ -508,4 +503,8 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleN
 						 startRota, endRota,
 						 startCol, endCol);
 	}
+}
+
+PlayScene::~PlayScene() {
+
 }

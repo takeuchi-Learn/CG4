@@ -18,8 +18,6 @@ private:
 	SCENE_NUM nextScene;
 
 public:
-	// https://dixq.net/g/sp_06.html
-	// «SceneMgr.h«@ƒV[ƒ“ŠÇ—•”
 
 	static SceneManager* getInstange();
 

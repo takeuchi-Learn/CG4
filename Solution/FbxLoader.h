@@ -31,6 +31,9 @@ public:
 	// モデルを格納するルートパス
 	static const std::string baseDir;
 
+	static void convertMatrixFromFbx(DirectX::XMMATRIX* dst,
+									 const FbxAMatrix& src);
+
 	// 初期化
 	void init(ID3D12Device* dev);
 
@@ -74,4 +77,6 @@ private:
 	void loadTexture(FbxModel* model, const std::string& fullPath);
 
 	std::string ExtractFileName(const std::string& path);
+
+	void parseSkin(FbxModel* model, FbxMesh* fbxMesh);
 };

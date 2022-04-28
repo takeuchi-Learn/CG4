@@ -40,7 +40,13 @@ private:
 	static ComPtr<ID3D12PipelineState> pipelinestate;
 
 public:
-	void init();
+	// モデル未読み込み
+	FbxObj3d();
+	// モデル読み込む
+	FbxObj3d(FbxModel* model);
+
+
+	void init();	// コンストラクタ内で呼び出している
 	void update();
 	void draw(ID3D12GraphicsCommandList* cmdList);
 

@@ -1,8 +1,13 @@
 #include "FbxModel.h"
 
+FbxModel::~FbxModel() {
+	// FBXシーンの開放
+	fbxScene->Destroy();
+}
+
 void FbxModel::createBuffers(ID3D12Device* dev) {
 	// 頂点データ全体のサイズ
-	UINT sizeVB = static_cast<UINT>(sizeof(VertexPosNormalUv) * vertices.size());
+	UINT sizeVB = static_cast<UINT>(sizeof(VertexPosNormalUvSkin) * vertices.size());
 	// 頂点バッファ生成
 	HRESULT result = dev->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
@@ -13,7 +18,7 @@ void FbxModel::createBuffers(ID3D12Device* dev) {
 		IID_PPV_ARGS(&vertBuff)
 	);
 	// 頂点バッファへのデータ転送
-	VertexPosNormalUv* vertMap = nullptr;
+	VertexPosNormalUvSkin* vertMap = nullptr;
 	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
 	if (SUCCEEDED(result)) {
 		std::copy(vertices.begin(), vertices.end(), vertMap);

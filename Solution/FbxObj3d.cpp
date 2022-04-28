@@ -160,6 +160,16 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t* vsPath, const wchar_t* psPa
 	if (FAILED(result)) { assert(0); }
 }
 
+
+
+FbxObj3d::FbxObj3d() {
+	init();
+}
+FbxObj3d::FbxObj3d(FbxModel* model) {
+	init();
+	setModel(model);
+}
+
 void FbxObj3d::init() {
 	HRESULT result = S_FALSE;
 

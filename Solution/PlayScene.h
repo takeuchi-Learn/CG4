@@ -117,5 +117,7 @@ public:
 	void update() override;
 	void draw() override;
 	void fin() override;
+
+	~PlayScene() override;
 };
 

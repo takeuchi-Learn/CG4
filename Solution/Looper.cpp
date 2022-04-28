@@ -7,17 +7,29 @@
 
 #include <DirectXMath.h>
 
+#include "FbxLoader.h"
 
+#include "Object3d.h"
 
-
+#include "Light.h"
 
 
 Looper::Looper() {
+
+	FbxLoader::GetInstance()->init(DirectXCommon::getInstance()->getDev());
+
+
+	Object3d::staticInit(DirectXCommon::getInstance()->getDev());
+
+	Light::staticInit(DirectXCommon::getInstance()->getDev());
+
 	SceneManager::getInstange()->init();
 }
 
 Looper::~Looper() {
 	SceneManager::getInstange()->fin();
+
+	FbxLoader::GetInstance()->fin();
 }
 
 Looper* Looper::getInstance() {
