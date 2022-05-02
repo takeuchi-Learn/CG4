@@ -397,9 +397,10 @@ void FbxLoader::loadTexture(FbxModel* model, const std::string& fullpath) {
 	TexMetadata& metadata = model->metadata;
 	ScratchImage& scratchImg = model->scratchImg;
 
-	wchar_t wfilepath[128];
+	constexpr size_t wfilepathLen = 128;
+	wchar_t wfilepath[wfilepathLen];
 	MultiByteToWideChar(CP_ACP, 0, fullpath.c_str(), -1,
-						wfilepath, _countof(wfilepath));
+						wfilepath, wfilepathLen);
 	result = LoadFromWICFile(wfilepath,
 							 WIC_FLAGS_NONE,
 							 &metadata,

@@ -213,10 +213,11 @@ void PlayScene::init() {
 
 #pragma region FBX
 
-	constexpr char fbxName[] = "cube";
+	constexpr char fbxName[] = "boneTest";
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
 
 	fbxObj3d.reset(new FbxObj3d(fbxModel.get()));
+	fbxObj3d->scale = XMFLOAT3(0.0725f, 0.0725f, 0.0725f);
 
 #pragma endregion FBX
 

@@ -19,10 +19,17 @@ protected:
 	using XMMATRIX = DirectX::XMMATRIX;
 
 public:
+	// ボーンの最大数(hlslの定数と合わせる)
+	static const int MAX_BONES = 32;
+
 	struct ConstBufferDataTransform {
 		XMMATRIX viewproj;
 		XMMATRIX world;
 		XMFLOAT3 cameraPos;
+	};
+
+	struct ConstBufferDataSkin {
+		XMMATRIX bones[MAX_BONES];
 	};
 
 public:
@@ -52,7 +59,7 @@ public:
 
 	inline void setModel(FbxModel* model) { this->model = model; }
 
-protected:
+public:
 	ComPtr<ID3D12Resource> constBuffTransform;
 
 	XMFLOAT3 scale = { 1, 1, 1 };
@@ -60,5 +67,8 @@ protected:
 	XMFLOAT3 position = { 0, 0, 0 };
 	XMMATRIX matWorld;
 	FbxModel* model = nullptr;
+
+	// 定数バッファ(スキン)
+	ComPtr<ID3D12Resource> constBuffSkin;
 };
 
