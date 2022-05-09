@@ -204,16 +204,37 @@ void FbxObj3d::init() {
 		nullptr,
 		IID_PPV_ARGS(&constBuffSkin)
 	);
+
+	// ungdone 1フレームの時間は60FPSを想定して固定
+	frameTime.SetTime(0, 0, 0, 1, 0, FbxTime::EMode::eFrames60);
+
+	// スキン無しへの対応のため、定数バッファへデータ転送
+	ConstBufferDataSkin* constMapSkin = nullptr;
+	result = constBuffSkin->Map(0, nullptr, (void**)&constMapSkin);
+	for (int i = 0; i < MAX_BONES; i++) {
+		constMapSkin->bones[i] = XMMatrixIdentity();
+	}
+	constBuffSkin->Unmap(0, nullptr);
 }
 
 void FbxObj3d::update() {
+	// アニメーション再生中ならフレーム数を進める
+	if (isPlay) {
+		currentTime += frameTime;
+		// 終了したら初めから
+		// todo ループなし再生などに対応する
+		if (currentTime > endTime) {
+			currentTime = startTime;
+		}
+	}
+
 	XMMATRIX matScale{}, matRot{}, matTrans{};
 
 	matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
 	matRot = XMMatrixIdentity();
 	matRot *= XMMatrixRotationZ(XMConvertToRadians(rotation.z));
-	matRot *= XMMatrixRotationZ(XMConvertToRadians(rotation.x));
-	matRot *= XMMatrixRotationZ(XMConvertToRadians(rotation.y));
+	matRot *= XMMatrixRotationX(XMConvertToRadians(rotation.x));
+	matRot *= XMMatrixRotationY(XMConvertToRadians(rotation.y));
 	matTrans = XMMatrixTranslation(position.x, position.y, position.z);
 
 	matWorld = XMMatrixIdentity();
@@ -249,11 +270,19 @@ void FbxObj3d::update() {
 		// 今の姿勢
 		XMMATRIX matCurrentPose{};
 		// 今の姿勢を取得
-		FbxAMatrix fbxCurrentPose = bones[i].fbxCluster->GetLink()->EvaluateGlobalTransform(0);
+		FbxAMatrix fbxCurrentPose =
+			bones[i].fbxCluster->GetLink()->EvaluateGlobalTransform(currentTime);
 		// XMMATRIXに変換
 		FbxLoader::convertMatrixFromFbx(&matCurrentPose, fbxCurrentPose);
 		// 合成してスキニング行列に
-		constMapSkin->bones[i] = bones[i].invInitialPose * matCurrentPose;
+		// メッシュノードのグローバルトランスフォーム *
+		// ボーンの初期姿勢の逆行列 *
+		// ボーンの今の姿勢 *
+		// メッシュノードのグローバルトランスフォームの逆行列
+		constMapSkin->bones[i] = model->GetModelTransform() *
+			bones[i].invInitialPose
+			* matCurrentPose
+			* XMMatrixInverse(nullptr, model->GetModelTransform());
 	}
 	constBuffSkin->Unmap(0, nullptr);
 }
@@ -261,6 +290,7 @@ void FbxObj3d::update() {
 void FbxObj3d::draw(ID3D12GraphicsCommandList* cmdList) {
 	//　モデルがないなら描画しない
 	if (model == nullptr) return;
+
 	// パイプラインステートの設定
 	cmdList->SetPipelineState(pipelinestate.Get());
 	// ルートシグネチャの設定
@@ -274,4 +304,28 @@ void FbxObj3d::draw(ID3D12GraphicsCommandList* cmdList) {
 
 	// モデルを描画
 	model->draw(cmdList);
+}
+
+void FbxObj3d::drawWithUpdate(ID3D12GraphicsCommandList* cmdList) {
+	update();
+	draw(cmdList);
+}
+
+void FbxObj3d::playAnimation() {
+	FbxScene* fbxScene = model->getFbxScene();
+	// 0番のアニメーションを取得
+	FbxAnimStack* animStack = fbxScene->GetSrcObject<FbxAnimStack>(0);
+	// アニメーションの名前を取得
+	const char* animStackName = animStack->GetName();
+	// アニメーションの時間取得
+	FbxTakeInfo* takeInfo = fbxScene->GetTakeInfo(animStackName);
+
+	// 開始時間を取得
+	startTime = takeInfo->mLocalTimeSpan.GetStart();
+	// 終了時間を取得
+	endTime = takeInfo->mLocalTimeSpan.GetStop();
+	// 現在の時間を開始時間にする
+	currentTime = startTime;
+	// 再生状態にする
+	isPlay = true;
 }

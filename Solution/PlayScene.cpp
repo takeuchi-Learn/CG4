@@ -217,7 +217,9 @@ void PlayScene::init() {
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
 
 	fbxObj3d.reset(new FbxObj3d(fbxModel.get()));
-	fbxObj3d->scale = XMFLOAT3(0.0725f, 0.0725f, 0.0725f);
+	fbxObj3d->setScale(XMFLOAT3(0.0725f, 0.0725f, 0.0725f));
+
+	fbxObj3d->playAnimation();
 
 #pragma endregion FBX
 
@@ -426,8 +428,6 @@ void PlayScene::update() {
 #pragma endregion スプライト
 
 	camera->update();
-
-	fbxObj3d->update();
 }
 
 void PlayScene::draw() {
@@ -443,7 +443,7 @@ void PlayScene::draw() {
 		obj3d[i].drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
 	}
 
-	fbxObj3d->draw(dxCom->getCmdList());
+	fbxObj3d->drawWithUpdate(dxCom->getCmdList());
 #pragma endregion 3D描画
 
 #pragma region 前景スプライト描画

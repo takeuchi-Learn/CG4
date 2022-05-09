@@ -4,7 +4,7 @@
 using namespace DirectX;
 
 const std::string FbxLoader::baseDir = "Resources/";
-const std::string FbxLoader::defaultTextureFileName = "red.png";
+const std::string FbxLoader::defaultTextureFileName = "white.png";
 
 FbxLoader* FbxLoader::GetInstance() {
 	static FbxLoader instance;
@@ -79,9 +79,6 @@ FbxModel* FbxLoader::loadModelFromFile(const std::string& modelName) {
 void FbxLoader::parseNodeRecursive(FbxModel* model,
 								   FbxNode* fbxNode,
 								   FbxModel::Node* parent) {
-	// ノード名取得
-	std::string name = fbxNode->GetName();
-
 	// モデルにノードを追加
 	model->nodes.emplace_back();
 	FbxModel::Node& node = model->nodes.back();
@@ -119,8 +116,6 @@ void FbxLoader::parseNodeRecursive(FbxModel* model,
 		node.parent = parent;
 		node.globalTransform *= parent->globalTransform;
 	}
-
-	// todo ノードの情報を解析してノードに記録
 
 	// fbxノードのメッシュ構造を解析
 	FbxNodeAttribute* fbxNodeAttribure = fbxNode->GetNodeAttribute();
@@ -249,6 +244,7 @@ void FbxLoader::parseMaterial(FbxModel* model, FbxNode* fbxNode) {
 	if (materialCount > 0) {
 		// 先頭のマテリアルを取得
 		FbxSurfaceMaterial* material = fbxNode->GetMaterial(0);
+		// テクスチャを読み込んだかを示すフラグ
 		bool textureLoaded = false;
 		if (material) {
 			// FbxSurfaceLambertクラスかどうかを調べる
@@ -273,6 +269,7 @@ void FbxLoader::parseMaterial(FbxModel* model, FbxNode* fbxNode) {
 				const FbxFileTexture* texture = diffuseProperty.GetSrcObject<FbxFileTexture>();
 				if (texture) {
 					const char* filePath = texture->GetFileName();
+					// ファイルパスからファイル名を抽出
 					std::string path_str(filePath);
 					std::string name = ExtractFileName(path_str);
 					// テクスチャ読み込み
@@ -308,7 +305,12 @@ void FbxLoader::parseSkin(FbxModel* model,
 						  FbxMesh* fbxMesh) {
 	FbxSkin* fbxSkin = static_cast<FbxSkin*>(fbxMesh->GetDeformer(0, FbxDeformer::eSkin));
 	// スキニング情報がなければ終了
-	if (fbxSkin == nullptr) return;
+	if (fbxSkin == nullptr) {
+		for (auto& i : model->vertices) {
+			i.boneIndex[0] = 0;
+			i.boneWeight[0] = 1.f;
+		}
+	}
 	// ボーン配列の参照
 	std::vector<FbxModel::Bone>& bones = model->bones;
 

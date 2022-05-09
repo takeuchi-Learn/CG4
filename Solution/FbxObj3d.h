@@ -57,9 +57,15 @@ public:
 	void update();
 	void draw(ID3D12GraphicsCommandList* cmdList);
 
+	void drawWithUpdate(ID3D12GraphicsCommandList* cmdList);
+
 	inline void setModel(FbxModel* model) { this->model = model; }
 
-public:
+	inline void setScale(const XMFLOAT3& scale) { this->scale = scale; }
+
+	void playAnimation();
+
+protected:
 	ComPtr<ID3D12Resource> constBuffTransform;
 
 	XMFLOAT3 scale = { 1, 1, 1 };
@@ -70,5 +76,11 @@ public:
 
 	// 定数バッファ(スキン)
 	ComPtr<ID3D12Resource> constBuffSkin;
+
+	FbxTime frameTime;
+	FbxTime startTime;
+	FbxTime endTime;
+	FbxTime currentTime;
+	bool isPlay = false;
 };
 
