@@ -31,7 +31,7 @@ using namespace Microsoft::WRL;
 
 #include "DirectXCommon.h"
 
-#include "ObjCommon.h"
+#include "SpriteCommon.h"
 
 #include "Sprite.h"
 

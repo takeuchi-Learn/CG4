@@ -5,16 +5,18 @@
 
 #include "Input.h"
 
+#include <memory>
+
 class TitleScene :
 	public GameScene {
 
 	// --------------------
 	// デバッグテキスト
 	// --------------------
-	Sprite::SpriteCommon spCom;
-	DebugText debugText{};
-	// デバッグテキスト用のテクスチャ番号を指定
-	const UINT debugTextTexNumber = Sprite::spriteSRVCount - 1;
+	std::unique_ptr<SpriteCommon> spCom;
+	std::unique_ptr<DebugText> debugText;
+	// デバッグテキスト用のテクスチャ番号
+	UINT debugTextTexNumber;
 
 	Input* input = nullptr;
 

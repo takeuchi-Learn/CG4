@@ -50,9 +50,9 @@ class PlayScene :
 	// --------------------
 	// スプライト共通
 	// --------------------
-	SpriteCommon spriteCommon;
+	std::unique_ptr<SpriteCommon> spriteCommon;
 	// スプライト共通テクスチャ読み込み
-	enum TEX_NUM { TEX1 };
+	UINT texNum = 0u;
 
 	// --------------------
 	// スプライト個別
@@ -63,9 +63,9 @@ class PlayScene :
 	// --------------------
 	// デバッグテキスト
 	// --------------------
-	DebugText debugText{};
-	// デバッグテキスト用のテクスチャ番号を指定
-	const UINT debugTextTexNumber = Sprite::spriteSRVCount - 1;
+	std::unique_ptr<DebugText> debugText;
+	// デバッグテキスト用のテクスチャ番号
+	UINT debugTextTexNumber;
 #pragma endregion スプライト
 
 #pragma region ライト
@@ -110,7 +110,7 @@ class PlayScene :
 	DirectXCommon* dxCom = nullptr;
 
 private:
-	void createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum = 10U, const float startScale = 1.f);
+	void createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum = 10U, const float startScale = 1.f);
 
 public:
 	void init() override;

@@ -2,19 +2,21 @@
 
 #include <DirectXMath.h>
 
-void DebugText::Initialize(ID3D12Device* dev,
-						   int window_width, int window_height,
-						   UINT texnumber, const Sprite::SpriteCommon& spriteCommon,
+DebugText::DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSIze) {
+	Initialize(texNum, spriteCommon, tabSize);
+}
+
+void DebugText::Initialize(UINT texnumber, const SpriteCommon* spriteCommon,
 						   UINT tabSize) {
 	this->tabSize = tabSize;
 	// 全てのスプライトデータについて
 	for (int i = 0; i < _countof(sprites); i++) {
 		// スプライトを生成する
-		sprites[i].create(dev, window_width, window_height, texnumber, spriteCommon, { 0,0 });
+		sprites[i] = Sprite(texnumber, spriteCommon, { 0, 0 });
 	}
 }
 
-void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text,
+void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
 					  const float x, const float y, const float scale,
 					  DirectX::XMFLOAT4 color) {
 	std::string textLocal = text;
@@ -58,12 +60,10 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 
 		// 座標計算
 		sprites[spriteIndex].position = { x + fontWidth * scale * posNumX, y + fontHeight * scale * posNumY, 0 };
-		sprites[spriteIndex].texLeftTop = { (float)fontIndexX * fontWidth, (float)fontIndexY * fontHeight };
-		sprites[spriteIndex].texSize = { fontWidth, fontHeight };
-		sprites[spriteIndex].size = { fontWidth * scale, fontHeight * scale };
 		sprites[spriteIndex].color = drawCol;
-		// 頂点バッファ転送
-		sprites[spriteIndex].SpriteTransferVertexBuffer(spriteCommon);
+		sprites[spriteIndex].setTexLeftTop({ (float)fontIndexX * fontWidth, (float)fontIndexY * fontHeight });
+		sprites[spriteIndex].setTexSize({ fontWidth, fontHeight });
+		sprites[spriteIndex].setSize({ fontWidth * scale, fontHeight * scale });
 		// 更新
 		sprites[spriteIndex].update(spriteCommon);
 
@@ -72,7 +72,7 @@ void DebugText::Print(const Sprite::SpriteCommon& spriteCommon, const std::strin
 	}
 }
 
-int DebugText::formatPrint(const Sprite::SpriteCommon& spriteCommon,
+int DebugText::formatPrint(const SpriteCommon* spriteCommon,
 						   const float x, const float y, const float scale,
 						   DirectX::XMFLOAT4 color, const char* fmt, ...) {
 
@@ -90,7 +90,7 @@ int DebugText::formatPrint(const Sprite::SpriteCommon& spriteCommon,
 }
 
 // まとめて描画
-void DebugText::DrawAll(DirectXCommon* dxCom, const Sprite::SpriteCommon& spriteCommon) {
+void DebugText::DrawAll(DirectXCommon* dxCom, const SpriteCommon* spriteCommon) {
 	// 全ての文字のスプライトについて
 	for (int i = 0; i < spriteIndex; i++) {
 		// スプライト描画

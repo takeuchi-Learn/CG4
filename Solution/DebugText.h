@@ -16,20 +16,25 @@ public: // 定数の宣言
 public:
 	UINT tabSize = 4;	// 初期値はSPACE4つ分
 
+private:
 	// メンバ関数
-	void Initialize(ID3D12Device* dev, int window_width, int window_height, UINT texnumber, const Sprite::SpriteCommon& spriteCommon, UINT tabSIze = 4);
+	void Initialize(UINT texnumber, const SpriteCommon* spriteCommon, UINT tabSIze = 4);
+
+public:
+	// 内部でinitializeを呼び出している
+	DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSIze = 4);
 
 	// ￥n : X座標をして位置に戻し、Y座標を文字の高さ分加算する
 	// ￥t : tabSize文字分右にずらす
-	void Print(const Sprite::SpriteCommon& spriteCommon, const std::string& text,
+	void Print(const SpriteCommon* spriteCommon, const std::string& text,
 			   const float x, const float y, const float scale = 1.0f,
 			   DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1));
 
 	// 内部でvsnprintfを使用
 	// @return vsnprintfの戻り値
-	int formatPrint(const Sprite::SpriteCommon& spriteCommon, const float x, const float y, const float scale, DirectX::XMFLOAT4 color, const char* fmt, ...);
+	int formatPrint(const SpriteCommon* spriteCommon, const float x, const float y, const float scale, DirectX::XMFLOAT4 color, const char* fmt, ...);
 
-	void DrawAll(DirectXCommon* dxCom, const Sprite::SpriteCommon& spriteCommon);
+	void DrawAll(DirectXCommon* dxCom, const SpriteCommon* spriteCommon);
 
 private: // メンバ変数     
 	// スプライトデータの配列

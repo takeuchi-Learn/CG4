@@ -13,6 +13,9 @@
 
 #include "Light.h"
 
+namespace {
+	UINT whiteTexNum = 0u;
+}
 
 Looper::Looper() {
 
@@ -24,6 +27,12 @@ Looper::Looper() {
 	Light::staticInit(DirectXCommon::getInstance()->getDev());
 
 	SceneManager::getInstange()->init();
+
+	spCom.reset(new SpriteCommon());
+
+	whiteTexNum = spCom->loadTexture(L"Resources/white.png");
+
+	postEffect.reset(new PostEffect(whiteTexNum, spCom.get(), {0, 0}));
 }
 
 Looper::~Looper() {
@@ -56,10 +65,12 @@ bool Looper::loop() {
 	constexpr DirectX::XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//Â‚Á‚Û‚¢F
 	DirectXCommon::getInstance()->startDraw(clearColor);
 
-	SceneManager::getInstange()->draw();
+	postEffect->draw(DirectXCommon::getInstance(), spCom.get());
+	// todo íœ‚·‚é
+	//SceneManager::getInstange()->draw();
 
 	DirectXCommon::getInstance()->endDraw();
-	
+
 
 	return false;
 }

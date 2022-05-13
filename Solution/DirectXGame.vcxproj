@@ -166,10 +166,11 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ObjCommon.cpp" />
+    <ClCompile Include="SpriteCommon.cpp" />
     <ClCompile Include="Object3d.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="PlayScene.cpp" />
+    <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="RandomNum.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -201,10 +202,11 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="ObjCommon.h" />
+    <ClInclude Include="SpriteCommon.h" />
     <ClInclude Include="Object3d.h" />
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="PlayScene.h" />
+    <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RandomNum.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sound.h" />

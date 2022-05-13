@@ -9,25 +9,22 @@ void TitleScene::init() {
 
 	input = Input::getInstance();
 
-	spCom = Sprite::createSpriteCommon(DirectXCommon::getInstance()->getDev(),
-									   WinAPI::window_width, WinAPI::window_height);
+	spCom.reset(new SpriteCommon());
 
 	// デバッグテキスト用のテクスチャ読み込み
-	Sprite::commonLoadTexture(spCom, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
+	debugTextTexNumber = spCom->loadTexture(L"Resources/debugfont.png");
 
-	debugText.Initialize(DirectXCommon::getInstance()->getDev(),
-						 WinAPI::window_width, WinAPI::window_height,
-						debugTextTexNumber, spCom);
+	debugText.reset(new DebugText(debugTextTexNumber, spCom.get()));
 }
 
 void TitleScene::update() {
 	if (input->triggerKey(DIK_SPACE)) {
 		SceneManager::getInstange()->changeScene(SCENE_NUM::PLAY);
 	}
-	debugText.Print(spCom, "TITLE", 0, 0, 10.f);
+	debugText->Print(spCom.get(), "TITLE", 0, 0, 10.f);
 }
 
 void TitleScene::draw() {
-	Sprite::drawStart(spCom, DirectXCommon::getInstance()->getCmdList());
-	debugText.DrawAll(DirectXCommon::getInstance(), spCom);
+	spCom->drawStart(DirectXCommon::getInstance()->getCmdList());
+	debugText->DrawAll(DirectXCommon::getInstance(), spCom.get());
 }

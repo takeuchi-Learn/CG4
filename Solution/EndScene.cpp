@@ -9,15 +9,12 @@ void EndScene::init() {
 
 	input = Input::getInstance();
 
-	spCom = Sprite::createSpriteCommon(DirectXCommon::getInstance()->getDev(),
-									   WinAPI::window_width, WinAPI::window_height);
+	spCom.reset(new SpriteCommon());
 
 	// デバッグテキスト用のテクスチャ読み込み
-	Sprite::commonLoadTexture(spCom, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
+	debugTextTexNumber = spCom->loadTexture(L"Resources/debugfont.png");
 
-	debugText.Initialize(DirectXCommon::getInstance()->getDev(),
-						 WinAPI::window_width, WinAPI::window_height,
-						debugTextTexNumber, spCom);
+	debugText.reset(new DebugText(debugTextTexNumber, spCom.get()));
 }
 
 void EndScene::update() {
@@ -25,12 +22,12 @@ void EndScene::update() {
 		SceneManager::getInstange()->changeScene(SCENE_NUM::TITLE);
 	}
 
-	debugText.Print(spCom, "END", 0, 0, 10.f);
+	debugText->Print(spCom.get(), "END", 0, 0, 10.f);
 }
 
 void EndScene::draw() {
-	Sprite::drawStart(spCom, DirectXCommon::getInstance()->getCmdList());
-	debugText.DrawAll(DirectXCommon::getInstance(), spCom);
+	spCom->drawStart(DirectXCommon::getInstance()->getCmdList());
+	debugText->DrawAll(DirectXCommon::getInstance(), spCom.get());
 }
 
 void EndScene::fin() {

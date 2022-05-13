@@ -151,18 +151,14 @@ void PlayScene::init() {
 	// --------------------
 	// スプライト共通
 	// --------------------
-	spriteCommon = Sprite::createSpriteCommon(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height);
+	spriteCommon.reset(new SpriteCommon());
 
 	// スプライト共通テクスチャ読み込み
-	Sprite::commonLoadTexture(spriteCommon, TEX_NUM::TEX1, L"Resources/texture.png", DirectXCommon::getInstance()->getDev());
+	texNum = spriteCommon->loadTexture(L"Resources/texture.png");
 
 	// スプライトの生成
 	for (int i = 0; i < _countof(sprites); i++) {
-		sprites[i].create(
-			DirectXCommon::getInstance()->getDev(),
-			WinAPI::window_width, WinAPI::window_height,
-			TEX_NUM::TEX1, spriteCommon, { 0,0 }, false, false
-		);
+		sprites[i] = Sprite(texNum, spriteCommon.get(), { 0, 0 });
 		// スプライトの座標変更
 		sprites[i].position.x = 1280.f / 10;
 		sprites[i].position.y = 720.f / 10;
@@ -173,14 +169,12 @@ void PlayScene::init() {
 		//sprites[i].rotation = 0;
 		//sprites[i].size.x = 400.0f;
 		//sprites[i].size.y = 100.0f;
-		// 頂点バッファに反映
-		sprites[i].SpriteTransferVertexBuffer(spriteCommon);
 	}
 
 	// デバッグテキスト用のテクスチャ読み込み
-	Sprite::commonLoadTexture(spriteCommon, debugTextTexNumber, L"Resources/debugfont.png", DirectXCommon::getInstance()->getDev());
+	debugTextTexNumber = spriteCommon->loadTexture(L"Resources/debugfont.png");
 	// デバッグテキスト初期化
-	debugText.Initialize(DirectXCommon::getInstance()->getDev(), WinAPI::window_width, WinAPI::window_height, debugTextTexNumber, spriteCommon);
+	debugText.reset(new DebugText(debugTextTexNumber, spriteCommon.get()));
 
 	// 3Dオブジェクト用パイプライン生成
 	object3dPipelineSet = Object3d::createGraphicsPipeline(dxCom->getDev());
@@ -255,11 +249,11 @@ void PlayScene::update() {
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
 		}
-		debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 2, 1.f, XMFLOAT4(1, 1, 1, 1), "BGM_STATE : %s", stateStr.c_str());
+		debugText->formatPrint(spriteCommon.get(), 0, debugText->fontHeight * 2, 1.f, XMFLOAT4(1, 1, 1, 1), "BGM_STATE : %s", stateStr.c_str());
 
-		debugText.Print(spriteCommon, "0 : Play/Stop BGM", 0, debugText.fontHeight * 3);
+		debugText->Print(spriteCommon.get(), "0 : Play/Stop BGM", 0, debugText->fontHeight * 3);
 
-		debugText.Print(spriteCommon, "P : create particle(play SE)", 0, debugText.fontHeight * 4);
+		debugText->Print(spriteCommon.get(), "P : create particle(play SE)", 0, debugText->fontHeight * 4);
 	}
 
 #pragma endregion 音
@@ -267,21 +261,21 @@ void PlayScene::update() {
 #pragma region マウス
 
 	if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
-		debugText.Print(spriteCommon, "input mouse left",
-						input->getMousePos().x, input->getMousePos().y, 0.75f);
+		debugText->Print(spriteCommon.get(), "input mouse left",
+						 input->getMousePos().x, input->getMousePos().y, 0.75f);
 	}
 	if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
-		debugText.Print(spriteCommon, "input mouse right",
-						input->getMousePos().x,
-						input->getMousePos().y + debugText.fontHeight, 0.75f);
+		debugText->Print(spriteCommon.get(), "input mouse right",
+						 input->getMousePos().x,
+						 input->getMousePos().y + debugText->fontHeight, 0.75f);
 	}
 	if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
-		debugText.Print(spriteCommon, "input mouse wheel",
-						input->getMousePos().x,
-						input->getMousePos().y + debugText.fontHeight * 2, 0.75f);
+		debugText->Print(spriteCommon.get(), "input mouse wheel",
+						 input->getMousePos().x,
+						 input->getMousePos().y + debugText->fontHeight * 2, 0.75f);
 	}
 	if (input->hitMouseBotton(VK_LSHIFT)) {
-		debugText.Print(spriteCommon, "LSHIFT(WinAPI)", 0, 0, 2);
+		debugText->Print(spriteCommon.get(), "LSHIFT(WinAPI)", 0, 0, 2);
 	}
 
 	// Rを押すたびマウスカーソルの表示非表示を切り替え
@@ -300,32 +294,32 @@ void PlayScene::update() {
 
 #pragma region 時間
 
-	debugText.formatPrint(spriteCommon, 0, 0, 1.f,
-						  XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxCom->getFPS());
+	debugText->formatPrint(spriteCommon.get(), 0, 0, 1.f,
+						   XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxCom->getFPS());
 
 	if (input->hitKey(DIK_R)) timer->reset();
 
-	debugText.formatPrint(spriteCommon, 0, debugText.fontHeight * 15, 1.f,
-						  XMFLOAT4(1, 1, 1, 1),
-						  "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
+	debugText->formatPrint(spriteCommon.get(), 0, debugText->fontHeight * 15, 1.f,
+						   XMFLOAT4(1, 1, 1, 1),
+						   "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
 
 #pragma endregion 時間
 
 #pragma region 情報表示
 
 	if (input->triggerKey(DIK_T)) {
-		debugText.tabSize++;
-		if (input->hitKey(DIK_LSHIFT)) debugText.tabSize = 4U;
+		debugText->tabSize++;
+		if (input->hitKey(DIK_LSHIFT)) debugText->tabSize = 4U;
 	}
 
-	debugText.formatPrint(spriteCommon, debugText.fontWidth * 2, debugText.fontHeight * 17, 1.f,
-						  XMFLOAT4(1, 1, 1, 1),
-						  "newLine\ntab(size %u)\tendString", debugText.tabSize);
+	debugText->formatPrint(spriteCommon.get(), debugText->fontWidth * 2, debugText->fontHeight * 17, 1.f,
+						   XMFLOAT4(1, 1, 1, 1),
+						   "newLine\ntab(size %u)\tendString", debugText->tabSize);
 
-	debugText.Print(spriteCommon, "SPACE : end", 0, debugText.fontHeight * 6, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
+	debugText->Print(spriteCommon.get(), "SPACE : end", 0, debugText->fontHeight * 6, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
 
-	debugText.Print(spriteCommon, "WASD : move camera", 0, debugText.fontHeight * 8);
-	debugText.Print(spriteCommon, "arrow : rotation camera", 0, debugText.fontHeight * 9);
+	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, debugText->fontHeight * 8);
+	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, debugText->fontHeight * 9);
 
 #pragma endregion 情報表示
 
@@ -378,12 +372,12 @@ void PlayScene::update() {
 		// 一秒で一周(2PI[rad])
 		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
 
-		debugText.formatPrint(spriteCommon,
-							  WinAPI::window_width / 2.f, debugText.fontHeight * 16, 1.f,
-							  XMFLOAT4(1, 1, 0, 1),
-							  "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
-							  timeAngle / XM_PI,
-							  angleRoundRad(timeAngle) / XM_PI);
+		debugText->formatPrint(spriteCommon.get(),
+							   WinAPI::window_width / 2.f, debugText->fontHeight * 16, 1.f,
+							   XMFLOAT4(1, 1, 0, 1),
+							   "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
+							   timeAngle / XM_PI,
+							   angleRoundRad(timeAngle) / XM_PI);
 
 		constexpr float lightR = 20.f;
 		lightObj->position = obj3d[0].position;
@@ -448,13 +442,13 @@ void PlayScene::draw() {
 
 #pragma region 前景スプライト描画
 
-	Sprite::drawStart(spriteCommon, dxCom->getCmdList());
+	spriteCommon->drawStart(dxCom->getCmdList());
 	// スプライト描画
 	for (UINT i = 0; i < _countof(sprites); i++) {
-		sprites[i].drawWithUpdate(dxCom, spriteCommon);
+		sprites[i].drawWithUpdate(dxCom, spriteCommon.get());
 	}
 	// デバッグテキスト描画
-	debugText.DrawAll(dxCom, spriteCommon);
+	debugText->DrawAll(dxCom, spriteCommon.get());
 
 #pragma endregion 前景スプライト描画
 }
@@ -463,7 +457,7 @@ void PlayScene::fin() {
 	//Sound::SoundStopWave(soundData1.get());
 }
 
-void PlayScene::createParticle(const DirectX::XMFLOAT3 pos, const UINT particleNum, const float startScale) {
+void PlayScene::createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum, const float startScale) {
 	for (UINT i = 0U; i < particleNum; i++) {
 
 		const float theata = RandomNum::getRandf(0, XM_PI);

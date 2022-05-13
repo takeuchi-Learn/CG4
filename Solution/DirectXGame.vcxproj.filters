@@ -105,7 +105,7 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>Object共通\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="ObjCommon.cpp">
+    <ClCompile Include="SpriteCommon.cpp">
       <Filter>Object共通\Sprite</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
@@ -153,6 +153,9 @@
     <ClCompile Include="Time.cpp">
       <Filter>Time</Filter>
     </ClCompile>
+    <ClCompile Include="PostEffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -173,7 +176,7 @@
     <ClInclude Include="Sprite.h">
       <Filter>Object共通\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="ObjCommon.h">
+    <ClInclude Include="SpriteCommon.h">
       <Filter>Object共通\Sprite</Filter>
     </ClInclude>
     <ClInclude Include="Object3d.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="Time.h">
       <Filter>Time</Filter>
+    </ClInclude>
+    <ClInclude Include="PostEffect.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
