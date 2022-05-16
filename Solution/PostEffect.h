@@ -14,6 +14,16 @@ private:
 	// SRV用のデスクリプタヒープ
 	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
 
+	// 深度バッファ
+	ComPtr<ID3D12Resource> depthBuff;
+	// RTV用デスクリプタヒープ
+	ComPtr<ID3D12DescriptorHeap> descHeapRTV;
+	// DSV用デスクリプタヒープ
+	ComPtr<ID3D12DescriptorHeap> descHeapDSV;
+
+	// 画面クリアの色
+	static const float clearColor[4];
+
 public:
 	PostEffect(UINT texNumber,
 			   const SpriteCommon* spriteCommon,
@@ -23,5 +33,9 @@ public:
 	void init();
 
 	void draw(DirectXCommon* dxCom, SpriteCommon* spCom);
+
+	void startDrawScene(DirectXCommon *dxCom);
+
+	void endDrawScene(DirectXCommon *dxCom);
 };
 

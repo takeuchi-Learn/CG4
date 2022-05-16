@@ -32,7 +32,7 @@ Looper::Looper() {
 
 	whiteTexNum = spCom->loadTexture(L"Resources/white.png");
 
-	postEffect.reset(new PostEffect(whiteTexNum, spCom.get(), {0, 0}));
+	postEffect.reset(new PostEffect(whiteTexNum, spCom.get(), { 0, 0 }));
 }
 
 Looper::~Looper() {
@@ -41,7 +41,7 @@ Looper::~Looper() {
 	FbxLoader::GetInstance()->fin();
 }
 
-Looper* Looper::getInstance() {
+Looper *Looper::getInstance() {
 	static Looper lpr;
 	return &lpr;
 }
@@ -62,6 +62,10 @@ bool Looper::loop() {
 	// --------------------
 	// シーンマネージャーの描画
 	// --------------------
+	postEffect->startDrawScene(DirectXCommon::getInstance());
+	SceneManager::getInstange()->draw();
+	postEffect->endDrawScene(DirectXCommon::getInstance());
+
 	constexpr DirectX::XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
 	DirectXCommon::getInstance()->startDraw(clearColor);
 
