@@ -24,7 +24,7 @@ void TitleScene::update() {
 	debugText->Print(spCom.get(), "TITLE", 0, 0, 10.f);
 }
 
-void TitleScene::draw() {
+void TitleScene::drawFrontSprite() {
 	spCom->drawStart(DirectXCommon::getInstance()->getCmdList());
 	debugText->DrawAll(DirectXCommon::getInstance(), spCom.get());
 }

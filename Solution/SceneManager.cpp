@@ -51,8 +51,16 @@ void SceneManager::update() {
 	nowScene->update();
 }
 
-void SceneManager::draw() {
-	nowScene->draw();
+void SceneManager::drawBackSprite() {
+	nowScene->drawBackSprite();
+}
+
+void SceneManager::drawObj3d() {
+	nowScene->drawObj3d();
+}
+
+void SceneManager::drawFrontSprite() {
+	nowScene->drawFrontSprite();
 }
 
 void SceneManager::fin() {

@@ -23,7 +23,7 @@ class EndScene :
 public:
     void init() override;
     void update() override;
-    void draw() override;
+    void drawFrontSprite() override;
     void fin() override;
 };
 

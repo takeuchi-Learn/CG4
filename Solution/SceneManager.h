@@ -23,7 +23,9 @@ public:
 
 	void init() override;
 	void update() override;
-	void draw() override;
+	void drawBackSprite() override;
+	void drawObj3d() override;
+	void drawFrontSprite() override;
 	void fin() override;
 
 	void changeScene(const SCENE_NUM nextScene);

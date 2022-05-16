@@ -115,7 +115,8 @@ private:
 public:
 	void init() override;
 	void update() override;
-	void draw() override;
+	void drawObj3d() override;
+	void drawFrontSprite() override;
 	void fin() override;
 
 	~PlayScene() override;

@@ -6,8 +6,6 @@ class Looper {
 private:
 	Looper(const Looper& looper) = delete;
 	Looper& operator=(const Looper& looper) = delete;
-
-	std::unique_ptr<SpriteCommon> spCom;
 	std::unique_ptr<PostEffect> postEffect;
 
 	Looper();

@@ -23,5 +23,5 @@ class TitleScene :
 public:
 	void init() override;
 	void update() override;
-	void draw() override;
+	void drawFrontSprite() override;
 };

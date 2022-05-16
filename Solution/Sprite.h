@@ -12,6 +12,7 @@ private:
 	using XMMATRIX = DirectX::XMMATRIX;
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
+public:
 	// 定数バッファ用データ構造体
 	struct ConstBufferData {
 		XMFLOAT4 color; // 色 (RGBA)
@@ -30,7 +31,7 @@ private:
 protected:
 	//頂点バッファ;
 	ComPtr<ID3D12Resource> vertBuff;
-	//頂点バッファビュー;
+	//頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
 	//定数バッファ;
 	ComPtr<ID3D12Resource> constBuff;

@@ -46,7 +46,7 @@ void Sprite::SpriteTransferVertexBuffer(const SpriteCommon* spriteCommon) {
 		right = -right;
 	}
 
-	if (isFlipY) {// ¶‰E“ü‚ê‘Ö‚¦
+	if (isFlipY) {// ã‰º“ü‚ê‘Ö‚¦
 		top = -top;
 		bottom = -bottom;
 	}

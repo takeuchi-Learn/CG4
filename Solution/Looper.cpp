@@ -13,10 +13,6 @@
 
 #include "Light.h"
 
-namespace {
-	UINT whiteTexNum = 0u;
-}
-
 Looper::Looper() {
 
 	FbxLoader::GetInstance()->init(DirectXCommon::getInstance()->getDev());
@@ -28,11 +24,7 @@ Looper::Looper() {
 
 	SceneManager::getInstange()->init();
 
-	spCom.reset(new SpriteCommon());
-
-	whiteTexNum = spCom->loadTexture(L"Resources/white.png");
-
-	postEffect.reset(new PostEffect(whiteTexNum, spCom.get(), { 0, 0 }));
+	postEffect.reset(new PostEffect());
 }
 
 Looper::~Looper() {
@@ -62,16 +54,19 @@ bool Looper::loop() {
 	// --------------------
 	// シーンマネージャーの描画
 	// --------------------
+	SceneManager::getInstange()->drawBackSprite();
+
 	postEffect->startDrawScene(DirectXCommon::getInstance());
-	SceneManager::getInstange()->draw();
+	SceneManager::getInstange()->drawObj3d();
 	postEffect->endDrawScene(DirectXCommon::getInstance());
 
 	constexpr DirectX::XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
 	DirectXCommon::getInstance()->startDraw(clearColor);
 
-	postEffect->draw(DirectXCommon::getInstance(), spCom.get());
-	// todo 削除する
-	//SceneManager::getInstange()->draw();
+	postEffect->draw(DirectXCommon::getInstance());
+	
+
+	SceneManager::getInstange()->drawFrontSprite();
 
 	DirectXCommon::getInstance()->endDraw();
 

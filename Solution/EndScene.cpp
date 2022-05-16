@@ -25,7 +25,7 @@ void EndScene::update() {
 	debugText->Print(spCom.get(), "END", 0, 0, 10.f);
 }
 
-void EndScene::draw() {
+void EndScene::drawFrontSprite() {
 	spCom->drawStart(DirectXCommon::getInstance()->getCmdList());
 	debugText->DrawAll(DirectXCommon::getInstance(), spCom.get());
 }

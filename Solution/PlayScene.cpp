@@ -424,9 +424,7 @@ void PlayScene::update() {
 	camera->update();
 }
 
-void PlayScene::draw() {
-
-#pragma region 3D描画
+void PlayScene::drawObj3d() {
 
 	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	particleMgr->drawWithUpdate(dxCom->getCmdList());
@@ -438,10 +436,9 @@ void PlayScene::draw() {
 	}
 
 	fbxObj3d->drawWithUpdate(dxCom->getCmdList());
-#pragma endregion 3D描画
+}
 
-#pragma region 前景スプライト描画
-
+void PlayScene::drawFrontSprite() {
 	spriteCommon->drawStart(dxCom->getCmdList());
 	// スプライト描画
 	for (UINT i = 0; i < _countof(sprites); i++) {
@@ -449,15 +446,13 @@ void PlayScene::draw() {
 	}
 	// デバッグテキスト描画
 	debugText->DrawAll(dxCom, spriteCommon.get());
-
-#pragma endregion 前景スプライト描画
 }
 
 void PlayScene::fin() {
 	//Sound::SoundStopWave(soundData1.get());
 }
 
-void PlayScene::createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum, const float startScale) {
+void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum, const float startScale) {
 	for (UINT i = 0U; i < particleNum; i++) {
 
 		const float theata = RandomNum::getRandf(0, XM_PI);
