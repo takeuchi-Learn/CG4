@@ -17,9 +17,9 @@ using namespace Microsoft::WRL;
 UINT SpriteCommon::nowTexNum = 0u;
 
 // スプライト用パイプライン生成
-SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Device* dev,
-															   const wchar_t* vsPath, const wchar_t* psPath,
-															   BLEND_MODE blendMode) {
+SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Device *dev,
+																	 const wchar_t *vsPath, const wchar_t *psPath,
+																	 BLEND_MODE blendMode) {
 	HRESULT result;
 
 	ComPtr<ID3DBlob> vsBlob = nullptr; // 頂点シェーダオブジェクト
@@ -41,7 +41,7 @@ SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Devic
 		std::string errstr;
 		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char*)errorBlob->GetBufferPointer(),
+		std::copy_n((char *)errorBlob->GetBufferPointer(),
 					errorBlob->GetBufferSize(),
 					errstr.begin());
 		errstr += "\n";
@@ -65,7 +65,7 @@ SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Devic
 		std::string errstr;
 		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char*)errorBlob->GetBufferPointer(),
+		std::copy_n((char *)errorBlob->GetBufferPointer(),
 					errorBlob->GetBufferSize(),
 					errstr.begin());
 		errstr += "\n";
@@ -100,7 +100,7 @@ SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Devic
 	gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;              // 背面カリングをしない
 
 	// レンダーターゲットのブレンド設定
-	D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = gpipeline.BlendState.RenderTarget[0];
+	D3D12_RENDER_TARGET_BLEND_DESC &blenddesc = gpipeline.BlendState.RenderTarget[0];
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; // 標準設定
 	blenddesc.BlendEnable = true;                   // ブレンドを有効にする
 	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;    // 加算
@@ -185,7 +185,7 @@ SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Devic
 }
 
 // スプライト共通テクスチャ読み込み
-UINT SpriteCommon::loadTexture(const wchar_t* filename) {
+UINT SpriteCommon::loadTexture(const wchar_t *filename, DirectX::XMFLOAT2 *pTexSize) {
 	// 異常な番号の指定を検出
 	assert(nowTexNum + 1 <= SpriteCommon::spriteSRVCount - 1);
 
@@ -204,7 +204,7 @@ UINT SpriteCommon::loadTexture(const wchar_t* filename) {
 		WIC_FLAGS_NONE,
 		&metadata, scratchImg);
 
-	const Image* img = scratchImg.GetImage(0, 0, 0); // 生データ抽出
+	const Image *img = scratchImg.GetImage(0, 0, 0); // 生データ抽出
 
 	// リソース設定
 	CD3DX12_RESOURCE_DESC texresDesc = CD3DX12_RESOURCE_DESC::Tex2D(
@@ -251,13 +251,15 @@ UINT SpriteCommon::loadTexture(const wchar_t* filename) {
 		)
 	);
 
+	if (pTexSize != nullptr) *pTexSize = XMFLOAT2(metadata.width, metadata.height);
+
 	return nowTexNum;
 }
 
 
 
 // スプライト共通グラフィックコマンドのセット
-void SpriteCommon::drawStart(ID3D12GraphicsCommandList* cmdList) {
+void SpriteCommon::drawStart(ID3D12GraphicsCommandList *cmdList) {
 	// パイプラインステートの設定
 	cmdList->SetPipelineState(pipelineSet.pipelinestate.Get());
 	// ルートシグネチャの設定
@@ -266,12 +268,12 @@ void SpriteCommon::drawStart(ID3D12GraphicsCommandList* cmdList) {
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// テクスチャ用デスクリプタヒープの設定
-	ID3D12DescriptorHeap* ppHeaps[] = { descHeap.Get() };
+	ID3D12DescriptorHeap *ppHeaps[] = { descHeap.Get() };
 	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
 SpriteCommon::SpriteCommon(BLEND_MODE blendMode,
-						   const wchar_t* vsPath, const wchar_t* psPath) {
+						   const wchar_t *vsPath, const wchar_t *psPath) {
 	// スプライト用パイプライン生成
 	pipelineSet = SpriteCreateGraphicsPipeline(DirectXCommon::getInstance()->getDev(), vsPath, psPath, blendMode);
 

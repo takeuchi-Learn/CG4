@@ -48,19 +48,19 @@ public:
 
 private:
 	// スプライト用パイプライン生成(createSpriteCommon内で呼び出している)
-	static SpriteCommon::PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device* dev,
-																  const wchar_t* vsPath, const wchar_t* psPath,
+	static SpriteCommon::PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device *dev,
+																  const wchar_t *vsPath, const wchar_t *psPath,
 																  BLEND_MODE blendMode);
 
 public:
 	SpriteCommon(BLEND_MODE blendMode = BLEND_MODE::ALPHA,
-				 const wchar_t* vsPath = L"Resources/Shaders/SpriteVS.hlsl",
-				 const wchar_t* psPath = L"Resources/Shaders/SpritePS.hlsl");
+				 const wchar_t *vsPath = L"Resources/Shaders/SpriteVS.hlsl",
+				 const wchar_t *psPath = L"Resources/Shaders/SpritePS.hlsl");
 
 	// スプライト共通テクスチャ読み込み
-	UINT loadTexture(const wchar_t* filename);
+	UINT loadTexture(const wchar_t *filename, DirectX::XMFLOAT2 *pTexSize = nullptr);
 
 	// スプライト共通グラフィックコマンドのセット
-	void drawStart(ID3D12GraphicsCommandList* cmdList);
+	void drawStart(ID3D12GraphicsCommandList *cmdList);
 };
 
