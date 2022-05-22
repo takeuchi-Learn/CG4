@@ -63,6 +63,8 @@ public:
 
 	inline void setScale(const XMFLOAT3& scale) { this->scale = scale; }
 
+	inline void setPosition(const XMFLOAT3& position) { this->position = position; }
+
 	void playAnimation();
 
 protected:

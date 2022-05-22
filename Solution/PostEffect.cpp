@@ -6,7 +6,7 @@
 
 using namespace DirectX;
 
-const float PostEffect::clearColor[4] = { 0.f, 0.f, 0.f, 0.f };
+const float PostEffect::clearColor[4] = { 0.f, 0.5f, 0.75f, 0.f };
 
 PostEffect::PostEffect() { init(); }
 
@@ -229,36 +229,40 @@ void PostEffect::init() {
 	auto dev = DirectXCommon::getInstance()->getDev();
 
 	// テクスチャバッファ設定
-	HRESULT result =
-		dev->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,
-															  D3D12_MEMORY_POOL_L0),
-									 D3D12_HEAP_FLAG_NONE,
-									 &texresDesc,
-									 D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-									 &CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM,
-														  clearColor),
-									 IID_PPV_ARGS(&texbuff));
-
-	assert(SUCCEEDED(result));
-
-	{
-		// 画素数
-		const UINT pixelCount = WinAPI::window_width * WinAPI::window_height;
-		// 一行分のデータサイズ
-		const UINT rowPitch = sizeof(UINT) * WinAPI::window_width;
-		// 画像全体のデータサイズ
-		const UINT depthPitch = rowPitch * WinAPI::window_height;
-		// 画像イメージ
-		UINT *img = new UINT[pixelCount];
-		// 0xrrggbbaaの色にする
-		for (UINT i = 0; i < pixelCount; i++) {
-			img[i] = 0xff0000ff;
-		}
-		// テクスチャバッファにデータ転送
-		result = texbuff->WriteToSubresource(0, nullptr, img, rowPitch, depthPitch);
-		delete[] img;
+	HRESULT result;
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		result =
+			dev->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_CPU_PAGE_PROPERTY_WRITE_BACK,
+																  D3D12_MEMORY_POOL_L0),
+										 D3D12_HEAP_FLAG_NONE,
+										 &texresDesc,
+										 D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+										 &CD3DX12_CLEAR_VALUE(DXGI_FORMAT_R8G8B8A8_UNORM,
+															  clearColor),
+										 IID_PPV_ARGS(&texbuff[i]));
 
 		assert(SUCCEEDED(result));
+
+		{
+			// 画素数
+			const UINT pixelCount = WinAPI::window_width * WinAPI::window_height;
+			// 一行分のデータサイズ
+			const UINT rowPitch = sizeof(UINT) * WinAPI::window_width;
+			// 画像全体のデータサイズ
+			const UINT depthPitch = rowPitch * WinAPI::window_height;
+			// 画像イメージ
+			UINT *img = new UINT[pixelCount];
+			// 0xrrggbbaaの色にする
+			for (UINT j = 0; j < pixelCount; j++) {
+				img[j] = 0xff0000ff;
+			}
+			// テクスチャバッファにデータ転送
+			result = texbuff[i]->WriteToSubresource(0, nullptr, img, rowPitch, depthPitch);
+			delete[] img;
+
+			assert(SUCCEEDED(result));
+		}
+
 	}
 
 	// SRV用デスクリプタヒープの設定
@@ -279,22 +283,27 @@ void PostEffect::init() {
 	srvDesc.Texture2D.MipLevels = 1;
 
 	// デスクリプタヒープにSRV作成
-	dev->CreateShaderResourceView(texbuff.Get(),
+	dev->CreateShaderResourceView(texbuff[0].Get(),
 								  &srvDesc,
 								  descHeapSRV->GetCPUDescriptorHandleForHeapStart());
 
 	// RTV用デスクリプタヒープ設定
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescHeapDesc{};
 	rtvDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvDescHeapDesc.NumDescriptors = 1;
+	rtvDescHeapDesc.NumDescriptors = renderTargetNum;
 	// RTV用デスクリプタヒープを生成
 	result = dev->CreateDescriptorHeap(&rtvDescHeapDesc, IID_PPV_ARGS(&descHeapRTV));
 	assert(SUCCEEDED(result));
-	// デスクリプタヒープにRTVを作成
-	dev->CreateRenderTargetView(texbuff.Get(),
-								nullptr,
-								descHeapRTV->GetCPUDescriptorHandleForHeapStart());
-
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		// デスクリプタヒープにRTVを作成
+		dev->CreateRenderTargetView(texbuff[i].Get(),
+									nullptr,
+									CD3DX12_CPU_DESCRIPTOR_HANDLE(
+										descHeapRTV->GetCPUDescriptorHandleForHeapStart(),
+										i,
+										dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV))
+									);
+	}
 	// 深度バッファのリソース設定
 	CD3DX12_RESOURCE_DESC depthResDesc =
 		CD3DX12_RESOURCE_DESC::Tex2D(
@@ -374,29 +383,43 @@ void PostEffect::startDrawScene(DirectXCommon *dxCom) {
 	auto cmdList = dxCom->getInstance()->getCmdList();
 
 	// リソースバリアを変更(シェーダーリソース -> 描画可能)
-	cmdList->ResourceBarrier(1,
-							 &CD3DX12_RESOURCE_BARRIER::Transition(texbuff.Get(),
-																   D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
-																   D3D12_RESOURCE_STATE_RENDER_TARGET));
-
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		cmdList->ResourceBarrier(1,
+								 &CD3DX12_RESOURCE_BARRIER::Transition(texbuff[i].Get(),
+																	   D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+																	   D3D12_RESOURCE_STATE_RENDER_TARGET));
+	}
 	// レンダーターゲットビュー用デスクリプタヒープのハンドルを取得
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvH =
-		descHeapRTV->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHs[renderTargetNum]{};
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		rtvHs[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+			descHeapRTV->GetCPUDescriptorHandleForHeapStart(), i,
+			DirectXCommon::getInstance()->getDev()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+	}
+
 	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvH =
 		descHeapDSV->GetCPUDescriptorHandleForHeapStart();
 
 	// レンダーターゲットをセット
-	cmdList->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+	cmdList->OMSetRenderTargets(renderTargetNum, rtvHs, false, &dsvH);
+
+	CD3DX12_VIEWPORT viewPorts[renderTargetNum]{};
+	CD3DX12_RECT scissorRects[renderTargetNum]{};
+
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		viewPorts[i] = CD3DX12_VIEWPORT(0.f, 0.f, WinAPI::window_width, WinAPI::window_height);
+		scissorRects[i] = CD3DX12_RECT(0, 0, WinAPI::window_width, WinAPI::window_height);
+	}
+
 	// ビューポートの設定
-	cmdList->RSSetViewports(1, &CD3DX12_VIEWPORT(0.f, 0.f,
-												 WinAPI::window_width,
-												 WinAPI::window_height));
+	cmdList->RSSetViewports(renderTargetNum, viewPorts);
 	// シザリング矩形の設定
-	cmdList->RSSetScissorRects(1, &CD3DX12_RECT(0, 0,
-												WinAPI::window_width, WinAPI::window_height));
+	cmdList->RSSetScissorRects(renderTargetNum, scissorRects);
 	// 全画面クリア
-	cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		cmdList->ClearRenderTargetView(rtvHs[i], clearColor, 0, nullptr);
+	}
 
 	// 深度バッファのクリア
 	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.F, 0, 0, nullptr);
@@ -404,8 +427,9 @@ void PostEffect::startDrawScene(DirectXCommon *dxCom) {
 
 void PostEffect::endDrawScene(DirectXCommon *dxCom) {
 	auto cmdList = dxCom->getInstance()->getCmdList();
-	cmdList->ResourceBarrier(1,
-							 &CD3DX12_RESOURCE_BARRIER::Transition(texbuff.Get(),
-																   D3D12_RESOURCE_STATE_RENDER_TARGET,
-																   D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texbuff[i].Get(),
+																		  D3D12_RESOURCE_STATE_RENDER_TARGET,
+																		  D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+	}
 }

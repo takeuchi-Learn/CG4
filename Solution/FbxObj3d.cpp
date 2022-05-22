@@ -5,16 +5,18 @@
 
 #include "FbxLoader.h"
 
+#include "PostEffect.h"
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-ID3D12Device* FbxObj3d::dev = nullptr;
-Camera* FbxObj3d::camera = nullptr;
+ID3D12Device *FbxObj3d::dev = nullptr;
+Camera *FbxObj3d::camera = nullptr;
 
 ComPtr<ID3D12RootSignature> FbxObj3d::rootsignature;
 ComPtr<ID3D12PipelineState> FbxObj3d::pipelinestate;
 
-void FbxObj3d::createGraphicsPipeline(const wchar_t* vsPath, const wchar_t* psPath) {
+void FbxObj3d::createGraphicsPipeline(const wchar_t *vsPath, const wchar_t *psPath) {
 	HRESULT result = S_FALSE;
 	ComPtr<ID3DBlob> vsBlob; // 頂点シェーダオブジェクト
 	ComPtr<ID3DBlob> psBlob;    // ピクセルシェーダオブジェクト
@@ -36,7 +38,7 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t* vsPath, const wchar_t* psPa
 		std::string errstr;
 		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char*)errorBlob->GetBufferPointer(),
+		std::copy_n((char *)errorBlob->GetBufferPointer(),
 					errorBlob->GetBufferSize(),
 					errstr.begin());
 		errstr += "\n";
@@ -59,7 +61,7 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t* vsPath, const wchar_t* psPa
 		std::string errstr;
 		errstr.resize(errorBlob->GetBufferSize());
 
-		std::copy_n((char*)errorBlob->GetBufferPointer(),
+		std::copy_n((char *)errorBlob->GetBufferPointer(),
 					errorBlob->GetBufferSize(),
 					errstr.begin());
 		errstr += "\n";
@@ -124,7 +126,11 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t* vsPath, const wchar_t* psPa
 	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;
 
 	// ブレンドステートの設定
-	gpipeline.BlendState.RenderTarget[0] = blenddesc;
+	for (UINT i = 0, maxSize = _countof(gpipeline.BlendState.RenderTarget);
+		 i < PostEffect::renderTargetNum && i < maxSize;
+		 i++) {
+		gpipeline.BlendState.RenderTarget[i] = blenddesc;
+	}
 
 	// 深度バッファのフォーマット
 	gpipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT;
@@ -136,8 +142,13 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t* vsPath, const wchar_t* psPa
 	// 図形の形状設定（三角形）
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-	gpipeline.NumRenderTargets = 1;    // 描画対象は1つ
-	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
+	gpipeline.NumRenderTargets = PostEffect::renderTargetNum;    // 描画対象の数
+	for (UINT i = 0, maxSize = _countof(gpipeline.BlendState.RenderTarget);
+		 i < PostEffect::renderTargetNum && i < maxSize;
+		 i++) {
+		gpipeline.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
+	}
+
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	// デスクリプタレンジ
@@ -179,7 +190,7 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t* vsPath, const wchar_t* psPa
 FbxObj3d::FbxObj3d() {
 	init();
 }
-FbxObj3d::FbxObj3d(FbxModel* model) {
+FbxObj3d::FbxObj3d(FbxModel *model) {
 	init();
 	setModel(model);
 }
@@ -209,8 +220,8 @@ void FbxObj3d::init() {
 	frameTime.SetTime(0, 0, 0, 1, 0, FbxTime::EMode::eFrames60);
 
 	// スキン無しへの対応のため、定数バッファへデータ転送
-	ConstBufferDataSkin* constMapSkin = nullptr;
-	result = constBuffSkin->Map(0, nullptr, (void**)&constMapSkin);
+	ConstBufferDataSkin *constMapSkin = nullptr;
+	result = constBuffSkin->Map(0, nullptr, (void **)&constMapSkin);
 	for (int i = 0; i < MAX_BONES; i++) {
 		constMapSkin->bones[i] = XMMatrixIdentity();
 	}
@@ -242,17 +253,17 @@ void FbxObj3d::update() {
 	matWorld *= matRot;
 	matWorld *= matTrans;
 
-	const XMMATRIX& matViewProj = camera->getViewProjectionMatrix();
+	const XMMATRIX &matViewProj = camera->getViewProjectionMatrix();
 	// モデルのメッシュのトランスフォーム
-	const XMMATRIX& modelTransform = model->GetModelTransform();
+	const XMMATRIX &modelTransform = model->GetModelTransform();
 	// カメラ座標
-	const XMFLOAT3& cameraPos = camera->getEye();
+	const XMFLOAT3 &cameraPos = camera->getEye();
 
 	HRESULT result = S_FALSE;
 
 	// 定数バッファへデータを転送
-	ConstBufferDataTransform* constMap = nullptr;
-	result = constBuffTransform->Map(0, nullptr, (void**)&constMap);
+	ConstBufferDataTransform *constMap = nullptr;
+	result = constBuffTransform->Map(0, nullptr, (void **)&constMap);
 	if (SUCCEEDED(result)) {
 		constMap->viewproj = matViewProj;
 		constMap->world = modelTransform * matWorld;
@@ -261,11 +272,11 @@ void FbxObj3d::update() {
 	}
 
 	// ボーン配列
-	std::vector<FbxModel::Bone>& bones = model->getBones();
+	std::vector<FbxModel::Bone> &bones = model->getBones();
 
 	// 定数バッファへデータ転送
-	ConstBufferDataSkin* constMapSkin = nullptr;
-	result = constBuffSkin->Map(0, nullptr, (void**)&constMapSkin);
+	ConstBufferDataSkin *constMapSkin = nullptr;
+	result = constBuffSkin->Map(0, nullptr, (void **)&constMapSkin);
 	for (UINT i = 0, loopLen = bones.size(); i < loopLen; i++) {
 		// 今の姿勢
 		XMMATRIX matCurrentPose{};
@@ -287,7 +298,7 @@ void FbxObj3d::update() {
 	constBuffSkin->Unmap(0, nullptr);
 }
 
-void FbxObj3d::draw(ID3D12GraphicsCommandList* cmdList) {
+void FbxObj3d::draw(ID3D12GraphicsCommandList *cmdList) {
 	//　モデルがないなら描画しない
 	if (model == nullptr) return;
 
@@ -306,19 +317,19 @@ void FbxObj3d::draw(ID3D12GraphicsCommandList* cmdList) {
 	model->draw(cmdList);
 }
 
-void FbxObj3d::drawWithUpdate(ID3D12GraphicsCommandList* cmdList) {
+void FbxObj3d::drawWithUpdate(ID3D12GraphicsCommandList *cmdList) {
 	update();
 	draw(cmdList);
 }
 
 void FbxObj3d::playAnimation() {
-	FbxScene* fbxScene = model->getFbxScene();
+	FbxScene *fbxScene = model->getFbxScene();
 	// 0番のアニメーションを取得
-	FbxAnimStack* animStack = fbxScene->GetSrcObject<FbxAnimStack>(0);
+	FbxAnimStack *animStack = fbxScene->GetSrcObject<FbxAnimStack>(0);
 	// アニメーションの名前を取得
-	const char* animStackName = animStack->GetName();
+	const char *animStackName = animStack->GetName();
 	// アニメーションの時間取得
-	FbxTakeInfo* takeInfo = fbxScene->GetTakeInfo(animStackName);
+	FbxTakeInfo *takeInfo = fbxScene->GetTakeInfo(animStackName);
 
 	// 開始時間を取得
 	startTime = takeInfo->mLocalTimeSpan.GetStart();

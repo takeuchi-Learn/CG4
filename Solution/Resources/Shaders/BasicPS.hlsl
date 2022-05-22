@@ -3,8 +3,9 @@
 Texture2D<float4> tex : register(t0);  	// 0番スロットに設定されたテクスチャ
 SamplerState smp : register(s0);      	// 0番スロットに設定されたサンプラー
 
-float4 main(VSOutput input) : SV_TARGET
+PSOutput main(VSOutput input)
 {
+	PSOutput output;
 
 	float3 eyeDir = normalize(cameraPos - input.worldPos.xyz);   // 頂点->視点ベクトル
 
@@ -23,5 +24,8 @@ float4 main(VSOutput input) : SV_TARGET
 	shadeColor.a = m_alpha;
 
     float4 texcolor = float4(tex.Sample(smp, input.uv));
-    return shadeColor * texcolor;
+    output.target0 = shadeColor * texcolor;
+	output.target1 = float4(1 - (output.target0).rgb, 1);
+
+	return output;
 }

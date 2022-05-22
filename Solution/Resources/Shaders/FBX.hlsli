@@ -25,3 +25,11 @@ struct VSOutput {
 	float3 normal : NORMAL;		// 法線
 	float2 uv : TEXCOORD;		// uv
 };
+
+// レンダーターゲットの数は2つ
+// undone PostEffectクラスのRenderTargetNumは此処の個数(2つ)に合わせる
+// 配列にすればいけるのでは?
+struct PSOutput {
+	float4 target0 : SV_TARGET0;
+	float4 target1 : SV_TARGET1;
+};

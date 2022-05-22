@@ -3,6 +3,11 @@
 
 class PostEffect {
 
+public:
+	// レンダーターゲットの数 = このクラスのテクスチャバッファの数
+	// シェーダーに合わせる
+	static const UINT renderTargetNum = 2;
+
 private:
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
@@ -35,7 +40,7 @@ private:
 	ComPtr<ID3D12Resource> constBuff;
 
 	// テクスチャバッファ
-	ComPtr<ID3D12Resource> texbuff;
+	ComPtr<ID3D12Resource> texbuff[renderTargetNum];
 	// SRV用のデスクリプタヒープ
 	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
 

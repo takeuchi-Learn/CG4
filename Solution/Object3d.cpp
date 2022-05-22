@@ -5,6 +5,8 @@
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
 
+#include "PostEffect.h"
+
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
@@ -225,7 +227,7 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 	gpipeline.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 
 	//レンダ―ターゲットのブレンド設定
-	D3D12_RENDER_TARGET_BLEND_DESC& blenddesc = gpipeline.BlendState.RenderTarget[0];
+	D3D12_RENDER_TARGET_BLEND_DESC blenddesc{};
 	blenddesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; //標準設定
 	blenddesc.BlendEnable = true;	//ブレンドを有効にする
 
@@ -260,6 +262,13 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 		break;
 	}
 
+	// ブレンドステートの設定
+	for (UINT i = 0, maxSize = _countof(gpipeline.BlendState.RenderTarget);
+		 i < PostEffect::renderTargetNum && i < maxSize;
+		 i++) {
+		gpipeline.BlendState.RenderTarget[i] = blenddesc;
+	}
+
 	// 深度バッファのフォーマット
 	gpipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
@@ -268,8 +277,14 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 
 	gpipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 
-	gpipeline.NumRenderTargets = 1; // 描画対象は1つ
-	gpipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
+	gpipeline.NumRenderTargets = PostEffect::renderTargetNum; // 描画対象の数
+
+	for (UINT i = 0, maxSize = _countof(gpipeline.BlendState.RenderTarget);
+		 i < PostEffect::renderTargetNum && i < maxSize;
+		 i++) {
+		gpipeline.RTVFormats[i] = DXGI_FORMAT_R8G8B8A8_UNORM; // 0～255指定のRGBA
+	}
+
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	//デスクリプタテーブルの設定
