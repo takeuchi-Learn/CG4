@@ -187,10 +187,10 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t *vsPath, const wchar_t *psPa
 
 
 
-FbxObj3d::FbxObj3d() {
+FbxObj3d::FbxObj3d(bool animLoop) : animLoop(animLoop) {
 	init();
 }
-FbxObj3d::FbxObj3d(FbxModel *model) {
+FbxObj3d::FbxObj3d(FbxModel *model, bool animLoop) : animLoop(animLoop) {
 	init();
 	setModel(model);
 }
@@ -232,10 +232,11 @@ void FbxObj3d::update() {
 	// アニメーション再生中ならフレーム数を進める
 	if (isPlay) {
 		currentTime += frameTime;
-		// 終了したら初めから
-		// todo ループなし再生などに対応する
-		if (currentTime > endTime) {
+		// ループする場合、終了したら初めから
+		if (animLoop && currentTime > endTime) {
 			currentTime = startTime;
+		} else {
+			isPlay = false;
 		}
 	}
 

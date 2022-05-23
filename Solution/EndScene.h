@@ -21,9 +21,8 @@ class EndScene :
 	Input* input = nullptr;
 
 public:
-    void init() override;
+	EndScene();
     void update() override;
     void drawFrontSprite() override;
-    void fin() override;
 };
 

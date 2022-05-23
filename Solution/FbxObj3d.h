@@ -48,9 +48,9 @@ private:
 
 public:
 	// モデル未読み込み
-	FbxObj3d();
+	FbxObj3d(bool animLoop = true);
 	// モデル読み込む
-	FbxObj3d(FbxModel* model);
+	FbxObj3d(FbxModel* model, bool animLoop = true);
 
 
 	void init();	// コンストラクタ内で呼び出している
@@ -84,5 +84,7 @@ protected:
 	FbxTime endTime;
 	FbxTime currentTime;
 	bool isPlay = false;
+
+	bool animLoop = true;
 };
 

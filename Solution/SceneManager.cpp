@@ -7,45 +7,32 @@
 #include "Input.h"
 
 SceneManager::SceneManager()
-	: nextScene(SCENE_NUM::NONE) {
+	: nextScene(nullptr) {
 
-	nowScene = (GameScene*)new TitleScene();
+	nowScene = (GameScene *)new TitleScene();
+	nowScene->init();
 }
 
-SceneManager* SceneManager::getInstange() {
+SceneManager *SceneManager::getInstange() {
 	static SceneManager sm;
 	return &sm;
 }
 
 
-void SceneManager::init() {
-	nowScene->init();
-}
-
 void SceneManager::update() {
 
 	// 次のシーンがあったら
-	if (nextScene != SCENE_NUM::NONE) {
+	if (nextScene != nullptr) {
 
-		// 今のシーンを削除
-		nowScene->fin();
+		// 今のシーンを削除し、次のシーンに入れ替える
 		delete nowScene;
+		nowScene = nextScene;
 
-		// undone シーンを追加する際はここのcaseも追加
-		switch (nextScene) {
-		case SCENE_NUM::TITLE:
-			nowScene = new TitleScene();
-			break;
-		case SCENE_NUM::PLAY:
-			nowScene = new PlayScene();
-			break;
-		case SCENE_NUM::END:
-			nowScene = new EndScene();
-			break;
-		}
+		// 次のシーンの初期化処理
+		nextScene->init();
 
-		nextScene = SCENE_NUM::NONE;	//次シーンの情報をクリア
-		nowScene->init();	//シーンを初期化
+		//次シーンの情報をクリア
+		nextScene = nullptr;
 	}
 
 	nowScene->update();
@@ -59,15 +46,13 @@ void SceneManager::drawFrontSprite() {
 	nowScene->drawFrontSprite();
 }
 
-void SceneManager::fin() {
-	nowScene->fin();
-
+SceneManager::~SceneManager() {
 	if (nowScene != nullptr) {
 		delete nowScene;
 		nowScene = nullptr;
 	}
 }
 
-void SceneManager::changeScene(const SCENE_NUM nextScene) {
+void SceneManager::changeScene(GameScene* nextScene) {
 	this->nextScene = nextScene;
 }

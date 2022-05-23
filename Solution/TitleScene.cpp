@@ -4,7 +4,9 @@
 
 #include "WinAPI.h"
 
-void TitleScene::init() {
+#include "PlayScene.h"
+
+TitleScene::TitleScene() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Title");
 
 	input = Input::getInstance();
@@ -19,7 +21,7 @@ void TitleScene::init() {
 
 void TitleScene::update() {
 	if (input->triggerKey(DIK_SPACE)) {
-		SceneManager::getInstange()->changeScene(SCENE_NUM::PLAY);
+		SceneManager::getInstange()->changeScene(new PlayScene());
 	}
 	debugText->Print(spCom.get(), "TITLE", 0, 0, 10.f);
 }

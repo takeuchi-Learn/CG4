@@ -4,7 +4,9 @@
 
 #include "WinAPI.h"
 
-void EndScene::init() {
+#include "TitleScene.h"
+
+EndScene::EndScene() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : End");
 
 	input = Input::getInstance();
@@ -19,7 +21,7 @@ void EndScene::init() {
 
 void EndScene::update() {
 	if (input->triggerKey(DIK_SPACE)) {
-		SceneManager::getInstange()->changeScene(SCENE_NUM::TITLE);
+		SceneManager::getInstange()->changeScene(new TitleScene());
 	}
 
 	debugText->Print(spCom.get(), "END", 0, 0, 10.f);
@@ -28,7 +30,4 @@ void EndScene::update() {
 void EndScene::drawFrontSprite() {
 	spCom->drawStart(DirectXCommon::getInstance()->getCmdList());
 	debugText->DrawAll(DirectXCommon::getInstance(), spCom.get());
-}
-
-void EndScene::fin() {
 }

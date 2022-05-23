@@ -21,7 +21,7 @@ class TitleScene :
 	Input* input = nullptr;
 
 public:
-	void init() override;
+	TitleScene();
 	void update() override;
 	void drawFrontSprite() override;
 };

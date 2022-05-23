@@ -12,6 +12,8 @@
 
 #include "FbxObj3d.h"
 
+#include "EndScene.h"
+
 using namespace DirectX;
 
 namespace {
@@ -109,7 +111,7 @@ namespace {
 	}
 }
 
-void PlayScene::init() {
+PlayScene::PlayScene() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 	dxCom = DirectXCommon::getInstance();
 
@@ -223,7 +225,7 @@ void PlayScene::init() {
 	constexpr char fbxName[] = "boneTest";
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
 
-	fbxObj3d.reset(new FbxObj3d(fbxModel.get()));
+	fbxObj3d.reset(new FbxObj3d(fbxModel.get(), false));
 	fbxObj3d->setScale(XMFLOAT3(0.0725f, 0.0725f, 0.0725f));
 
 	fbxObj3d->playAnimation();
@@ -237,11 +239,16 @@ void PlayScene::init() {
 	timer.reset(new Time());
 }
 
+void PlayScene::init() {
+	// タイマー開始
+	timer->reset();
+}
+
 void PlayScene::update() {
 
 	// SPACEでENDシーンへ
 	if (input->triggerKey(DIK_SPACE)) {
-		SceneManager::getInstange()->changeScene(SCENE_NUM::END);
+		SceneManager::getInstange()->changeScene(new EndScene());
 	}
 
 	backObj->rotation.y += 0.1f;
@@ -469,10 +476,6 @@ void PlayScene::drawFrontSprite() {
 	debugText->DrawAll(dxCom, spriteCommon.get());
 }
 
-void PlayScene::fin() {
-	//Sound::SoundStopWave(soundData1.get());
-}
-
 void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum, const float startScale) {
 	for (UINT i = 0U; i < particleNum; i++) {
 
@@ -517,5 +520,5 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos, const UINT particle
 }
 
 PlayScene::~PlayScene() {
-
+	//Sound::SoundStopWave(soundData1.get());
 }

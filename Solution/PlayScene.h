@@ -117,11 +117,11 @@ private:
 	void createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum = 10U, const float startScale = 1.f);
 
 public:
+	PlayScene();
 	void init() override;
 	void update() override;
 	void drawObj3d() override;
 	void drawFrontSprite() override;
-	void fin() override;
 
 	~PlayScene() override;
 };

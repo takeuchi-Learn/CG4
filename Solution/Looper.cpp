@@ -22,13 +22,10 @@ Looper::Looper() {
 
 	Light::staticInit(DirectXCommon::getInstance()->getDev());
 
-	SceneManager::getInstange()->init();
-
 	postEffect.reset(new PostEffect());
 }
 
 Looper::~Looper() {
-	SceneManager::getInstange()->fin();
 
 	FbxLoader::GetInstance()->fin();
 }
