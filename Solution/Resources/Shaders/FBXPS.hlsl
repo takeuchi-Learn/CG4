@@ -15,6 +15,7 @@ PSOutput main(VSOutput input) {
 	float4 shadecolor = float4(brightness, brightness, brightness, 1.f);
 
 	output.target0 = shadecolor * texcolor;
+	// target1‚ğ”½“]F‚É‚·‚é
 	output.target1 = float4(1 - (output.target0).rgb, 1);
 
 	return output;

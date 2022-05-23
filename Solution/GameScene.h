@@ -5,7 +5,6 @@ public:
 
 	virtual void init() {};		// À‘•‚Í”CˆÓ
 	virtual void update() = 0;	// À‘••K{
-	virtual void drawBackSprite() {};	// À‘•‚Í”CˆÓ
 	virtual void drawObj3d(){};			// À‘•‚Í”CˆÓ
 	virtual void drawFrontSprite(){};	// À‘•‚Í”CˆÓ
 	virtual void fin() {};		// À‘•‚Í”CˆÓ

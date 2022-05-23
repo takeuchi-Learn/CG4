@@ -79,6 +79,7 @@ class PlayScene :
 
 	// 3Dオブジェクト用パイプライン生成
 	Object3d::PipelineSet object3dPipelineSet;
+	Object3d::PipelineSet backPipelineSet;
 
 	const UINT obj3dTexNum = 0U;
 	std::unique_ptr<Model> model;
@@ -88,6 +89,9 @@ class PlayScene :
 	DirectX::XMFLOAT2 angle{};	// 各軸周りの回転角
 
 	std::unique_ptr<Object3d> lightObj;
+
+	std::unique_ptr<Model> backModel;
+	std::unique_ptr<Object3d> backObj;
 
 #pragma endregion 3Dオブジェクト
 

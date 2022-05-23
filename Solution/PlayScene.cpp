@@ -120,6 +120,7 @@ void PlayScene::init() {
 #pragma region ビュー変換
 
 	camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
+	camera->setFarZ(10000.f);
 	camera->setEye(XMFLOAT3(0, 0, -175));	// 視点座標
 	camera->setTarget(XMFLOAT3(0, 0, 0));	// 注視点座標
 	camera->setUp(XMFLOAT3(0, 1, 0));		// 上方向
@@ -176,13 +177,25 @@ void PlayScene::init() {
 	// デバッグテキスト初期化
 	debugText.reset(new DebugText(debugTextTexNumber, spriteCommon.get()));
 
-	// 3Dオブジェクト用パイプライン生成
-	object3dPipelineSet = Object3d::createGraphicsPipeline(dxCom->getDev());
-
 
 #pragma endregion スプライト
 
 #pragma region 3Dオブジェクト
+
+	// 3Dオブジェクト用パイプライン生成
+	object3dPipelineSet = Object3d::createGraphicsPipeline(dxCom->getDev());
+
+	backPipelineSet = Object3d::createGraphicsPipeline(dxCom->getDev(), Object3d::BLEND_MODE::ALPHA,
+													   L"Resources/Shaders/BackVS.hlsl",
+													   L"Resources/Shaders/BackPS.hlsl");
+
+
+
+	backModel.reset(new Model("Resources/back/", "back", 1u, true));
+
+	backObj.reset(new Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), backModel.get(), 1u));
+	constexpr float backScale = 10.f;
+	backObj->scale = { backScale, backScale, backScale };
 
 	/*model.reset(new Model(DirectXCommon::getInstance()->getDev(),
 						  L"Resources/model/model.obj", L"Resources/model/tex.png",
@@ -230,6 +243,8 @@ void PlayScene::update() {
 	if (input->triggerKey(DIK_SPACE)) {
 		SceneManager::getInstange()->changeScene(SCENE_NUM::END);
 	}
+
+	backObj->rotation.y += 0.1f;
 
 #pragma region 音
 
@@ -422,9 +437,15 @@ void PlayScene::update() {
 #pragma endregion スプライト
 
 	camera->update();
+
+	// 背景オブジェクトの中心をカメラにする
+	backObj->position = camera->getEye();
 }
 
 void PlayScene::drawObj3d() {
+
+	Object3d::startDraw(dxCom->getCmdList(), backPipelineSet);
+	backObj->drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
 
 	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	particleMgr->drawWithUpdate(dxCom->getCmdList());

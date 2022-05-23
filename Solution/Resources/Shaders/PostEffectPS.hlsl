@@ -1,6 +1,7 @@
 #include "PostEffect.hlsli"
 
-Texture2D<float4> tex : register(t0);   // 0番スロットに設定されたテクスチャ
+Texture2D<float4> tex0 : register(t0);   // 0番スロットに設定されたテクスチャ
+Texture2D<float4> tex1 : register(t1);   // 1番スロットに設定されたテクスチャ
 SamplerState smp : register(s0);        // 0番スロットに設定されたサンプラー
 
 float4 main(VSOutput input) : SV_TARGET
@@ -11,12 +12,22 @@ float4 main(VSOutput input) : SV_TARGET
 	float vignNum = len * 0.75f;
 
 	// 走査線のようなもの
-	float time = 0.f;
+	/*float time = 0.f;
 	float sinNum = input.uv.y * 100.f + time;
 	float sLineNum = sin(sinNum) * sin(sinNum + 0.75f) + 1;
-	sLineNum /= 32;
+	sLineNum /= 32;*/
+	float sLineNum = 0;
 
-	float4 texColor = tex.Sample(smp, input.uv);
+	float4 texColor0 = tex0.Sample(smp, input.uv);
+	float4 texColor1 = tex1.Sample(smp, input.uv);
 
-	return float4(texColor.rgb - sLineNum - vignNum, 1);
+	// tex0とtex1の横縞になるように描画
+	float4 col = texColor0;
+	if (fmod(input.uv.y, 0.1f) < 0.05f) {
+		col = texColor1;
+	}
+
+	float4 drawCol = float4(col.rgb - sLineNum - vignNum, 1);
+
+	return drawCol;
 }

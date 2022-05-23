@@ -6,7 +6,7 @@
 
 using namespace DirectX;
 
-const float PostEffect::clearColor[4] = { 0.f, 0.5f, 0.75f, 0.f };
+const float PostEffect::clearColor[4] = { 0.f, 0.5f, 0.75f, 1.f };
 
 PostEffect::PostEffect() { init(); }
 
@@ -173,13 +173,17 @@ void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	// デスクリプタテーブルの設定
-	CD3DX12_DESCRIPTOR_RANGE descRangeSRV{};
-	descRangeSRV.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 レジスタ
+	CD3DX12_DESCRIPTOR_RANGE descRangeSRV0{};
+	descRangeSRV0.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 レジスタ
+
+	CD3DX12_DESCRIPTOR_RANGE descRangeSRV1{};
+	descRangeSRV1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // t1 レジスタ
 
 	// ルートパラメータの設定
-	CD3DX12_ROOT_PARAMETER rootparams[2]{};
+	CD3DX12_ROOT_PARAMETER rootparams[3]{};
 	rootparams[0].InitAsConstantBufferView(0); // 定数バッファビューとして初期化(b0レジスタ)
-	rootparams[1].InitAsDescriptorTable(1, &descRangeSRV);
+	rootparams[1].InitAsDescriptorTable(1, &descRangeSRV0);
+	rootparams[2].InitAsDescriptorTable(1, &descRangeSRV1);
 
 	// スタティックサンプラー
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
@@ -269,7 +273,7 @@ void PostEffect::init() {
 	D3D12_DESCRIPTOR_HEAP_DESC srvDescHeapDesc{};
 	srvDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	srvDescHeapDesc.NumDescriptors = 1;
+	srvDescHeapDesc.NumDescriptors = 2;
 	// SRV用デスクリプタヒープを生成
 	result = dev->CreateDescriptorHeap(&srvDescHeapDesc,
 									   IID_PPV_ARGS(&descHeapSRV));
@@ -283,9 +287,16 @@ void PostEffect::init() {
 	srvDesc.Texture2D.MipLevels = 1;
 
 	// デスクリプタヒープにSRV作成
-	dev->CreateShaderResourceView(texbuff[0].Get(),
-								  &srvDesc,
-								  descHeapSRV->GetCPUDescriptorHandleForHeapStart());
+	for (UINT i = 0; i < renderTargetNum; i++) {
+		dev->CreateShaderResourceView(texbuff[i].Get(),
+									  &srvDesc,
+									  CD3DX12_CPU_DESCRIPTOR_HANDLE(
+										  descHeapSRV->GetCPUDescriptorHandleForHeapStart(),
+										  i,
+										  dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+									  )
+		);
+	}
 
 	// RTV用デスクリプタヒープ設定
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescHeapDesc{};
@@ -302,7 +313,7 @@ void PostEffect::init() {
 										descHeapRTV->GetCPUDescriptorHandleForHeapStart(),
 										i,
 										dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV))
-									);
+		);
 	}
 	// 深度バッファのリソース設定
 	CD3DX12_RESOURCE_DESC depthResDesc =
@@ -346,6 +357,7 @@ void PostEffect::draw(DirectXCommon *dxCom) {
 #pragma region 描画設定
 
 	static auto cmdList = dxCom->getCmdList();
+	static auto dev = dxCom->getDev();
 
 	// パイプラインステートの設定
 	cmdList->SetPipelineState(pipelineSet.pipelinestate.Get());
@@ -363,16 +375,29 @@ void PostEffect::draw(DirectXCommon *dxCom) {
 
 #pragma region 描画
 	// 頂点バッファをセット
-	dxCom->getCmdList()->IASetVertexBuffers(0, 1, &vbView);
+	cmdList->IASetVertexBuffers(0, 1, &vbView);
 
 	// 定数バッファをセット
-	dxCom->getCmdList()->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(0, constBuff->GetGPUVirtualAddress());
 
 	// シェーダリソースビューをセット
-	dxCom->getCmdList()->SetGraphicsRootDescriptorTable(1, descHeapSRV->GetGPUDescriptorHandleForHeapStart());
+	cmdList->SetGraphicsRootDescriptorTable(1,
+											CD3DX12_GPU_DESCRIPTOR_HANDLE(
+												descHeapSRV->GetGPUDescriptorHandleForHeapStart(),
+												0,
+												dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+											)
+	);
+	cmdList->SetGraphicsRootDescriptorTable(2,
+											CD3DX12_GPU_DESCRIPTOR_HANDLE(
+												descHeapSRV->GetGPUDescriptorHandleForHeapStart(),
+												1,
+												dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+											)
+	);
 
 	// ポリゴンの描画（4頂点で四角形）
-	dxCom->getCmdList()->DrawInstanced(4, 1, 0, 0);
+	cmdList->DrawInstanced(4, 1, 0, 0);
 
 
 #pragma endregion 描画

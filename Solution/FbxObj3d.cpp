@@ -152,7 +152,7 @@ void FbxObj3d::createGraphicsPipeline(const wchar_t *vsPath, const wchar_t *psPa
 	gpipeline.SampleDesc.Count = 1; // 1ピクセルにつき1回サンプリング
 
 	// デスクリプタレンジ
-	CD3DX12_DESCRIPTOR_RANGE descRangeSRV;
+	CD3DX12_DESCRIPTOR_RANGE descRangeSRV{};
 	descRangeSRV.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0 レジスタ
 
 	// ルートパラメータ

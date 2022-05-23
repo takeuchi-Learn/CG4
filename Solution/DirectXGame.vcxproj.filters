@@ -67,6 +67,9 @@
     <Filter Include="シェーダーファイル\PostEffect">
       <UniqueIdentifier>{6aa06a82-548b-464a-8e40-738a170d6c98}</UniqueIdentifier>
     </Filter>
+    <Filter Include="シェーダーファイル\Back">
+      <UniqueIdentifier>{692039fe-447c-47ac-a801-43c34480cca2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -283,6 +286,12 @@
     <FxCompile Include="Resources\Shaders\PostEffectVS.hlsl">
       <Filter>シェーダーファイル\PostEffect</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\BackPS.hlsl">
+      <Filter>シェーダーファイル\Back</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\BackVS.hlsl">
+      <Filter>シェーダーファイル\Back</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Basic.hlsli">
@@ -299,6 +308,9 @@
     </None>
     <None Include="Resources\Shaders\PostEffect.hlsli">
       <Filter>シェーダーファイル\PostEffect</Filter>
+    </None>
+    <None Include="Resources\Shaders\Back.hlsli">
+      <Filter>シェーダーファイル\Back</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -54,8 +54,6 @@ bool Looper::loop() {
 	// --------------------
 	// シーンマネージャーの描画
 	// --------------------
-	SceneManager::getInstange()->drawBackSprite();
-
 	postEffect->startDrawScene(DirectXCommon::getInstance());
 	SceneManager::getInstange()->drawObj3d();
 	postEffect->endDrawScene(DirectXCommon::getInstance());

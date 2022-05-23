@@ -25,6 +25,7 @@ PSOutput main(VSOutput input)
 
     float4 texcolor = float4(tex.Sample(smp, input.uv));
     output.target0 = shadeColor * texcolor;
+	// target1を反転色にする
 	output.target1 = float4(1 - (output.target0).rgb, 1);
 
 	return output;
