@@ -233,10 +233,12 @@ void FbxObj3d::update() {
 	if (isPlay) {
 		currentTime += frameTime;
 		// ループする場合、終了したら初めから
-		if (animLoop && currentTime > endTime) {
-			currentTime = startTime;
-		} else {
-			isPlay = false;
+		if (currentTime > endTime) {
+			if (animLoop) {
+				currentTime = startTime;
+			} else {
+				isPlay = false;
+			}
 		}
 	}
 

@@ -225,7 +225,7 @@ PlayScene::PlayScene() {
 	constexpr char fbxName[] = "boneTest";
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
 
-	fbxObj3d.reset(new FbxObj3d(fbxModel.get(), false));
+	fbxObj3d.reset(new FbxObj3d(fbxModel.get()/*, false*/));
 	fbxObj3d->setScale(XMFLOAT3(0.0725f, 0.0725f, 0.0725f));
 
 	fbxObj3d->playAnimation();
