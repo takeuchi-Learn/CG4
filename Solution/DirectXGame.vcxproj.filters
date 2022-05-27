@@ -70,6 +70,9 @@
     <Filter Include="シェーダーファイル\Back">
       <UniqueIdentifier>{692039fe-447c-47ac-a801-43c34480cca2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PostEffect">
+      <UniqueIdentifier>{1df91dc1-5225-4718-8154-358746785b17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -160,7 +163,7 @@
       <Filter>Time</Filter>
     </ClCompile>
     <ClCompile Include="PostEffect.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>PostEffect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -249,7 +252,7 @@
       <Filter>Time</Filter>
     </ClInclude>
     <ClInclude Include="PostEffect.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>PostEffect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

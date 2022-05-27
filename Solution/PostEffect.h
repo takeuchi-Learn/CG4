@@ -1,6 +1,10 @@
 #pragma once
 #include "DirectXCommon.h"
 
+#include "Time.h"
+
+#include <memory>
+
 class PostEffect {
 
 public:
@@ -19,8 +23,8 @@ private:
 
 	// 定数バッファ用データ構造体
 	struct ConstBufferData {
-		DirectX::XMFLOAT4 color; // 色 (RGBA)
-		DirectX::XMMATRIX mat;   // ３Ｄ変換行列
+		float oneSec;
+		float nowTime;
 	};
 
 	// パイプラインセット
@@ -60,11 +64,15 @@ private:
 	// パイプラインとルートシグネチャのセット
 	PipelineSet pipelineSet;
 
+	std::unique_ptr<Time> timer;
+
 private:
 	void initBuffer();
 
 	void createGraphicsPipelineState(const wchar_t* vsPath = L"Resources/Shaders/PostEffectVS.hlsl",
 									 const wchar_t* psPath = L"Resources/Shaders/PostEffectPS.hlsl");
+
+	void transferConstBuff(float nowTime, float oneSec = Time::oneSec);
 
 public:
 	PostEffect();

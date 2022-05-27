@@ -8,7 +8,21 @@ using namespace DirectX;
 
 const float PostEffect::clearColor[4] = { 0.f, 0.5f, 0.75f, 1.f };
 
-PostEffect::PostEffect() { init(); }
+PostEffect::PostEffect() {
+	timer.reset(new Time());
+	init();
+}
+
+void PostEffect::transferConstBuff(float nowTime, float oneSec) {
+	// 定数バッファにデータ転送
+	ConstBufferData *constMap = nullptr;
+	HRESULT result = constBuff->Map(0, nullptr, (void **)&constMap);
+	constMap->oneSec = oneSec;
+	constMap->nowTime = nowTime;
+	constBuff->Unmap(0, nullptr);
+
+	assert(SUCCEEDED(result));
+}
 
 void PostEffect::initBuffer() {
 	constexpr UINT vertNum = 4;
@@ -56,12 +70,7 @@ void PostEffect::initBuffer() {
 	);
 	assert(SUCCEEDED(result));
 
-	// 定数バッファにデータ転送
-	ConstBufferData *constMap = nullptr;
-	result = constBuff->Map(0, nullptr, (void **)&constMap);
-	constMap->color = DirectX::XMFLOAT4(1, 1, 1, 1); // 色指定（RGBA）
-	constMap->mat = XMMatrixIdentity();
-	constBuff->Unmap(0, nullptr);
+	transferConstBuff(timer->getNowTime());
 }
 
 void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_t *psPath) {
@@ -354,6 +363,9 @@ void PostEffect::init() {
 }
 
 void PostEffect::draw(DirectXCommon *dxCom) {
+
+	transferConstBuff(timer->getNowTime());
+
 #pragma region 描画設定
 
 	static auto cmdList = dxCom->getCmdList();
