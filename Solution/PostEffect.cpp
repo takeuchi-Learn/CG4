@@ -8,7 +8,8 @@ using namespace DirectX;
 
 const float PostEffect::clearColor[4] = { 0.f, 0.5f, 0.75f, 1.f };
 
-PostEffect::PostEffect() {
+PostEffect::PostEffect()
+	: mosaicNum({ WinAPI::window_width, WinAPI::window_height }) {
 	timer.reset(new Time());
 	init();
 }
@@ -19,6 +20,10 @@ void PostEffect::transferConstBuff(float nowTime, float oneSec) {
 	HRESULT result = constBuff->Map(0, nullptr, (void **)&constMap);
 	constMap->oneSec = oneSec;
 	constMap->nowTime = nowTime;
+	constMap->winSize = { (float)WinAPI::window_width, (float)WinAPI::window_height };
+	constMap->noiseIntensity = noiseIntensity;
+	constMap->mosaicNum = mosaicNum;
+	constMap->vignIntensity = vignIntensity;
 	constBuff->Unmap(0, nullptr);
 
 	assert(SUCCEEDED(result));
@@ -210,20 +215,18 @@ void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_
 												   &errorBlob);
 	assert(SUCCEEDED(result));
 
-	auto dev = DirectXCommon::getInstance()->getDev();
-
 	// ルートシグネチャの生成
-	result = dev->CreateRootSignature(0,
-									  rootSigBlob->GetBufferPointer(),
-									  rootSigBlob->GetBufferSize(),
-									  IID_PPV_ARGS(&pipelineSet.rootsignature));
+	result = DirectXCommon::getInstance()->getDev()->CreateRootSignature(0,
+																		 rootSigBlob->GetBufferPointer(),
+																		 rootSigBlob->GetBufferSize(),
+																		 IID_PPV_ARGS(&pipelineSet.rootsignature));
 	assert(SUCCEEDED(result));
 
 	// パイプラインにルートシグネチャをセット
 	gpipeline.pRootSignature = pipelineSet.rootsignature.Get();
 
-	result = dev->CreateGraphicsPipelineState(&gpipeline,
-											  IID_PPV_ARGS(&pipelineSet.pipelinestate));
+	result = DirectXCommon::getInstance()->getDev()->CreateGraphicsPipelineState(&gpipeline,
+																				 IID_PPV_ARGS(&pipelineSet.pipelinestate));
 	assert(SUCCEEDED(result));
 }
 
@@ -368,8 +371,8 @@ void PostEffect::draw(DirectXCommon *dxCom) {
 
 #pragma region 描画設定
 
-	static auto cmdList = dxCom->getCmdList();
-	static auto dev = dxCom->getDev();
+	auto cmdList = dxCom->getCmdList();
+	auto dev = dxCom->getDev();
 
 	// パイプラインステートの設定
 	cmdList->SetPipelineState(pipelineSet.pipelinestate.Get());

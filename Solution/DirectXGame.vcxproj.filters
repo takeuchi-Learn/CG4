@@ -73,6 +73,12 @@
     <Filter Include="PostEffect">
       <UniqueIdentifier>{1df91dc1-5225-4718-8154-358746785b17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object共通\3Dオブジェクト\obj">
+      <UniqueIdentifier>{7b2dfc6f-1668-40e3-ab8f-f66b75cc8623}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object共通\3Dオブジェクト\fbx">
+      <UniqueIdentifier>{39a35835-1668-4d74-85a7-a230a909e2a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -117,32 +123,11 @@
     <ClCompile Include="SpriteCommon.cpp">
       <Filter>Object共通\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClCompile>
-    <ClCompile Include="Object3d.cpp">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClCompile>
-    <ClCompile Include="FbxObj3d.cpp">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>Light</Filter>
     </ClCompile>
     <ClCompile Include="Looper.cpp">
       <Filter>System</Filter>
-    </ClCompile>
-    <ClCompile Include="FbxLoader.cpp">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClCompile>
-    <ClCompile Include="FbxModel.cpp">
-      <Filter>Object共通\3Dオブジェクト</Filter>
     </ClCompile>
     <ClCompile Include="ParticleManager.cpp">
       <Filter>Object共通</Filter>
@@ -164,6 +149,27 @@
     </ClCompile>
     <ClCompile Include="PostEffect.cpp">
       <Filter>PostEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3d.cpp">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxLoader.cpp">
+      <Filter>Object共通\3Dオブジェクト\fbx</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxModel.cpp">
+      <Filter>Object共通\3Dオブジェクト\fbx</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxObj3d.cpp">
+      <Filter>Object共通\3Dオブジェクト\fbx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -188,12 +194,6 @@
     <ClInclude Include="SpriteCommon.h">
       <Filter>Object共通\Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="Object3d.h">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Collision</Filter>
     </ClInclude>
@@ -212,26 +212,11 @@
     <ClInclude Include="WinAPI.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="FbxObj3d.h">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Light</Filter>
     </ClInclude>
     <ClInclude Include="Looper.h">
       <Filter>System</Filter>
-    </ClInclude>
-    <ClInclude Include="FbxLoader.h">
-      <Filter>Object共通\3Dオブジェクト</Filter>
-    </ClInclude>
-    <ClInclude Include="FbxModel.h">
-      <Filter>Object共通\3Dオブジェクト</Filter>
     </ClInclude>
     <ClInclude Include="ParticleManager.h">
       <Filter>Object共通</Filter>
@@ -253,6 +238,27 @@
     </ClInclude>
     <ClInclude Include="PostEffect.h">
       <Filter>PostEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3d.h">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Object共通\3Dオブジェクト\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxObj3d.h">
+      <Filter>Object共通\3Dオブジェクト\fbx</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxLoader.h">
+      <Filter>Object共通\3Dオブジェクト\fbx</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxModel.h">
+      <Filter>Object共通\3Dオブジェクト\fbx</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

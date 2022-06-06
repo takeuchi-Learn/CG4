@@ -25,6 +25,10 @@ private:
 	struct ConstBufferData {
 		float oneSec;
 		float nowTime;
+		DirectX::XMFLOAT2 winSize;
+		float noiseIntensity = 0.f;
+		DirectX::XMFLOAT2 mosaicNum;
+		float vignIntensity = 0.9f;
 	};
 
 	// パイプラインセット
@@ -66,6 +70,10 @@ private:
 
 	std::unique_ptr<Time> timer;
 
+	float noiseIntensity = 0.f;
+	DirectX::XMFLOAT2 mosaicNum;
+	float vignIntensity = 0.9f;
+
 private:
 	void initBuffer();
 
@@ -75,6 +83,11 @@ private:
 	void transferConstBuff(float nowTime, float oneSec = Time::oneSec);
 
 public:
+	// @param 0 ~ 1
+	inline void setNoiseIntensity(float intensity) { noiseIntensity = intensity; }
+
+	inline void setMosaicNum(const DirectX::XMFLOAT2 &mosaicNum) { this->mosaicNum = mosaicNum; }
+
 	PostEffect();
 
 	void init();
