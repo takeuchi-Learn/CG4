@@ -10,6 +10,8 @@
 #include <DirectXMath.h>
 #include <string>
 
+#include "Light.h"
+
 class FbxObj3d {
 protected:
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -55,15 +57,17 @@ public:
 
 	void init();	// コンストラクタ内で呼び出している
 	void update();
-	void draw(ID3D12GraphicsCommandList* cmdList);
+	void draw(ID3D12GraphicsCommandList* cmdList, Light* light);
 
-	void drawWithUpdate(ID3D12GraphicsCommandList* cmdList);
+	void drawWithUpdate(ID3D12GraphicsCommandList* cmdList, Light* light);
 
 	inline void setModel(FbxModel* model) { this->model = model; }
 
 	inline void setScale(const XMFLOAT3& scale) { this->scale = scale; }
 
 	inline void setPosition(const XMFLOAT3& position) { this->position = position; }
+
+	inline void setRotation(const XMFLOAT3& rotation) { this->rotation = rotation; }
 
 	void playAnimation();
 

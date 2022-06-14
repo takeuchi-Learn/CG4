@@ -23,7 +23,7 @@ struct VSOutput {
     float4 svpos : SV_POSITION; // システム用頂点座標
     float4 worldPos : POSITION;
     float3 normal : NORMAL;
-    float2 uv  :TEXCOORD; // uv値
+    float2 uv  : TEXCOORD; // uv値
 };
 
 // レンダーターゲットの数は2つ

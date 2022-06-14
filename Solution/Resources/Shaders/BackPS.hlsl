@@ -7,8 +7,8 @@ PSOutput main(VSOutput input)
 {
 	PSOutput output;
 
-    float4 texcolor = float4(tex.Sample(smp, input.uv));
-    output.target0 = texcolor;
+	float4 texcolor = float4(tex.Sample(smp, input.uv));
+	output.target0 = texcolor;
 	output.target1 = output.target0;
 
 	return output;

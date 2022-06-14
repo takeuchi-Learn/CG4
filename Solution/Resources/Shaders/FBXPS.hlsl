@@ -6,17 +6,29 @@ SamplerState smp : register(s0);      	// 0番スロットに設定されたサンプラー
 PSOutput main(VSOutput input) {
 	PSOutput output;
 
-	float4 texcolor = tex.Sample(smp, input.uv);
+	float3 eyeDir = normalize(cameraPos - input.worldPos.xyz);   // 頂点->視点ベクトル
 
-	// Lambert反射
-	float3 light = normalize(float3(1, -1, 1));
-	float diffuse = saturate(dot(-light, input.normal));
-	float brightness = diffuse + 0.3f;
-	float4 shadecolor = float4(brightness, brightness, brightness, 1.f);
+	const float shininess = 4.f;    // 光沢
 
-	output.target0 = shadecolor * texcolor;
+	/*float3 dir2Light = cameraPos - input.worldPos;
+	float3 lightColor = float3(1, 1, 1);*/
+
+	float3 dir2LightDotNormal = dot(dir2Light, input.normal);
+
+	float3 reflect = normalize(-dir2Light + 2 * dir2LightDotNormal * input.normal); // 反射光
+
+	float3 ambient = m_ambient;
+	float3 diffuse = dir2LightDotNormal * m_diffuse;
+	float3 specular = pow(saturate(dot(reflect, eyeDir)), shininess) * m_specular;  // 鏡面反射光
+
+	float4 shadeColor;
+	shadeColor.rgb = (ambient + diffuse + specular) * lightColor;
+	shadeColor.a = m_alpha;
+
+	float4 texcolor = float4(tex.Sample(smp, input.uv));
+	output.target0 = shadeColor * texcolor;
 	// target1を反転色にする
-	output.target1 = float4(1 - (output.target0).rgb, 1);
+	output.target1 = output.target0;
 
 	return output;
 }

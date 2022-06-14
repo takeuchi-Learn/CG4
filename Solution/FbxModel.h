@@ -75,6 +75,16 @@ public:
 		Bone(const std::string& name) : name(name) {};
 	};
 
+	// 定数バッファ用データ構造体B1
+	struct ConstBufferDataB1 {
+		DirectX::XMFLOAT3 ambient;	// アンビエント
+		float pad1;		// パディング
+		DirectX::XMFLOAT3 diffuse;	// ディフューズ
+		float pad2;		// パディング
+		DirectX::XMFLOAT3 specular;	// スペキュラー
+		float alpha;	// アルファ
+	};
+
 private:
 
 	std::string name;
@@ -89,8 +99,10 @@ private:
 	// 頂点インデックス
 	std::vector<unsigned int> indices;
 
-	DirectX::XMFLOAT3 ambient = { 1, 1, 1 };
-	DirectX::XMFLOAT3 diffuse = { 1, 1, 1 };
+	DirectX::XMFLOAT3 ambient = { 0.5f, 0.5f, 0.5f };
+	DirectX::XMFLOAT3 diffuse = { 0.6f, 0.6f, 0.6f };
+	DirectX::XMFLOAT3 specular = { 0.8f, 0.8f, 0.8f };
+	float alpha = 1.f;
 	DirectX::TexMetadata metadata = {};
 	DirectX::ScratchImage scratchImg = {};
 
@@ -104,12 +116,30 @@ private:
 	// ボーン配列
 	std::vector<Bone> bones;
 
+
+	// 定数バッファ
+	ComPtr<ID3D12Resource> constBuffB1;
+
 	// FBXシーン
 	FbxScene* fbxScene = nullptr;
 
+	bool materialDirty = false;
+
+	void createConstBuffB1();
+
+	void transferConstBuffB1();
+
 public:
+	inline void setAmbient(const DirectX::XMFLOAT3 &ambient) { this->ambient = ambient, materialDirty = true; }
+	inline void setDiffuse(const DirectX::XMFLOAT3 &diffuse) { this->diffuse = diffuse, materialDirty = true; }
+	inline void setSpecular(const DirectX::XMFLOAT3 &specular) { this->specular = specular, materialDirty = true; }
+	inline void setAlpha(float alpha) { this->alpha = alpha; }
+
+	inline ID3D12Resource* getConstBuffB1() { return constBuffB1.Get(); }
+
 	FbxScene* getFbxScene() { return fbxScene; }
 
+	FbxModel();
 	~FbxModel();
 
 	void createBuffers(ID3D12Device* dev);

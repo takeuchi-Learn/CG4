@@ -18,3 +18,9 @@ struct GSOutput
 	float2 uv  :TEXCOORD; // uv値
 	float3 color : COLOR;
 };
+
+// レンダーターゲットの数は2つ
+struct PSOutput {
+	float4 target0 : SV_TARGET0;
+	float4 target1 : SV_TARGET1;
+};

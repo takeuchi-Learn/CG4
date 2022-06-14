@@ -30,7 +30,7 @@ float4 main(VSOutput input) : SV_TARGET
 	float vignNum = vignatte(uv);
 
 	// ëñç∏ê¸ÇÃÇÊÇ§Ç»Ç‡ÇÃ
-	float sinNum = uv.y * 96.f + time * -4.f;
+	float sinNum = uv.y * 96.f + time * 4.f;
 	float sLineNum = sin(sinNum) * sin(sinNum + 0.75f) + 1;
 	sLineNum *= -0.03125f;	// sLineNum /= 32
 

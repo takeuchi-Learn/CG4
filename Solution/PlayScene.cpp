@@ -226,7 +226,8 @@ PlayScene::PlayScene() {
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
 
 	fbxObj3d.reset(new FbxObj3d(fbxModel.get()/*, false*/));
-	fbxObj3d->setScale(XMFLOAT3(0.0725f, 0.0725f, 0.0725f));
+	constexpr float fbxObjScale = 0.0725f;
+	fbxObj3d->setScale(XMFLOAT3(fbxObjScale, fbxObjScale, fbxObjScale));
 
 	fbxObj3d->playAnimation();
 
@@ -463,7 +464,7 @@ void PlayScene::drawObj3d() {
 		obj3d[i].drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
 	}
 
-	fbxObj3d->drawWithUpdate(dxCom->getCmdList());
+	fbxObj3d->drawWithUpdate(dxCom->getCmdList(), light.get());
 }
 
 void PlayScene::drawFrontSprite() {
@@ -483,26 +484,15 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos, const UINT particle
 		const float phi = RandomNum::getRandf(0, XM_PI * 2.f);
 		const float r = RandomNum::getRandf(0, 5.f);
 
-		// X,Y,Z‘S‚Ä[-2.5f,+2.5f]‚Åƒ‰ƒ“ƒ_ƒ€‚É•ª•z
-		constexpr float rnd_pos = 2.5f;
 		XMFLOAT3 generatePos = pos;
-		/*generatePos.x += Random::getRandNormallyf(0.f, rnd_pos);
-		generatePos.y += Random::getRandNormallyf(0.f, rnd_pos);
-		generatePos.z += Random::getRandNormallyf(0.f, rnd_pos);*/
 
-		//constexpr float rnd_vel = 0.0625f;
 		const XMFLOAT3 vel{
-			r * sin(theata) * cos(phi),
-			r * cos(theata),
-			r * sin(theata) * sin(phi)
+			r * nearSin(theata) * nearCos(phi),
+			r * nearCos(theata),
+			r * nearSin(theata) * nearSin(phi)
 		};
 
-		//constexpr float rnd_acc = 0.05f;
 		XMFLOAT3 acc{};
-
-		/*acc.x = 0.f;
-		acc.y = -Random::getRandf(rnd_acc, rnd_acc * 2.f);
-		acc.z = 0.f;*/
 
 
 		constexpr auto startCol = XMFLOAT3(1, 1, 0.25f), endCol = XMFLOAT3(1, 0, 1);
