@@ -12,8 +12,8 @@ cbuffer cbuff1 : register(b1) {
 }
 
 cbuffer cbuff2 : register(b2) {
-	float3 dir2Light;   // ライトへの方向の単位ベクトル
-	float3 lightColor;  // ライトの色(RGB)
+	float3 lightPos;   // ライトへの方向の単位ベクトル
+	float4 lightColor;  // ライトの色(RGB)
 };
 
 // ボーンの最大数(FbxObj3d.hの定数と合わせる)

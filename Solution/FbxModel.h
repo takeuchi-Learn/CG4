@@ -123,7 +123,7 @@ private:
 	// FBXƒV[ƒ“
 	FbxScene* fbxScene = nullptr;
 
-	bool materialDirty = false;
+	bool materialDirty = true;
 
 	void createConstBuffB1();
 
@@ -134,6 +134,8 @@ public:
 	inline void setDiffuse(const DirectX::XMFLOAT3 &diffuse) { this->diffuse = diffuse, materialDirty = true; }
 	inline void setSpecular(const DirectX::XMFLOAT3 &specular) { this->specular = specular, materialDirty = true; }
 	inline void setAlpha(float alpha) { this->alpha = alpha; }
+
+	inline auto getSpecular() { return specular; }
 
 	inline ID3D12Resource* getConstBuffB1() { return constBuffB1.Get(); }
 

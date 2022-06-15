@@ -10,8 +10,7 @@ PSOutput main(VSOutput input) {
 
 	const float shininess = 4.f;    // Œõ‘ò
 
-	/*float3 dir2Light = cameraPos - input.worldPos;
-	float3 lightColor = float3(1, 1, 1);*/
+	float3 dir2Light = normalize(lightPos - input.worldPos);
 
 	float3 dir2LightDotNormal = dot(dir2Light, input.normal);
 

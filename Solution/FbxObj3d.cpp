@@ -198,9 +198,7 @@ FbxObj3d::FbxObj3d(FbxModel *model, bool animLoop) : animLoop(animLoop) {
 }
 
 void FbxObj3d::init() {
-	HRESULT result = S_FALSE;
-
-	result = dev->CreateCommittedResource(
+	HRESULT result = dev->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataTransform) + 0xff) & ~0xff),
@@ -244,14 +242,12 @@ void FbxObj3d::update() {
 		}
 	}
 
-	XMMATRIX matScale{}, matRot{}, matTrans{};
-
-	matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
-	matRot = XMMatrixIdentity();
+	XMMATRIX matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
+	XMMATRIX matRot = XMMatrixIdentity();
 	matRot *= XMMatrixRotationZ(XMConvertToRadians(rotation.z));
 	matRot *= XMMatrixRotationX(XMConvertToRadians(rotation.x));
 	matRot *= XMMatrixRotationY(XMConvertToRadians(rotation.y));
-	matTrans = XMMatrixTranslation(position.x, position.y, position.z);
+	XMMATRIX matTrans = XMMatrixTranslation(position.x, position.y, position.z);
 
 	matWorld = XMMatrixIdentity();
 	matWorld *= matScale;
@@ -264,11 +260,9 @@ void FbxObj3d::update() {
 	// カメラ座標
 	const XMFLOAT3 &cameraPos = camera->getEye();
 
-	HRESULT result = S_FALSE;
-
 	// 定数バッファへデータを転送
 	ConstBufferDataTransform *constMap = nullptr;
-	result = constBuffTransform->Map(0, nullptr, (void **)&constMap);
+	HRESULT result = constBuffTransform->Map(0, nullptr, (void **)&constMap);
 	if (SUCCEEDED(result)) {
 		constMap->viewproj = matViewProj;
 		constMap->world = modelTransform * matWorld;

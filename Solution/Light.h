@@ -11,20 +11,20 @@ private:
 
 public:
 	struct ConstBufferData {
-		DirectX::XMVECTOR dir2light;	// ライトに向かうベクトル
-		DirectX::XMFLOAT3 lightColor;	// ライト色
+		DirectX::XMFLOAT3 lightPos{ 0, 0, 0 };		// ライトの位置(ワールド)
+		DirectX::XMFLOAT4 lightColor{ 1, 1, 1, 1 };	// ライト色
 	};
 
 private:
-	static ID3D12Device* dev;
+	static ID3D12Device *dev;
 
 public:
-	static void staticInit(ID3D12Device* dev);
+	static void staticInit(ID3D12Device *dev);
 
 private:
 	ComPtr<ID3D12Resource> constBuff;	// 定数バッファ
-	DirectX::XMVECTOR lightDir = { 1, 0, 0, 0 };	// 光線方向
-	DirectX::XMFLOAT3 lightColor = { 1, 1, 1 };	// ライトの色
+	DirectX::XMFLOAT3 pos = { 0, 0, 0 };	// ライトの位置
+	DirectX::XMFLOAT3 color = { 1, 1, 1 };	// ライトの色
 	bool dirty = false;
 
 public:
@@ -37,12 +37,12 @@ public:
 	void init();
 
 	// 光線の方向をセット
-	void setLightDir(const DirectX::XMVECTOR& lightDir);
-	void setLightColor(const DirectX::XMFLOAT3& lightColor);
+	void setLightPos(const DirectX::XMFLOAT3 &lightPos);
+	void setLightColor(const DirectX::XMFLOAT3 &lightColor);
 
 	void update();
 
 	// @param rootParamIndex : Object3dクラスのcreateGraphicsPipeline関数内のrootParamsの要素数
-	void draw(DirectXCommon* dxCom, UINT rootParamIndex);
+	void draw(DirectXCommon *dxCom, UINT rootParamIndex);
 };
 

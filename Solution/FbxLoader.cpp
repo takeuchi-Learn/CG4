@@ -262,6 +262,13 @@ void FbxLoader::parseMaterial(FbxModel* model, FbxNode* fbxNode) {
 				model->diffuse.x = (float)diffuse.Get()[0];
 				model->diffuse.y = (float)diffuse.Get()[1];
 				model->diffuse.z = (float)diffuse.Get()[2];
+
+				FbxSurfacePhong* phong = (FbxSurfacePhong*)material;
+
+				FbxPropertyT<FbxDouble3> specular = phong->Specular;
+				model->specular.x = (float)specular.Get()[0];
+				model->specular.y = (float)specular.Get()[1];
+				model->specular.z = (float)specular.Get()[2];
 			}
 			// ディフューズテクスチャを取り出す
 			const FbxProperty diffuseProperty = material->FindProperty(FbxSurfaceMaterial::sDiffuse);

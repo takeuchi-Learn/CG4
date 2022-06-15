@@ -4,9 +4,9 @@
 
 using namespace DirectX;
 
-ID3D12Device* Light::dev = nullptr;
+ID3D12Device *Light::dev = nullptr;
 
-void Light::staticInit(ID3D12Device* dev) {
+void Light::staticInit(ID3D12Device *dev) {
 	assert(!Light::dev);
 	assert(dev);
 	Light::dev = dev;
@@ -19,20 +19,19 @@ Light::Light() {
 void Light::transferConstBuffer() {
 	HRESULT result = S_FALSE;
 	//定数バッファへデータ転送
-	ConstBufferData* constMap = nullptr;
-	result = constBuff->Map(0, nullptr, (void**)&constMap);
+	ConstBufferData *constMap = nullptr;
+	result = constBuff->Map(0, nullptr, (void **)&constMap);
 	if (SUCCEEDED(result)) {
-		constMap->dir2light = -lightDir;
-		constMap->lightColor = lightColor;
+		constMap->lightPos = pos;
+		// wxyzの順になるらしいので、ずらす
+		constMap->lightColor = XMFLOAT4(1, color.x, color.y, color.z);
 		constBuff->Unmap(0, nullptr);
 	}
 }
 
 void Light::init() {
-	HRESULT result = S_FALSE;
-
 	//定数バッファ生成
-	result = dev->CreateCommittedResource(
+	HRESULT result = dev->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff) & ~0xff),
@@ -40,19 +39,19 @@ void Light::init() {
 		nullptr,
 		IID_PPV_ARGS(&constBuff)
 	);
-	if (FAILED(result)) { assert(0); }
+	assert(SUCCEEDED(result));
 
 	// 定数バッファへデータ転送
 	transferConstBuffer();
 }
 
-void Light::setLightDir(const DirectX::XMVECTOR& lightDir) {
-	this->lightDir = XMVector3Normalize(lightDir);
+void Light::setLightPos(const DirectX::XMFLOAT3 &lightPos) {
+	pos = lightPos;
 	dirty = true;
 }
 
-void Light::setLightColor(const DirectX::XMFLOAT3& lightColor) {
-	this->lightColor = lightColor;
+void Light::setLightColor(const DirectX::XMFLOAT3 &lightColor) {
+	this->color = lightColor;
 	dirty = true;
 }
 
@@ -63,7 +62,7 @@ void Light::update() {
 	}
 }
 
-void Light::draw(DirectXCommon* dxCom, UINT rootParamIndex) {
+void Light::draw(DirectXCommon *dxCom, UINT rootParamIndex) {
 	dxCom->getCmdList()->SetGraphicsRootConstantBufferView(rootParamIndex,
 														   constBuff->GetGPUVirtualAddress());
 }

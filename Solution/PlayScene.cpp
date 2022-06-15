@@ -408,18 +408,18 @@ void PlayScene::update() {
 		lightObj->position.y += nearSin(timeAngle) * lightR;
 		lightObj->position.z += nearCos(timeAngle) * lightR;
 
-		/*for (auto& i : obj3d) {
-			i.setLightPos(lightObj->position);
-		}*/
-
-		light->setLightDir(XMVectorSet(obj3d[0].position.x - lightObj->position.x,
-									   obj3d[0].position.y - lightObj->position.y,
-									   obj3d[0].position.z - lightObj->position.z,
-									   1.f));
+		light->setLightPos(lightObj->position);
 
 		light->update();
 	}
 #pragma endregion ライト
+
+	debugText->formatPrint(spriteCommon.get(),
+						   500, 0, 0.75f, { 1,1,1,1 },
+						   "%.3f, %.3f, %.3f",
+						   fbxModel->getSpecular().x,
+						   fbxModel->getSpecular().y,
+						   fbxModel->getSpecular().z);
 
 #pragma region スプライト
 
@@ -453,15 +453,15 @@ void PlayScene::update() {
 void PlayScene::drawObj3d() {
 
 	Object3d::startDraw(dxCom->getCmdList(), backPipelineSet);
-	backObj->drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
+	backObj->drawWithUpdate(dxCom, light.get());
 
 	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
 	particleMgr->drawWithUpdate(dxCom->getCmdList());
 
 	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
-	lightObj->drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
+	lightObj->drawWithUpdate(dxCom, light.get());
 	for (UINT i = 0; i < obj3d.size(); i++) {
-		obj3d[i].drawWithUpdate(camera->getViewMatrix(), dxCom, light.get());
+		obj3d[i].drawWithUpdate(dxCom, light.get());
 	}
 
 	fbxObj3d->drawWithUpdate(dxCom->getCmdList(), light.get());
