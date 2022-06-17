@@ -1,9 +1,9 @@
 #include "FbxModel.h"
-#include "DirectXCommon.h"
+#include "DXBase.h"
 
 void FbxModel::createConstBuffB1() {
 	// 定数バッファの生成
-	HRESULT result = DirectXCommon::getInstance()->getDev()->CreateCommittedResource(
+	HRESULT result = DXBase::getInstance()->getDev()->CreateCommittedResource(
 			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), 	// アップロード可能
 			D3D12_HEAP_FLAG_NONE,
 			&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataB1) + 0xff) & ~0xff),

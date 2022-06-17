@@ -33,7 +33,7 @@ void PostEffect::initBuffer() {
 	constexpr UINT vertNum = 4;
 
 	// 頂点バッファ生成
-	HRESULT result = DirectXCommon::getInstance()->getDev()->CreateCommittedResource(
+	HRESULT result = DXBase::getInstance()->getDev()->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer(sizeof(VertexPosUv) * vertNum),
@@ -65,7 +65,7 @@ void PostEffect::initBuffer() {
 	vbView.StrideInBytes = sizeof(VertexPosUv);
 
 	// 定数バッファの生成
-	result = DirectXCommon::getInstance()->getDev()->CreateCommittedResource(
+	result = DXBase::getInstance()->getDev()->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) + 0xff) & ~0xff),
@@ -216,7 +216,7 @@ void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_
 	assert(SUCCEEDED(result));
 
 	// ルートシグネチャの生成
-	result = DirectXCommon::getInstance()->getDev()->CreateRootSignature(0,
+	result = DXBase::getInstance()->getDev()->CreateRootSignature(0,
 																		 rootSigBlob->GetBufferPointer(),
 																		 rootSigBlob->GetBufferSize(),
 																		 IID_PPV_ARGS(&pipelineSet.rootsignature));
@@ -225,7 +225,7 @@ void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_
 	// パイプラインにルートシグネチャをセット
 	gpipeline.pRootSignature = pipelineSet.rootsignature.Get();
 
-	result = DirectXCommon::getInstance()->getDev()->CreateGraphicsPipelineState(&gpipeline,
+	result = DXBase::getInstance()->getDev()->CreateGraphicsPipelineState(&gpipeline,
 																				 IID_PPV_ARGS(&pipelineSet.pipelinestate));
 	assert(SUCCEEDED(result));
 }
@@ -242,7 +242,7 @@ void PostEffect::init() {
 									 1, 0, 1, 0,
 									 D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
-	auto dev = DirectXCommon::getInstance()->getDev();
+	auto dev = DXBase::getInstance()->getDev();
 
 	// テクスチャバッファ設定
 	HRESULT result;
@@ -365,7 +365,7 @@ void PostEffect::init() {
 								descHeapDSV->GetCPUDescriptorHandleForHeapStart());
 }
 
-void PostEffect::draw(DirectXCommon *dxCom) {
+void PostEffect::draw(DXBase *dxCom) {
 
 	transferConstBuff((float)timer->getNowTime());
 
@@ -419,7 +419,7 @@ void PostEffect::draw(DirectXCommon *dxCom) {
 }
 
 
-void PostEffect::startDrawScene(DirectXCommon *dxCom) {
+void PostEffect::startDrawScene(DXBase *dxCom) {
 	auto cmdList = dxCom->getInstance()->getCmdList();
 
 	// リソースバリアを変更(シェーダーリソース -> 描画可能)
@@ -434,7 +434,7 @@ void PostEffect::startDrawScene(DirectXCommon *dxCom) {
 	for (UINT i = 0; i < renderTargetNum; i++) {
 		rtvHs[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(
 			descHeapRTV->GetCPUDescriptorHandleForHeapStart(), i,
-			DirectXCommon::getInstance()->getDev()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+			DXBase::getInstance()->getDev()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
 	}
 
 	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
@@ -465,7 +465,7 @@ void PostEffect::startDrawScene(DirectXCommon *dxCom) {
 	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.F, 0, 0, nullptr);
 }
 
-void PostEffect::endDrawScene(DirectXCommon *dxCom) {
+void PostEffect::endDrawScene(DXBase *dxCom) {
 	auto cmdList = dxCom->getInstance()->getCmdList();
 	for (UINT i = 0; i < renderTargetNum; i++) {
 		cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texbuff[i].Get(),

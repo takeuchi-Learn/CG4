@@ -113,7 +113,7 @@ namespace {
 
 PlayScene::PlayScene() {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
-	dxCom = DirectXCommon::getInstance();
+	dxCom = DXBase::getInstance();
 
 	input = Input::getInstance();
 
@@ -195,11 +195,11 @@ PlayScene::PlayScene() {
 
 	backModel.reset(new Model("Resources/back/", "back", 1u, true));
 
-	backObj.reset(new Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), backModel.get(), 1u));
+	backObj.reset(new Object3d(DXBase::getInstance()->getDev(), camera.get(), backModel.get(), 1u));
 	constexpr float backScale = 10.f;
 	backObj->scale = { backScale, backScale, backScale };
 
-	/*model.reset(new Model(DirectXCommon::getInstance()->getDev(),
+	/*model.reset(new Model(DXBase::getInstance()->getDev(),
 						  L"Resources/model/model.obj", L"Resources/model/tex.png",
 						  WinAPI::window_width, WinAPI::window_height,
 						  Object3d::constantBufferNum, obj3dTexNum));*/
@@ -207,13 +207,13 @@ PlayScene::PlayScene() {
 
 	constexpr UINT obj3dNum = 1;
 	for (UINT i = 0; i < obj3dNum; i++) {
-		obj3d.emplace_back(Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
+		obj3d.emplace_back(Object3d(DXBase::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
 		obj3d[i].scale = { obj3dScale, obj3dScale, obj3dScale };
 		obj3d[i].position = { i * obj3dScale, 0, 0 };
 		obj3d[i].rotation.y = 180.f;
 	}
 
-	lightObj.reset(new Object3d(Object3d(DirectXCommon::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum)));
+	lightObj.reset(new Object3d(Object3d(DXBase::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum)));
 	const float lightObjScale = obj3dScale * 0.5f;
 	lightObj->scale = XMFLOAT3(lightObjScale, lightObjScale, lightObjScale);
 	lightObj->position = obj3d[0].position;
@@ -363,7 +363,7 @@ void PlayScene::update() {
 
 	{
 
-		const float rotaVal = XM_PIDIV2 / DirectXCommon::getInstance()->getFPS();	// –ˆ•bŽl”¼Žü
+		const float rotaVal = XM_PIDIV2 / DXBase::getInstance()->getFPS();	// –ˆ•bŽl”¼Žü
 
 		if (input->hitKey(DIK_RIGHT)) {
 			angle.y += rotaVal;

@@ -314,7 +314,7 @@ void FbxObj3d::draw(ID3D12GraphicsCommandList *cmdList, Light *light) {
 	// --- ‘æˆêˆø”‚ÍcreateGraphicsPipeliine“àrootparams‚ÌŠY“–‚·‚é—v‘f”Ô†
 	cmdList->SetGraphicsRootConstantBufferView(2, constBuffSkin->GetGPUVirtualAddress());
 
-	light->draw(DirectXCommon::getInstance(), 4);
+	light->draw(DXBase::getInstance(), 4);
 
 	cmdList->SetGraphicsRootConstantBufferView(3, model->getConstBuffB1()->GetGPUVirtualAddress());
 

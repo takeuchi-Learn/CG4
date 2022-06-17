@@ -1,5 +1,5 @@
 #pragma once
-#include "DirectXCommon.h"
+#include "DXBase.h"
 
 #include "Time.h"
 
@@ -92,10 +92,10 @@ public:
 
 	void init();
 
-	void draw(DirectXCommon *dxCom);
+	void draw(DXBase *dxCom);
 
-	void startDrawScene(DirectXCommon *dxCom);
+	void startDrawScene(DXBase *dxCom);
 
-	void endDrawScene(DirectXCommon *dxCom);
+	void endDrawScene(DXBase *dxCom);
 };
 

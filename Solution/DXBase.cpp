@@ -1,4 +1,4 @@
-#include "DirectXCommon.h"
+#include "DXBase.h"
 
 #include <cassert>
 
@@ -11,14 +11,14 @@ using namespace Microsoft::WRL;
 
 #include <DirectXMath.h>
 
-DirectXCommon* DirectXCommon::getInstance() {
-	static DirectXCommon dxCom{};
+DXBase* DXBase::getInstance() {
+	static DXBase dxCom{};
 	return &dxCom;
 }
 
 
 
-void DirectXCommon::initDevice() {
+void DXBase::initDevice() {
 	HRESULT result;
 	//DXGiファクトリ(デバイス生成後は解放されてよい)
 	//ComPtr<IDXGIFactory6> dxgiFactory;
@@ -82,7 +82,7 @@ void DirectXCommon::initDevice() {
 	}
 }
 
-void DirectXCommon::initCommand() {
+void DXBase::initCommand() {
 	HRESULT result;
 	// コマンドアロケータを生成
 	result = dev->CreateCommandAllocator(
@@ -101,7 +101,7 @@ void DirectXCommon::initCommand() {
 	dev->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&cmdQueue));
 }
 
-void DirectXCommon::initSwapchain() {
+void DXBase::initSwapchain() {
 	// 各種設定をしてスワップチェーンを生成
 	DXGI_SWAP_CHAIN_DESC1 swapchainDesc{};
 	swapchainDesc.Width = 1280;
@@ -128,7 +128,7 @@ void DirectXCommon::initSwapchain() {
 	swapchain1.As(&swapchain);
 }
 
-void DirectXCommon::initRTV() {
+void DXBase::initRTV() {
 	HRESULT result = S_FALSE;
 
 	// 各種設定をしてデスクリプタヒープを生成
@@ -158,7 +158,7 @@ void DirectXCommon::initRTV() {
 	}
 }
 
-void DirectXCommon::initDepthBuffer() {
+void DXBase::initDepthBuffer() {
 	HRESULT result;
 
 	// 深度バッファリソース設定
@@ -195,7 +195,7 @@ void DirectXCommon::initDepthBuffer() {
 		dsvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void DirectXCommon::initFence() {
+void DXBase::initFence() {
 	HRESULT result;
 
 	// フェンスの生成
@@ -204,7 +204,7 @@ void DirectXCommon::initFence() {
 	result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 }
 
-void DirectXCommon::ClearRenderTarget(const DirectX::XMFLOAT3& clearColor) {
+void DXBase::ClearRenderTarget(const DirectX::XMFLOAT3& clearColor) {
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
 	// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
@@ -215,14 +215,14 @@ void DirectXCommon::ClearRenderTarget(const DirectX::XMFLOAT3& clearColor) {
 	cmdList->ClearRenderTargetView(rtvH, clearColorTmp, 0, nullptr);
 }
 
-void DirectXCommon::ClearDepthBuffer() {
+void DXBase::ClearDepthBuffer() {
 	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
 	// 深度バッファのクリア
 	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-DirectXCommon::DirectXCommon() {
+DXBase::DXBase() {
 	this->winapi = WinAPI::getInstance();;
 
 	fps = -1.f;
@@ -237,11 +237,11 @@ DirectXCommon::DirectXCommon() {
 	initFence();
 }
 
-DirectXCommon::~DirectXCommon() {
+DXBase::~DXBase() {
 
 }
 
-void DirectXCommon::startDraw(const DirectX::XMFLOAT3& clearColor) {
+void DXBase::startDraw(const DirectX::XMFLOAT3& clearColor) {
 	// バックバッファの番号を取得（2つなので0番か1番）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
@@ -273,7 +273,7 @@ void DirectXCommon::startDraw(const DirectX::XMFLOAT3& clearColor) {
 
 }
 
-void DirectXCommon::endDraw() {
+void DXBase::endDraw() {
 	// バックバッファの番号を取得（2つなので0番か1番）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
@@ -306,9 +306,9 @@ void DirectXCommon::endDraw() {
 	flipTimeFPS();
 }
 
-ID3D12Device* DirectXCommon::getDev() { return dev.Get(); }
+ID3D12Device* DXBase::getDev() { return dev.Get(); }
 
-ID3D12GraphicsCommandList* DirectXCommon::getCmdList() { return cmdList.Get(); }
+ID3D12GraphicsCommandList* DXBase::getCmdList() { return cmdList.Get(); }
 
 
 // --------------------
@@ -320,7 +320,7 @@ namespace {
 	constexpr auto oneSec = std::chrono::duration_cast<myTimeUnit>(std::chrono::seconds(1)).count();
 }
 
-void DirectXCommon::flipTimeFPS() {
+void DXBase::flipTimeFPS() {
 	for (UINT i = divNum - 1; i > 0; i--) {
 		fpsTime[i] = fpsTime[i - 1];
 	}
@@ -329,7 +329,7 @@ void DirectXCommon::flipTimeFPS() {
 		).count();
 }
 
-void DirectXCommon::updateFPS() {
+void DXBase::updateFPS() {
 	float avgDiffTime = 0.f;
 	for (UINT i = 0; i < divNum - 1; i++) {
 		avgDiffTime += fpsTime[i] - fpsTime[i + 1];
@@ -340,4 +340,4 @@ void DirectXCommon::updateFPS() {
 	if (avgDiffTime != 0) fps = oneSec / avgDiffTime;
 }
 
-float DirectXCommon::getFPS() { return fps; }
+float DXBase::getFPS() { return fps; }

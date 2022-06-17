@@ -3,7 +3,7 @@
 #include <wrl.h>
 #include <DirectXMath.h>
 #include <d3d12.h>
-#include "DirectXCommon.h"
+#include "DXBase.h"
 
 class Light {
 private:
@@ -43,6 +43,6 @@ public:
 	void update();
 
 	// @param rootParamIndex : Object3dƒNƒ‰ƒX‚ÌcreateGraphicsPipelineŠÖ”“à‚ÌrootParams‚Ì—v‘f”
-	void draw(DirectXCommon *dxCom, UINT rootParamIndex);
+	void draw(DXBase *dxCom, UINT rootParamIndex);
 };
 

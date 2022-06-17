@@ -151,9 +151,9 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
-    <ClCompile Include="CollisionPrimitive.cpp" />
+    <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="DebugText.cpp" />
-    <ClCompile Include="DirectXCommon.cpp" />
+    <ClCompile Include="DXBase.cpp" />
     <ClCompile Include="EndScene.cpp" />
     <ClCompile Include="FbxLoader.cpp" />
     <ClCompile Include="FbxModel.cpp" />
@@ -188,9 +188,9 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision.h" />
-    <ClInclude Include="CollisionPrimitive.h" />
+    <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="DebugText.h" />
-    <ClInclude Include="DirectXCommon.h" />
+    <ClInclude Include="DXBase.h" />
     <ClInclude Include="EndScene.h" />
     <ClInclude Include="FbxLoader.h" />
     <ClInclude Include="FbxModel.h" />

@@ -1,7 +1,7 @@
 #include "System.h"
 
 #include "WinAPI.h"
-#include "DirectXCommon.h"
+#include "DXBase.h"
 
 #include "Input.h"
 #include "Looper.h"
@@ -13,7 +13,7 @@
 #include "Light.h"
 
 System::System() {
-	constexpr LPCSTR window_title = "DirectXクラス化";
+	constexpr LPCSTR window_title = "DirectX_Engine";
 	WinAPI::getInstance()->setWindowText(window_title);
 }
 
@@ -21,7 +21,7 @@ void System::update() {
 	if (error == false) {
 		// ゲームループ
 		while (!WinAPI::getInstance()->processMessage()
-			   && Looper::getInstance()->loop() == false) {
+			   && !Looper::getInstance()->loop()) {
 
 		}
 	}

@@ -29,7 +29,7 @@ using namespace Microsoft::WRL;
 
 #include "WinAPI.h"
 
-#include "DirectXCommon.h"
+#include "DXBase.h"
 
 #include "SpriteCommon.h"
 
@@ -44,7 +44,7 @@ using namespace Microsoft::WRL;
 #include "Object3d.h"
 #include <memory>
 
-#include "CollisionPrimitive.h"
+#include "CollisionShape.h"
 
 #include "Collision.h"
 #include <iomanip>

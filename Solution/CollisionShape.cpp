@@ -1,4 +1,4 @@
-#include "CollisionPrimitive.h"
+#include "CollisionShape.h"
 
 using namespace DirectX;
 

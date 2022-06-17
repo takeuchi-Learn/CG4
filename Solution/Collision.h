@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CollisionPrimitive.h"
+#include "CollisionShape.h"
 
 class Collision {
 public:

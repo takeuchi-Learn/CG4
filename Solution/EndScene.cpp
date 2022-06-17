@@ -28,6 +28,6 @@ void EndScene::update() {
 }
 
 void EndScene::drawFrontSprite() {
-	spCom->drawStart(DirectXCommon::getInstance()->getCmdList());
-	debugText->DrawAll(DirectXCommon::getInstance(), spCom.get());
+	spCom->drawStart(DXBase::getInstance()->getCmdList());
+	debugText->DrawAll(DXBase::getInstance(), spCom.get());
 }

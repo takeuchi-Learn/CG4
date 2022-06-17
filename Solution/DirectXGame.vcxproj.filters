@@ -25,9 +25,6 @@
     <Filter Include="Object共通">
       <UniqueIdentifier>{94bc1451-ed14-473b-9b23-b9eff326d1ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Random">
-      <UniqueIdentifier>{dbb5bc90-58d2-406f-8584-3f1bbf586040}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object共通\Sprite">
       <UniqueIdentifier>{1333e45c-ebf4-446e-8b47-cd7f07e0d860}</UniqueIdentifier>
     </Filter>
@@ -79,6 +76,9 @@
     <Filter Include="Object共通\3Dオブジェクト\fbx">
       <UniqueIdentifier>{39a35835-1668-4d74-85a7-a230a909e2a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RandomNum">
+      <UniqueIdentifier>{dbb5bc90-58d2-406f-8584-3f1bbf586040}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -87,13 +87,13 @@
     <ClCompile Include="WinAPI.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
+    <ClCompile Include="DXBase.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionPrimitive.cpp">
+    <ClCompile Include="CollisionShape.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
     <ClCompile Include="GameScene.cpp">
@@ -115,7 +115,7 @@
       <Filter>Sceme</Filter>
     </ClCompile>
     <ClCompile Include="RandomNum.cpp">
-      <Filter>Random</Filter>
+      <Filter>RandomNum</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Object共通\Sprite</Filter>
@@ -186,7 +186,7 @@
       <Filter>Sceme</Filter>
     </ClInclude>
     <ClInclude Include="RandomNum.h">
-      <Filter>Random</Filter>
+      <Filter>RandomNum</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Object共通\Sprite</Filter>
@@ -197,10 +197,10 @@
     <ClInclude Include="Collision.h">
       <Filter>Collision</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionPrimitive.h">
+    <ClInclude Include="CollisionShape.h">
       <Filter>Collision</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXCommon.h">
+    <ClInclude Include="DXBase.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="GameScene.h">

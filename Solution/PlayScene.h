@@ -14,7 +14,7 @@
 
 #include "ParticleManager.h"
 
-#include "DirectXCommon.h"
+#include "DXBase.h"
 
 #include "Input.h"
 
@@ -111,7 +111,7 @@ class PlayScene :
 
 	std::unique_ptr<ParticleManager> particleMgr;
 
-	DirectXCommon* dxCom = nullptr;
+	DXBase* dxCom = nullptr;
 
 private:
 	void createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum = 10U, const float startScale = 1.f);

@@ -34,7 +34,7 @@ public:
 	// @return vsnprintfの戻り値
 	int formatPrint(const SpriteCommon* spriteCommon, const float x, const float y, const float scale, DirectX::XMFLOAT4 color, const char* fmt, ...);
 
-	void DrawAll(DirectXCommon* dxCom, const SpriteCommon* spriteCommon);
+	void DrawAll(DXBase* dxCom, const SpriteCommon* spriteCommon);
 
 private: // メンバ変数     
 	// スプライトデータの配列

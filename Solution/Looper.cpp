@@ -2,7 +2,7 @@
 
 #include "Input.h"
 
-#include "DirectXCommon.h"
+#include "DXBase.h"
 #include "SceneManager.h"
 
 #include <DirectXMath.h>
@@ -15,12 +15,12 @@
 
 Looper::Looper() {
 
-	FbxLoader::GetInstance()->init(DirectXCommon::getInstance()->getDev());
+	FbxLoader::GetInstance()->init(DXBase::getInstance()->getDev());
 
 
-	Object3d::staticInit(DirectXCommon::getInstance()->getDev());
+	Object3d::staticInit(DXBase::getInstance()->getDev());
 
-	Light::staticInit(DirectXCommon::getInstance()->getDev());
+	Light::staticInit(DXBase::getInstance()->getDev());
 
 	postEffect.reset(new PostEffect());
 }
@@ -51,19 +51,19 @@ bool Looper::loop() {
 	// --------------------
 	// シーンマネージャーの描画
 	// --------------------
-	postEffect->startDrawScene(DirectXCommon::getInstance());
+	postEffect->startDrawScene(DXBase::getInstance());
 	SceneManager::getInstange()->drawObj3d();
-	postEffect->endDrawScene(DirectXCommon::getInstance());
+	postEffect->endDrawScene(DXBase::getInstance());
 
 	constexpr DirectX::XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
-	DirectXCommon::getInstance()->startDraw(clearColor);
+	DXBase::getInstance()->startDraw(clearColor);
 
-	postEffect->draw(DirectXCommon::getInstance());
+	postEffect->draw(DXBase::getInstance());
 	
 
 	SceneManager::getInstange()->drawFrontSprite();
 
-	DirectXCommon::getInstance()->endDraw();
+	DXBase::getInstance()->endDraw();
 
 
 	return false;

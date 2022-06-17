@@ -90,7 +90,7 @@ int DebugText::formatPrint(const SpriteCommon* spriteCommon,
 }
 
 // まとめて描画
-void DebugText::DrawAll(DirectXCommon* dxCom, const SpriteCommon* spriteCommon) {
+void DebugText::DrawAll(DXBase* dxCom, const SpriteCommon* spriteCommon) {
 	// 全ての文字のスプライトについて
 	for (int i = 0; i < spriteIndex; i++) {
 		// スプライト描画
