@@ -254,6 +254,12 @@ Object3d::PipelineSet Object3d::createGraphicsPipeline(ID3D12Device* dev,
 		blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	// 1.0 - デストカラーの値
 		blenddesc.DestBlend = D3D12_BLEND_ZERO;
 		break;
+	case Object3d::BLEND_MODE::ALPHA:
+		//--半透明合成
+		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				// 加算
+		blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;			// ソースのアルファ値
+		blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	// デストの値を100%使う
+		break;
 	default:
 		//--半透明合成
 		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;				// 加算

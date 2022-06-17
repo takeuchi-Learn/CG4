@@ -2,7 +2,7 @@
 
 #include <DirectXMath.h>
 
-DebugText::DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSIze) {
+DebugText::DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSize) {
 	Initialize(texNum, spriteCommon, tabSize);
 }
 

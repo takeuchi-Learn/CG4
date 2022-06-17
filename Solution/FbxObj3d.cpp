@@ -276,7 +276,7 @@ void FbxObj3d::update() {
 	// 定数バッファへデータ転送
 	ConstBufferDataSkin *constMapSkin = nullptr;
 	result = constBuffSkin->Map(0, nullptr, (void **)&constMapSkin);
-	for (UINT i = 0, loopLen = bones.size(); i < loopLen; i++) {
+	for (UINT i = 0, loopLen = UINT(bones.size()); i < loopLen; i++) {
 		// 今の姿勢
 		XMMATRIX matCurrentPose{};
 		// 今の姿勢を取得
@@ -331,6 +331,7 @@ void FbxObj3d::playAnimation() {
 	FbxScene *fbxScene = model->getFbxScene();
 	// 0番のアニメーションを取得
 	FbxAnimStack *animStack = fbxScene->GetSrcObject<FbxAnimStack>(0);
+	if (animStack == nullptr) return;
 	// アニメーションの名前を取得
 	const char *animStackName = animStack->GetName();
 	// アニメーションの時間取得

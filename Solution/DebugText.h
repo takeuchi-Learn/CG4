@@ -22,7 +22,7 @@ private:
 
 public:
 	// 内部でinitializeを呼び出している
-	DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSIze = 4);
+	DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSize = 4);
 
 	// ￥n : X座標をして位置に戻し、Y座標を文字の高さ分加算する
 	// ￥t : tabSize文字分右にずらす

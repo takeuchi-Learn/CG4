@@ -11,14 +11,14 @@ public:
 	using timeUnit = std::chrono::microseconds;
 	using timeType = long long;
 
-	static constexpr long long oneSec = std::chrono::duration_cast<timeUnit>(std::chrono::seconds(1)).count();
+	static constexpr timeType oneSec = std::chrono::duration_cast<timeUnit>(std::chrono::seconds(1)).count();
 
 	~Time();
 
 	Time();
 
 	// ˆê”‚ÌŠÔ‚ğæ“¾
-	inline static timeType getOneBeatTime(const float bpm) { return (float)std::chrono::duration_cast<timeUnit>(std::chrono::seconds(60ll)).count() / bpm; };
+	inline static timeType getOneBeatTime(const float bpm) { return timeType(std::chrono::duration_cast<timeUnit>(std::chrono::seconds(60ll)).count() / bpm); };
 
 	// Œ»İ‚Ü‚Å‚ÌŠÔ‚ğæ“¾
 	// reset()ÅŒã‚ÉÀs‚µ‚½ŠÔ‚ª‹N“_

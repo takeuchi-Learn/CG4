@@ -75,7 +75,7 @@ void PostEffect::initBuffer() {
 	);
 	assert(SUCCEEDED(result));
 
-	transferConstBuff(timer->getNowTime());
+	transferConstBuff((float)timer->getNowTime());
 }
 
 void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_t *psPath) {
@@ -367,7 +367,7 @@ void PostEffect::init() {
 
 void PostEffect::draw(DirectXCommon *dxCom) {
 
-	transferConstBuff(timer->getNowTime());
+	transferConstBuff((float)timer->getNowTime());
 
 #pragma region •`‰æİ’è
 

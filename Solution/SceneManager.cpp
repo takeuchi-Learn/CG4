@@ -1,8 +1,6 @@
 #include "SceneManager.h"
 
 #include "TitleScene.h"
-#include "PlayScene.h"
-#include "EndScene.h"
 
 #include "Input.h"
 

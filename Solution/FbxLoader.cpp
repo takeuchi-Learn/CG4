@@ -289,6 +289,10 @@ void FbxLoader::parseMaterial(FbxModel* model, FbxNode* fbxNode) {
 		if (!textureLoaded) {
 			loadTexture(model, baseDir + defaultTextureFileName);
 		}
+	} else {
+		// マテリアルがない場合はデフォルトのテクスチャを読み込む
+		// アンビエントなどの値はヘッダーで値を入れてある
+		loadTexture(model, baseDir + defaultTextureFileName);
 	}
 }
 
@@ -317,6 +321,7 @@ void FbxLoader::parseSkin(FbxModel* model,
 			i.boneIndex[0] = 0;
 			i.boneWeight[0] = 1.f;
 		}
+		return;
 	}
 	// ボーン配列の参照
 	std::vector<FbxModel::Bone>& bones = model->bones;
@@ -370,7 +375,7 @@ void FbxLoader::parseSkin(FbxModel* model,
 	}
 	// 頂点配列書き換え用参照
 	auto& vertices = model->vertices;
-	for (int i = 0, loopLen = vertices.size(); i < loopLen; i++) {
+	for (UINT i = 0, loopLen = vertices.size(); i < loopLen; i++) {
 		// 最も大きい4つを選択
 		auto& weightList = weightLists[i];
 		// 降順ソート

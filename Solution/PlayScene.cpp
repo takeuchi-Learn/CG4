@@ -33,13 +33,13 @@ namespace {
 	}
 
 	float nearSin(float rad) {
-		constexpr auto a = +0.005859483;
-		constexpr auto b = +0.005587939;
-		constexpr auto c = -0.171570726;
-		constexpr auto d = +0.0018185485;
-		constexpr auto e = +0.9997773594;
+		constexpr float a = +0.005859483f;
+		constexpr float b = +0.005587939f;
+		constexpr float c = -0.171570726f;
+		constexpr float d = +0.0018185485f;
+		constexpr float e = +0.9997773594f;
 
-		double x = angleRoundRad(rad);
+		float x = angleRoundRad(rad);
 
 		// 0 ~ PI/2がわかれば求められる
 		if (x < XM_PIDIV2) {
@@ -225,6 +225,9 @@ PlayScene::PlayScene() {
 	constexpr char fbxName[] = "boneTest";
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
 
+	/*fbxModel->setAmbient(XMFLOAT3(0.5f, 0.5f, 0.5f));
+	fbxModel->setSpecular(XMFLOAT3(0.8f, 0.8f, 0.8f));*/
+
 	fbxObj3d.reset(new FbxObj3d(fbxModel.get()/*, false*/));
 	constexpr float fbxObjScale = 0.0725f;
 	fbxObj3d->setScale(XMFLOAT3(fbxObjScale, fbxObjScale, fbxObjScale));
@@ -272,33 +275,38 @@ void PlayScene::update() {
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
 		}
-		debugText->formatPrint(spriteCommon.get(), 0, debugText->fontHeight * 2, 1.f, XMFLOAT4(1, 1, 1, 1), "BGM_STATE : %s", stateStr.c_str());
+		debugText->formatPrint(spriteCommon.get(), 0, debugText->fontHeight * 2.f, 1.f, XMFLOAT4(1, 1, 1, 1), "BGM_STATE : %s", stateStr.c_str());
 
-		debugText->Print(spriteCommon.get(), "0 : Play/Stop BGM", 0, debugText->fontHeight * 3);
+		debugText->Print(spriteCommon.get(), "0 : Play/Stop BGM", 0, debugText->fontHeight * 3.f);
 
-		debugText->Print(spriteCommon.get(), "P : create particle(play SE)", 0, debugText->fontHeight * 4);
+		debugText->Print(spriteCommon.get(), "P : create particle(play SE)", 0, debugText->fontHeight * 4.f);
 	}
 
 #pragma endregion 音
 
 #pragma region マウス
 
-	if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
-		debugText->Print(spriteCommon.get(), "input mouse left",
-						 input->getMousePos().x, input->getMousePos().y, 0.75f);
-	}
-	if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
-		debugText->Print(spriteCommon.get(), "input mouse right",
-						 input->getMousePos().x,
-						 input->getMousePos().y + debugText->fontHeight, 0.75f);
-	}
-	if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
-		debugText->Print(spriteCommon.get(), "input mouse wheel",
-						 input->getMousePos().x,
-						 input->getMousePos().y + debugText->fontHeight * 2, 0.75f);
-	}
-	if (input->hitMouseBotton(VK_LSHIFT)) {
-		debugText->Print(spriteCommon.get(), "LSHIFT(WinAPI)", 0, 0, 2);
+	{
+
+		const XMFLOAT2 mousePos(float(input->getMousePos().x), float(input->getMousePos().y));
+
+		if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
+			debugText->Print(spriteCommon.get(), "input mouse left",
+							 mousePos.x, mousePos.y, 0.75f);
+		}
+		if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
+			debugText->Print(spriteCommon.get(), "input mouse right",
+							 mousePos.x,
+							 mousePos.y + debugText->fontHeight, 0.75f);
+		}
+		if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
+			debugText->Print(spriteCommon.get(), "input mouse wheel",
+							 mousePos.x,
+							 mousePos.y + debugText->fontHeight * 2, 0.75f);
+		}
+		if (input->hitMouseBotton(VK_LSHIFT)) {
+			debugText->Print(spriteCommon.get(), "LSHIFT(WinAPI)", 0, 0, 2);
+		}
 	}
 
 	// Rを押すたびマウスカーソルの表示非表示を切り替え
@@ -322,9 +330,12 @@ void PlayScene::update() {
 
 	if (input->hitKey(DIK_R)) timer->reset();
 
-	debugText->formatPrint(spriteCommon.get(), 0, debugText->fontHeight * 15, 1.f,
+	debugText->formatPrint(spriteCommon.get(),
+						   0, debugText->fontHeight * 15.f,
+						   1.f,
 						   XMFLOAT4(1, 1, 1, 1),
-						   "Time : %.6f[s]", (long double)timer->getNowTime() / Time::oneSec);
+						   "Time : %.6f[s]",
+						   float(timer->getNowTime()) / float(Time::oneSec));
 
 #pragma endregion 時間
 
@@ -335,14 +346,16 @@ void PlayScene::update() {
 		if (input->hitKey(DIK_LSHIFT)) debugText->tabSize = 4U;
 	}
 
-	debugText->formatPrint(spriteCommon.get(), debugText->fontWidth * 2, debugText->fontHeight * 17, 1.f,
+	debugText->formatPrint(spriteCommon.get(),
+						   debugText->fontWidth * 2.f, debugText->fontHeight * 17.f,
+						   1.f,
 						   XMFLOAT4(1, 1, 1, 1),
 						   "newLine\ntab(size %u)\tendString", debugText->tabSize);
 
-	debugText->Print(spriteCommon.get(), "SPACE : end", 0, debugText->fontHeight * 6, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
+	debugText->Print(spriteCommon.get(), "SPACE : end", 0, debugText->fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
 
-	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, debugText->fontHeight * 8);
-	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, debugText->fontHeight * 9);
+	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, debugText->fontHeight * 8.f);
+	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, debugText->fontHeight * 9.f);
 
 #pragma endregion 情報表示
 
@@ -393,10 +406,10 @@ void PlayScene::update() {
 #pragma region ライト
 	{
 		// 一秒で一周(2PI[rad])
-		auto timeAngle = (float)timer->getNowTime() / Time::oneSec * XM_2PI;
+		const float timeAngle = float(timer->getNowTime()) / Time::oneSec * XM_2PI;
 
 		debugText->formatPrint(spriteCommon.get(),
-							   WinAPI::window_width / 2.f, debugText->fontHeight * 16, 1.f,
+							   WinAPI::window_width / 2.f, debugText->fontHeight * 16.f, 1.f,
 							   XMFLOAT4(1, 1, 0, 1),
 							   "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
 							   timeAngle / XM_PI,
@@ -413,13 +426,6 @@ void PlayScene::update() {
 		light->update();
 	}
 #pragma endregion ライト
-
-	debugText->formatPrint(spriteCommon.get(),
-						   500, 0, 0.75f, { 1,1,1,1 },
-						   "%.3f, %.3f, %.3f",
-						   fbxModel->getSpecular().x,
-						   fbxModel->getSpecular().y,
-						   fbxModel->getSpecular().z);
 
 #pragma region スプライト
 
