@@ -15,7 +15,7 @@ cbuffer cbuff1 : register(b1) {
 
 cbuffer cbuff2 : register(b2) {
 	float3 lightPos;	// ライトの位置(ワールド)
-	float4 lightColor;	// ライトの色(RGB)
+	float3 lightColor;	// ライトの色(RGB)
 };
 
 // 頂点シェーダーからピクセルシェーダーへのやり取りに使用する構造体

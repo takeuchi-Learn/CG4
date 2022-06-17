@@ -23,8 +23,7 @@ void Light::transferConstBuffer() {
 	result = constBuff->Map(0, nullptr, (void **)&constMap);
 	if (SUCCEEDED(result)) {
 		constMap->lightPos = pos;
-		// wxyz‚Ì‡‚É‚È‚é‚ç‚µ‚¢‚Ì‚ÅA‚¸‚ç‚·
-		constMap->lightColor = XMFLOAT4(1, color.x, color.y, color.z);
+		constMap->lightColor = color;
 		constBuff->Unmap(0, nullptr);
 	}
 }

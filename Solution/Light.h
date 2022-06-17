@@ -12,7 +12,8 @@ private:
 public:
 	struct ConstBufferData {
 		DirectX::XMFLOAT3 lightPos{ 0, 0, 0 };		// ライトの位置(ワールド)
-		DirectX::XMFLOAT4 lightColor{ 1, 1, 1, 1 };	// ライト色
+		float pad{};
+		DirectX::XMFLOAT3 lightColor{ 1, 1, 1 };	// ライト色
 	};
 
 private:
