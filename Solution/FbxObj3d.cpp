@@ -346,3 +346,8 @@ void FbxObj3d::playAnimation() {
 	// Ä¶ó‘Ô‚É‚·‚é
 	isPlay = true;
 }
+
+void FbxObj3d::stopAnimation(bool resetPoseFlag) {
+	isPlay = false;
+	if(resetPoseFlag) currentTime = startTime;
+}

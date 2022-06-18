@@ -60,6 +60,9 @@ class PlayScene :
 	static const int SPRITES_NUM = 1;
 	Sprite sprites[SPRITES_NUM]{};
 
+	std::unique_ptr<Sprite> white;
+	UINT whiteTexNum = 0u;
+
 	// --------------------
 	// デバッグテキスト
 	// --------------------
@@ -115,6 +118,15 @@ class PlayScene :
 
 private:
 	void createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum = 10U, const float startScale = 1.f);
+
+	// update_何とか関数を格納する
+	void (PlayScene:: *update_proc)();
+
+	void update_start();
+	void update_play();
+	void update_end();
+
+	void changeEndScene();
 
 public:
 	PlayScene();

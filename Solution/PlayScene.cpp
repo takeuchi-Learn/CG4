@@ -111,7 +111,8 @@ namespace {
 	}
 }
 
-PlayScene::PlayScene() {
+PlayScene::PlayScene()
+	: update_proc(&PlayScene::update_start) {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 	dxCom = DXBase::getInstance();
 
@@ -155,6 +156,13 @@ PlayScene::PlayScene() {
 	// スプライト共通
 	// --------------------
 	spriteCommon.reset(new SpriteCommon());
+
+	whiteTexNum = spriteCommon->loadTexture(L"Resources/white.png");
+	white.reset(new Sprite(whiteTexNum, spriteCommon.get(), XMFLOAT2(0.f, 0.f)));
+	white->setSize(XMFLOAT2(WinAPI::window_width, WinAPI::window_height));
+	white->position.x = 0.f;
+	white->position.y = 0.f;
+	white->color = XMFLOAT4(0, 0, 0, 1);
 
 	// スプライト共通テクスチャ読み込み
 	texNum = spriteCommon->loadTexture(L"Resources/texture.png");
@@ -232,8 +240,6 @@ PlayScene::PlayScene() {
 	constexpr float fbxObjScale = 0.0725f;
 	fbxObj3d->setScale(XMFLOAT3(fbxObjScale, fbxObjScale, fbxObjScale));
 
-	fbxObj3d->playAnimation();
-
 #pragma endregion FBX
 
 	// パーティクル初期化
@@ -249,13 +255,59 @@ void PlayScene::init() {
 }
 
 void PlayScene::update() {
+	// シーン遷移中も背景は回す
+	backObj->rotation.y += 0.1f;
+
+	(this->*update_proc)();
+
+	// 背景オブジェクトの中心をカメラにする
+	backObj->position = camera->getEye();
+
+
+	light->update();
+	camera->update();
+}
+
+void PlayScene::update_start() {
+	white->color.w -= 0.75f / dxCom->getFPS();
+	if (white->color.w < 0.f) {
+		white->color.w = 1.f;
+		white->isInvisible = true;
+
+		fbxObj3d->playAnimation();
+		timer->reset();
+
+		update_proc = &PlayScene::update_play;
+	}
+}
+
+void PlayScene::update_end() {
+	white->color.w += 0.75f / dxCom->getFPS();
+	if (white->color.w > 1.f) {
+		SceneManager::getInstange()->changeScene(new EndScene());
+	}
+}
+
+void PlayScene::changeEndScene() {
+	// BGMが鳴っていたら停止する
+	if (Sound::checkPlaySound(soundData1.get())) {
+		Sound::SoundStopWave(soundData1.get());
+	}
+
+	// fbxのアニメーションを停止する
+	fbxObj3d->stopAnimation(false);
+
+	white->isInvisible = false;
+	white->color.w = 0.f;
+	update_proc = &PlayScene::update_end;
+}
+
+void PlayScene::update_play() {
 
 	// SPACEでENDシーンへ
 	if (input->triggerKey(DIK_SPACE)) {
-		SceneManager::getInstange()->changeScene(new EndScene());
+		changeEndScene();
 	}
-
-	backObj->rotation.y += 0.1f;
 
 #pragma region 音
 
@@ -422,8 +474,6 @@ void PlayScene::update() {
 		lightObj->position.z += nearCos(timeAngle) * lightR;
 
 		light->setLightPos(lightObj->position);
-
-		light->update();
 	}
 #pragma endregion ライト
 
@@ -449,11 +499,6 @@ void PlayScene::update() {
 	}
 
 #pragma endregion スプライト
-
-	camera->update();
-
-	// 背景オブジェクトの中心をカメラにする
-	backObj->position = camera->getEye();
 }
 
 void PlayScene::drawObj3d() {
@@ -479,6 +524,8 @@ void PlayScene::drawFrontSprite() {
 	for (UINT i = 0; i < _countof(sprites); i++) {
 		sprites[i].drawWithUpdate(dxCom, spriteCommon.get());
 	}
+	white->drawWithUpdate(dxCom, spriteCommon.get());
+
 	// デバッグテキスト描画
 	debugText->DrawAll(dxCom, spriteCommon.get());
 }

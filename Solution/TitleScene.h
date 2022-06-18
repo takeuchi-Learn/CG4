@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include <DirectXMath.h>
+
 class TitleScene :
 	public GameScene {
 
@@ -19,6 +21,14 @@ class TitleScene :
 	UINT debugTextTexNumber;
 
 	Input* input = nullptr;
+
+	DirectX::XMFLOAT2 titleStrPos{};
+
+	// update_âΩÇ∆Ç©ä÷êîÇäiî[Ç∑ÇÈ
+	void (TitleScene:: *update_proc)();
+
+	void update_end();
+	void update_normal();
 
 public:
 	TitleScene();

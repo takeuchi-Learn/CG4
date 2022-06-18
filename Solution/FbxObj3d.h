@@ -70,6 +70,7 @@ public:
 	inline void setRotation(const XMFLOAT3& rotation) { this->rotation = rotation; }
 
 	void playAnimation();
+	void stopAnimation(bool resetPoseFlag = true);
 
 protected:
 	ComPtr<ID3D12Resource> constBuffTransform;
