@@ -1,4 +1,4 @@
-#include "Looper.h"
+ï»¿#include "Looper.h"
 
 #include "Input.h"
 
@@ -35,36 +35,46 @@ Looper *Looper::getInstance() {
 	return &lpr;
 }
 
-bool Looper::loop() {
-
-	// “ü—Íî•ñ‚ÌXV
+bool Looper::loopUpdate() {
+	// å…¥åŠ›æƒ…å ±ã®æ›´æ–°
 	Input::getInstance()->update();
 
-	// ESC‚ÅI—¹
+	// ESCã§çµ‚äº†
 	if (Input::getInstance()->hitKey(DIK_ESCAPE)) return true;
 
 	// --------------------
-	// ƒV[ƒ“ƒ}ƒl[ƒWƒƒ[‚ÌXV
+	// ã‚·ãƒ¼ãƒ³ãƒžãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®æ›´æ–°
 	// --------------------
 	SceneManager::getInstange()->update();
 
+	return false;
+}
+
+bool Looper::loopDraw() {
 	// --------------------
-	// ƒV[ƒ“ƒ}ƒl[ƒWƒƒ[‚Ì•`‰æ
+	// ã‚·ãƒ¼ãƒ³ãƒžãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®æç”»
 	// --------------------
 	postEffect->startDrawScene(DXBase::getInstance());
 	SceneManager::getInstange()->drawObj3d();
 	postEffect->endDrawScene(DXBase::getInstance());
 
-	constexpr DirectX::XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//Â‚Á‚Û‚¢F
+	constexpr DirectX::XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//é’ã£ã½ã„è‰²
 	DXBase::getInstance()->startDraw(clearColor);
 
 	postEffect->draw(DXBase::getInstance());
-	
+
 
 	SceneManager::getInstange()->drawFrontSprite();
 
 	DXBase::getInstance()->endDraw();
 
+	return false;
+}
+
+bool Looper::loop() {
+	if (loopUpdate()) return true;
+
+	if (loopDraw()) return true;
 
 	return false;
 }
