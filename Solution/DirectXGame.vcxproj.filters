@@ -129,7 +129,7 @@
     <ClCompile Include="Looper.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleManager.cpp">
+    <ClCompile Include="ParticleMgr.cpp">
       <Filter>Object共通</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
@@ -153,7 +153,7 @@
     <ClCompile Include="Object3d.cpp">
       <Filter>Object共通\3Dオブジェクト\obj</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="ObjModel.cpp">
       <Filter>Object共通\3Dオブジェクト\obj</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
@@ -218,7 +218,7 @@
     <ClInclude Include="Looper.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleManager.h">
+    <ClInclude Include="ParticleMgr.h">
       <Filter>Object共通</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
@@ -242,7 +242,7 @@
     <ClInclude Include="Object3d.h">
       <Filter>Object共通\3Dオブジェクト\obj</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="ObjModel.h">
       <Filter>Object共通\3Dオブジェクト\obj</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">

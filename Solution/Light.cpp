@@ -61,7 +61,7 @@ void Light::update() {
 	}
 }
 
-void Light::draw(DXBase *dxCom, UINT rootParamIndex) {
-	dxCom->getCmdList()->SetGraphicsRootConstantBufferView(rootParamIndex,
+void Light::draw(DXBase *dxBase, UINT rootParamIndex) {
+	dxBase->getCmdList()->SetGraphicsRootConstantBufferView(rootParamIndex,
 														   constBuff->GetGPUVirtualAddress());
 }

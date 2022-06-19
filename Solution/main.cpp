@@ -40,7 +40,7 @@ using namespace Microsoft::WRL;
 #include <sstream>
 #include <fstream>
 
-#include "Model.h"
+#include "ObjModel.h"
 #include "Object3d.h"
 #include <memory>
 

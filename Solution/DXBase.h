@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -10,13 +10,13 @@
 #include <DirectXMath.h>
 
 class DXBase {
-	DXBase(const DXBase& dxcom) = delete;
-	DXBase& operator=(const DXBase& dxcom) = delete;
+	DXBase(const DXBase& dxBase) = delete;
+	DXBase& operator=(const DXBase& dxBase) = delete;
 
 	DXBase();
 	~DXBase();
 
-#pragma region privateƒƒ“ƒo•Ï”
+#pragma region privateãƒ¡ãƒ³ãƒå¤‰æ•°
 
 	Microsoft::WRL::ComPtr<ID3D12Device> dev;
 	Microsoft::WRL::ComPtr<IDXGIFactory6> dxgiFactory;
@@ -60,15 +60,15 @@ private:
 	void initDepthBuffer();
 	void initFence();
 
-	// ‘S‰æ–ÊƒNƒŠƒA
+	// å…¨ç”»é¢ã‚¯ãƒªã‚¢
 	void ClearRenderTarget(const DirectX::XMFLOAT3& clearColor);
-	// [“xƒoƒbƒtƒ@ƒNƒŠƒA
+	// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	void ClearDepthBuffer();
 
 public:
 	static DXBase* getInstance();
 
-	// @param clearColor ‰½‚à‚È‚¢êŠ‚Ì•`‰æFBŠù’èˆø”‚ÍˆÃ‚¢‰©F‚Á‚Û‚¢F
+	// @param clearColor ä½•ã‚‚ãªã„å ´æ‰€ã®æç”»è‰²ã€‚æ—¢å®šå¼•æ•°ã¯æš—ã„é»„è‰²ã£ã½ã„è‰²
 	void startDraw(const DirectX::XMFLOAT3& clearColor = DirectX::XMFLOAT3(0.5f, 0.5f, 0.f));
 	void endDraw();
 

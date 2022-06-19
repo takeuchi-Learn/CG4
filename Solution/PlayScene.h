@@ -12,7 +12,7 @@
 
 #include "Camera.h"
 
-#include "ParticleManager.h"
+#include "ParticleMgr.h"
 
 #include "DXBase.h"
 
@@ -85,7 +85,7 @@ class PlayScene :
 	Object3d::PipelineSet backPipelineSet;
 
 	const UINT obj3dTexNum = 0U;
-	std::unique_ptr<Model> model;
+	std::unique_ptr<ObjModel> model;
 	std::vector<Object3d> obj3d;
 	const float obj3dScale = 10.f;
 
@@ -93,7 +93,7 @@ class PlayScene :
 
 	std::unique_ptr<Object3d> lightObj;
 
-	std::unique_ptr<Model> backModel;
+	std::unique_ptr<ObjModel> backModel;
 	std::unique_ptr<Object3d> backObj;
 
 #pragma endregion 3Dオブジェクト
@@ -112,9 +112,9 @@ class PlayScene :
 
 	std::unique_ptr<Camera> camera;
 
-	std::unique_ptr<ParticleManager> particleMgr;
+	std::unique_ptr<ParticleMgr> particleMgr;
 
-	DXBase* dxCom = nullptr;
+	DXBase* dxBase = nullptr;
 
 private:
 	void createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum = 10U, const float startScale = 1.f);

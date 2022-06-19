@@ -1,20 +1,18 @@
-#pragma once
+ï»¿#pragma once
 
 #include <wrl.h>
 #include <DirectXMath.h>
 #include <vector>
 #include <d3d12.h>
 
-#include "Model.h"
+#include "ObjModel.h"
 #include "DXBase.h"
 #include "Camera.h"
 
 #include "Light.h"
 
 class Object3d {
-	// Microsoft::WRL::‚ğÈ—ª
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-	// DirectX::‚ğÈ—ª
 	using XMFLOAT2 = DirectX::XMFLOAT2;
 	using XMFLOAT3 = DirectX::XMFLOAT3;
 	using XMFLOAT4 = DirectX::XMFLOAT4;
@@ -28,30 +26,30 @@ public:
 		REVERSE
 	};
 
-	//ƒpƒCƒvƒ‰ƒCƒ“ƒZƒbƒg
+	//ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚»ãƒƒãƒˆ
 	struct PipelineSet {
-		//ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgƒIƒuƒWƒFƒNƒg
+		//ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 		ComPtr<ID3D12PipelineState> pipelinestate;
-		//ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ
+		//ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£
 		ComPtr<ID3D12RootSignature> rootsignature;
 	};
 
-	// ’¸“_ƒf[ƒ^\‘¢‘Ì
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 	//struct Vertex {
-	//	XMFLOAT3 pos; // xyzÀ•W
-	//	XMFLOAT3 normal; // –@üƒxƒNƒgƒ‹
-	//	XMFLOAT2 uv; // uvÀ•W
+	//	XMFLOAT3 pos; // xyzåº§æ¨™
+	//	XMFLOAT3 normal; // æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	//	XMFLOAT2 uv; // uvåº§æ¨™
 	//};
 
-	// ’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘ÌB0
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“B0
 	struct ConstBufferDataB0 {
 		XMMATRIX viewProj;
-		XMMATRIX world;	// ƒ[ƒ‹ƒhs—ñ
-		XMFLOAT3 cameraPos;	// ƒJƒƒ‰ˆÊ’u(ƒ[ƒ‹ƒhÀ•W)
+		XMMATRIX world;	// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
+		XMFLOAT3 cameraPos;	// ã‚«ãƒ¡ãƒ©ä½ç½®(ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™)
 	};
 
 	// --------------------
-	// staticƒƒ“ƒo
+	// staticãƒ¡ãƒ³ãƒ
 	// --------------------
 private:
 	static ID3D12Device* dev;
@@ -67,7 +65,7 @@ private:
 	}
 
 public:
-	// ’¸“_ƒoƒbƒtƒ@‚ÌÅ‘å”
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®æœ€å¤§æ•°
 	static const int constantBufferNum = 128;
 
 	static PipelineSet& getGraphicsPipeline() { return ppSetDef; }
@@ -77,20 +75,20 @@ public:
 
 	static void staticInit(ID3D12Device* device);
 
-	//3DƒIƒuƒWƒFƒNƒg—pƒpƒCƒvƒ‰ƒCƒ“¶¬
-	// ƒVƒF[ƒ_[ƒ‚ƒfƒ‹w’è‚Í "*s_5_0"
+	//3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”¨ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ç”Ÿæˆ
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ¢ãƒ‡ãƒ«æŒ‡å®šã¯ "*s_5_0"
 	static Object3d::PipelineSet createGraphicsPipeline(ID3D12Device* dev,
 														BLEND_MODE blendMode = BLEND_MODE::ALPHA,
 														const wchar_t* vsShaderPath = L"Resources/Shaders/BasicVS.hlsl",
 														const wchar_t* psShaderPath = L"Resources/Shaders/BasicPS.hlsl");
 
 	// --------------------
-	// (“®“I)ƒƒ“ƒo
+	// (å‹•çš„)ãƒ¡ãƒ³ãƒ
 	// --------------------
 private:
-	// ’è”ƒoƒbƒtƒ@
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> constBuffB0;
-	// ƒ[ƒ‹ƒh•ÏŠ·s—ñ
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›è¡Œåˆ—
 	XMMATRIX matWorld;
 
 public:
@@ -98,29 +96,29 @@ public:
 
 	XMFLOAT4 color = { 1, 1, 1, 1 };
 
-	// ƒAƒtƒBƒ“•ÏŠ·î•ñ
+	// ã‚¢ãƒ•ã‚£ãƒ³å¤‰æ›æƒ…å ±
 	XMFLOAT3 scale = { 1,1,1 };
 	XMFLOAT3 rotation = { 0,0,0 };
 	XMFLOAT3 position = { 0,0,0 };
-	// eƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^
+	// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
 	Object3d* parent = nullptr;
 
-	//ƒ‚ƒfƒ‹ƒf[ƒ^
-	Model* model = nullptr;
+	//ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿
+	ObjModel* model = nullptr;
 
 	bool isBillboard = false;
-	bool isBillBoardY = false;// isBillboard‚ªfalse‚Ìê‡‚Ì‚İ‹@”\‚·‚é
+	bool isBillBoardY = false;// isBillboardãŒfalseã®å ´åˆã®ã¿æ©Ÿèƒ½ã™ã‚‹
 
 	XMMATRIX getMatWorld() const;
 
 	//void setTexture(ID3D12Device* dev, const UINT newTexNum);
 
 
-	// ƒ‚ƒfƒ‹‚ÍŒã‚©‚çè“®‚Å“Ç‚İ‚Ş(delete‚àè“®)
+	// ãƒ¢ãƒ‡ãƒ«ã¯å¾Œã‹ã‚‰æ‰‹å‹•ã§èª­ã¿è¾¼ã‚€(deleteã‚‚æ‰‹å‹•)
 	Object3d(ID3D12Device* dev, Camera* camera);
 
-	// ƒ‚ƒfƒ‹ƒf[ƒ^‚à‚±‚±‚Å“n‚·(delete‚Íè“®)
-	Object3d(ID3D12Device* dev, Camera* camera, Model* model, const UINT texNum);
+	// ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚‚ã“ã“ã§æ¸¡ã™(deleteã¯æ‰‹å‹•)
+	Object3d(ID3D12Device* dev, Camera* camera, ObjModel* model, const UINT texNum);
 
 	void update(ID3D12Device* dev);
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <wrl.h>
 #include <DirectXMath.h>
@@ -6,10 +6,10 @@
 #include <unordered_map>
 #include "Mesh.h"
 
-class Model {
-	// Microsoft::WRL::‚ğÈ—ª
+class ObjModel {
+	// Microsoft::WRL::ã‚’çœç•¥
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-	// DirectX::‚ğÈ—ª
+	// DirectX::ã‚’çœç•¥
 	using XMFLOAT2 = DirectX::XMFLOAT2;
 	using XMFLOAT3 = DirectX::XMFLOAT3;
 	using XMFLOAT4 = DirectX::XMFLOAT4;
@@ -22,38 +22,38 @@ public:
 
 private:
 	static ID3D12Device* dev;
-	// ƒfƒXƒNƒŠƒvƒ^ƒTƒCƒY
+	// ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã‚µã‚¤ã‚º
 	static UINT descriptorHandleIncrementSize;
 
 	// --------------------
-	// ƒƒ“ƒo•Ï”
+	// ãƒ¡ãƒ³ãƒå¤‰æ•°
 	// --------------------
 private:
 	std::string name;
 	std::vector<Mesh*> meshes;
 	std::unordered_map<std::string, Material*> materials;
-	// ƒfƒtƒHƒ‹ƒgƒ}ƒeƒŠƒAƒ‹
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒãƒ†ãƒªã‚¢ãƒ«
 	Material* defaultMaterial = nullptr;
-	// ƒfƒXƒNƒŠƒvƒ^ƒq[ƒv
+	// ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—
 	ComPtr<ID3D12DescriptorHeap> descHeap;
 
 	/// <summary>
-	/// ƒ}ƒeƒŠƒAƒ‹“Ç‚İ‚İ
+	/// ãƒãƒ†ãƒªã‚¢ãƒ«èª­ã¿è¾¼ã¿
 	/// </summary>
 	void loadMaterial(const std::string& directoryPath, const std::string& filename);
 
 	/// <summary>
-	/// ƒ}ƒeƒŠƒAƒ‹“o˜^
+	/// ãƒãƒ†ãƒªã‚¢ãƒ«ç™»éŒ²
 	/// </summary>
 	void addMaterial(Material* material);
 
 	/// <summary>
-	/// ƒfƒXƒNƒŠƒvƒ^ƒq[ƒv‚Ì¶¬
+	/// ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã®ç”Ÿæˆ
 	/// </summary>
 	void createDescriptorHeap();
 
 	/// <summary>
-	/// ƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	/// </summary>
 	void loadTextures(const std::string& dirPath, UINT texNum);
 
@@ -62,28 +62,28 @@ public:
 	// static
 	// ----------
 
-	// Ã“I‰Šú‰»
+	// é™çš„åˆæœŸåŒ–
 	static void staticInit(ID3D12Device* device);
 
 
-	// ƒƒ“ƒo
+	// ãƒ¡ãƒ³ãƒ
 
-	// @param dirPath : objƒtƒ@ƒCƒ‹‚Ì‚ ‚éêŠ‚ÌƒpƒX(—á : Resources/player/)
-	// @param objModelName : objƒtƒ@ƒCƒ‹‚Ìƒtƒ@ƒCƒ‹–¼(Šg’£q‚È‚µB—á : player.obj -> player)
-	Model(const std::string& dirPath, const std::string& objModelName, UINT texNum = 0u, bool smoothing = false);
-	~Model();
+	// @param dirPath : objãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ã‚‹å ´æ‰€ã®ãƒ‘ã‚¹(ä¾‹ : Resources/player/)
+	// @param objModelName : objãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«å(æ‹¡å¼µå­ãªã—ã€‚ä¾‹ : player.obj -> player)
+	ObjModel(const std::string& dirPath, const std::string& objModelName, UINT texNum = 0u, bool smoothing = false);
+	~ObjModel();
 
 	/// <summary>
-	/// ‰Šú‰»
+	/// åˆæœŸåŒ–
 	/// </summary>
-	/// <param name="dirPath">ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚Ì‚ ‚éƒpƒX</param>
-	/// <param name="modelname">ƒ‚ƒfƒ‹–¼(—á : Resources/player.obj)</param>
+	/// <param name="dirPath">ãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ã‚‹ãƒ‘ã‚¹</param>
+	/// <param name="modelname">ãƒ¢ãƒ‡ãƒ«å(ä¾‹ : Resources/player.obj)</param>
 	void init(const std::string& dirPath, const std::string& modelname, UINT texNum = 0u, bool smoothing = false);
 
 	/// <summary>
-	/// •`‰æ
+	/// æç”»
 	/// </summary>
-	/// <param name="cmdList">–½—ß”­sæƒRƒ}ƒ“ƒhƒŠƒXƒg</param>
+	/// <param name="cmdList">å‘½ä»¤ç™ºè¡Œå…ˆã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ</param>
 	void draw(ID3D12GraphicsCommandList* cmdList);
 };
 

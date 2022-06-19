@@ -114,11 +114,11 @@ namespace {
 PlayScene::PlayScene()
 	: update_proc(&PlayScene::update_start) {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
-	dxCom = DXBase::getInstance();
+	dxBase = DXBase::getInstance();
 
 	input = Input::getInstance();
 
-	FbxObj3d::setDevice(dxCom->getDev());
+	FbxObj3d::setDevice(dxBase->getDev());
 
 #pragma region ビュー変換
 
@@ -193,25 +193,25 @@ PlayScene::PlayScene()
 #pragma region 3Dオブジェクト
 
 	// 3Dオブジェクト用パイプライン生成
-	object3dPipelineSet = Object3d::createGraphicsPipeline(dxCom->getDev());
+	object3dPipelineSet = Object3d::createGraphicsPipeline(dxBase->getDev());
 
-	backPipelineSet = Object3d::createGraphicsPipeline(dxCom->getDev(), Object3d::BLEND_MODE::ALPHA,
+	backPipelineSet = Object3d::createGraphicsPipeline(dxBase->getDev(), Object3d::BLEND_MODE::ALPHA,
 													   L"Resources/Shaders/BackVS.hlsl",
 													   L"Resources/Shaders/BackPS.hlsl");
 
 
 
-	backModel.reset(new Model("Resources/back/", "back", 1u, true));
+	backModel.reset(new ObjModel("Resources/back/", "back", 1u, true));
 
 	backObj.reset(new Object3d(DXBase::getInstance()->getDev(), camera.get(), backModel.get(), 1u));
 	constexpr float backScale = 10.f;
 	backObj->scale = { backScale, backScale, backScale };
 
-	/*model.reset(new Model(DXBase::getInstance()->getDev(),
+	/*model.reset(new ObjModel(DXBase::getInstance()->getDev(),
 						  L"Resources/model/model.obj", L"Resources/model/tex.png",
 						  WinAPI::window_width, WinAPI::window_height,
 						  Object3d::constantBufferNum, obj3dTexNum));*/
-	model.reset(new Model("Resources/model/", "model", obj3dTexNum, true));
+	model.reset(new ObjModel("Resources/model/", "model", obj3dTexNum, true));
 
 	constexpr UINT obj3dNum = 1;
 	for (UINT i = 0; i < obj3dNum; i++) {
@@ -243,7 +243,7 @@ PlayScene::PlayScene()
 #pragma endregion FBX
 
 	// パーティクル初期化
-	particleMgr.reset(new ParticleManager(dxCom->getDev(), L"Resources/effect1.png", camera.get()));
+	particleMgr.reset(new ParticleMgr(dxBase->getDev(), L"Resources/effect1.png", camera.get()));
 
 	// 時間初期化
 	timer.reset(new Time());
@@ -269,7 +269,7 @@ void PlayScene::update() {
 }
 
 void PlayScene::update_start() {
-	white->color.w -= 0.75f / dxCom->getFPS();
+	white->color.w -= 0.75f / dxBase->getFPS();
 	if (white->color.w < 0.f) {
 		white->color.w = 1.f;
 		white->isInvisible = true;
@@ -282,7 +282,7 @@ void PlayScene::update_start() {
 }
 
 void PlayScene::update_end() {
-	white->color.w += 0.75f / dxCom->getFPS();
+	white->color.w += 0.75f / dxBase->getFPS();
 	if (white->color.w > 1.f) {
 		SceneManager::getInstange()->changeScene(new EndScene());
 	}
@@ -378,7 +378,7 @@ void PlayScene::update_play() {
 #pragma region 時間
 
 	debugText->formatPrint(spriteCommon.get(), 0, 0, 1.f,
-						   XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxCom->getFPS());
+						   XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxBase->getFPS());
 
 	if (input->hitKey(DIK_R)) timer->reset();
 
@@ -437,7 +437,7 @@ void PlayScene::update_play() {
 
 
 		// 移動量
-		const float moveSpeed = 75.f / dxCom->getFPS();
+		const float moveSpeed = 75.f / dxBase->getFPS();
 		// 視点移動
 		if (input->hitKey(DIK_W)) {
 			camera->moveForward(moveSpeed);
@@ -503,31 +503,31 @@ void PlayScene::update_play() {
 
 void PlayScene::drawObj3d() {
 
-	Object3d::startDraw(dxCom->getCmdList(), backPipelineSet);
-	backObj->drawWithUpdate(dxCom, light.get());
+	Object3d::startDraw(dxBase->getCmdList(), backPipelineSet);
+	backObj->drawWithUpdate(dxBase, light.get());
 
-	ParticleManager::startDraw(dxCom->getCmdList(), object3dPipelineSet);
-	particleMgr->drawWithUpdate(dxCom->getCmdList());
+	ParticleMgr::startDraw(dxBase->getCmdList(), object3dPipelineSet);
+	particleMgr->drawWithUpdate(dxBase->getCmdList());
 
-	Object3d::startDraw(dxCom->getCmdList(), object3dPipelineSet);
-	lightObj->drawWithUpdate(dxCom, light.get());
+	Object3d::startDraw(dxBase->getCmdList(), object3dPipelineSet);
+	lightObj->drawWithUpdate(dxBase, light.get());
 	for (UINT i = 0; i < obj3d.size(); i++) {
-		obj3d[i].drawWithUpdate(dxCom, light.get());
+		obj3d[i].drawWithUpdate(dxBase, light.get());
 	}
 
-	fbxObj3d->drawWithUpdate(dxCom->getCmdList(), light.get());
+	fbxObj3d->drawWithUpdate(dxBase->getCmdList(), light.get());
 }
 
 void PlayScene::drawFrontSprite() {
-	spriteCommon->drawStart(dxCom->getCmdList());
+	spriteCommon->drawStart(dxBase->getCmdList());
 	// スプライト描画
 	for (UINT i = 0; i < _countof(sprites); i++) {
-		sprites[i].drawWithUpdate(dxCom, spriteCommon.get());
+		sprites[i].drawWithUpdate(dxBase, spriteCommon.get());
 	}
-	white->drawWithUpdate(dxCom, spriteCommon.get());
+	white->drawWithUpdate(dxBase, spriteCommon.get());
 
 	// デバッグテキスト描画
-	debugText->DrawAll(dxCom, spriteCommon.get());
+	debugText->DrawAll(dxBase, spriteCommon.get());
 }
 
 void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum, const float startScale) {

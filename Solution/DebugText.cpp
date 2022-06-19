@@ -1,4 +1,4 @@
-#include "DebugText.h"
+ï»¿#include "DebugText.h"
 
 #include <DirectXMath.h>
 
@@ -9,9 +9,9 @@ DebugText::DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSize
 void DebugText::Initialize(UINT texnumber, const SpriteCommon* spriteCommon,
 						   UINT tabSize) {
 	this->tabSize = tabSize;
-	// ‘S‚Ä‚ÌƒXƒvƒ‰ƒCƒgƒf[ƒ^‚É‚Â‚¢‚Ä
+	// å…¨ã¦ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆãƒ‡ãƒ¼ã‚¿ã«ã¤ã„ã¦
 	for (int i = 0; i < _countof(sprites); i++) {
-		// ƒXƒvƒ‰ƒCƒg‚ğ¶¬‚·‚é
+		// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’ç”Ÿæˆã™ã‚‹
 		sprites[i] = Sprite(texnumber, spriteCommon, { 0, 0 });
 	}
 }
@@ -23,10 +23,10 @@ void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
 
 	int posNumX = 0, posNumY = 0;
 
-	// ‘S‚Ä‚Ì•¶š‚É‚Â‚¢‚Ä
+	// å…¨ã¦ã®æ–‡å­—ã«ã¤ã„ã¦
 	for (UINT i = 0; i < text.size(); i++, posNumX++) {
 
-		// Å‘å•¶š”’´‰ß
+		// æœ€å¤§æ–‡å­—æ•°è¶…é
 		if (spriteIndex >= maxCharCount) {
 			break;
 		}
@@ -46,10 +46,10 @@ void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
 			}
 		}
 
-		// 1•¶šæ‚èo‚·(¦ASCIIƒR[ƒh‚Å‚µ‚©¬‚è—§‚½‚È‚¢)
+		// 1æ–‡å­—å–ã‚Šå‡ºã™(â€»ASCIIã‚³ãƒ¼ãƒ‰ã§ã—ã‹æˆã‚Šç«‹ãŸãªã„)
 		const unsigned char& character = textLocal[i];
 
-		// ASCIIƒR[ƒh‚Ì2’i•ª”ò‚Î‚µ‚½”Ô†‚ğŒvZ
+		// ASCIIã‚³ãƒ¼ãƒ‰ã®2æ®µåˆ†é£›ã°ã—ãŸç•ªå·ã‚’è¨ˆç®—
 		int fontIndex = character - 32;
 		if (character >= 0x7f) {
 			fontIndex = 0;
@@ -58,16 +58,16 @@ void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
 		int fontIndexY = fontIndex / fontLineCount;
 		int fontIndexX = fontIndex % fontLineCount;
 
-		// À•WŒvZ
+		// åº§æ¨™è¨ˆç®—
 		sprites[spriteIndex].position = { x + fontWidth * scale * posNumX, y + fontHeight * scale * posNumY, 0 };
 		sprites[spriteIndex].color = drawCol;
 		sprites[spriteIndex].setTexLeftTop({ (float)fontIndexX * fontWidth, (float)fontIndexY * fontHeight });
 		sprites[spriteIndex].setTexSize({ fontWidth, fontHeight });
 		sprites[spriteIndex].setSize({ fontWidth * scale, fontHeight * scale });
-		// XV
+		// æ›´æ–°
 		sprites[spriteIndex].update(spriteCommon);
 
-		// •¶š‚ğ‚P‚Âi‚ß‚é
+		// æ–‡å­—ã‚’ï¼‘ã¤é€²ã‚ã‚‹
 		spriteIndex++;
 	}
 }
@@ -89,12 +89,12 @@ int DebugText::formatPrint(const SpriteCommon* spriteCommon,
 	return ret;
 }
 
-// ‚Ü‚Æ‚ß‚Ä•`‰æ
-void DebugText::DrawAll(DXBase* dxCom, const SpriteCommon* spriteCommon) {
-	// ‘S‚Ä‚Ì•¶š‚ÌƒXƒvƒ‰ƒCƒg‚É‚Â‚¢‚Ä
+// ã¾ã¨ã‚ã¦æç”»
+void DebugText::DrawAll(DXBase* dxBase, const SpriteCommon* spriteCommon) {
+	// å…¨ã¦ã®æ–‡å­—ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã«ã¤ã„ã¦
 	for (int i = 0; i < spriteIndex; i++) {
-		// ƒXƒvƒ‰ƒCƒg•`‰æ
-		sprites[i].draw(dxCom->getCmdList(), spriteCommon, dxCom->getDev());
+		// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆæç”»
+		sprites[i].draw(dxBase->getCmdList(), spriteCommon, dxBase->getDev());
 	}
 
 	spriteIndex = 0;

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <DirectXMath.h>
 #include <wrl.h>
@@ -11,115 +11,115 @@
 
 #include "Object3d.h"
 
-class ParticleManager {
+class ParticleMgr {
 private:
-	// ƒGƒCƒŠƒAƒX
-   // Microsoft::WRL::‚ğÈ—ª
+	// ã‚¨ã‚¤ãƒªã‚¢ã‚¹
+   // Microsoft::WRL::ã‚’çœç•¥
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-	// DirectX::‚ğÈ—ª
+	// DirectX::ã‚’çœç•¥
 	using XMFLOAT2 = DirectX::XMFLOAT2;
 	using XMFLOAT3 = DirectX::XMFLOAT3;
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
 
-	// ƒTƒuƒNƒ‰ƒX
+	// ã‚µãƒ–ã‚¯ãƒ©ã‚¹
 public:
-	// ’¸“_ƒf[ƒ^\‘¢‘Ì
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 	struct VertexPos {
-		XMFLOAT3 pos; // xyzÀ•W
-		float scale; // ƒXƒP[ƒ‹
+		XMFLOAT3 pos; // xyzåº§æ¨™
+		float scale; // ã‚¹ã‚±ãƒ¼ãƒ«
 		XMFLOAT3 color;
 	};
 
-	// ’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘Ì
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 	struct ConstBufferData {
-		XMMATRIX mat;	// ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñ
-		XMMATRIX matBillboard;	// ƒrƒ‹ƒ{[ƒhs—ñ
+		XMMATRIX mat;	// ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—
+		XMMATRIX matBillboard;	// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰è¡Œåˆ—
 	};
 
-	// ƒp[ƒeƒBƒNƒ‹1—±
+	// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«1ç²’
 	class Particle {
-		// Microsoft::WRL::‚ğÈ—ª
+		// Microsoft::WRL::ã‚’çœç•¥
 		template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-		// DirectX::‚ğÈ—ª
+		// DirectX::ã‚’çœç•¥
 		using XMFLOAT2 = DirectX::XMFLOAT2;
 		using XMFLOAT3 = DirectX::XMFLOAT3;
 		using XMFLOAT4 = DirectX::XMFLOAT4;
 		using XMMATRIX = DirectX::XMMATRIX;
 
 	public:
-		// À•W
+		// åº§æ¨™
 		XMFLOAT3 position = {};
-		// ‘¬“x
+		// é€Ÿåº¦
 		XMFLOAT3 velocity = {};
-		// ‰Á‘¬“x
+		// åŠ é€Ÿåº¦
 		XMFLOAT3 accel = {};
-		// F
+		// è‰²
 		XMFLOAT3 color = {};
-		// ƒXƒP[ƒ‹
+		// ã‚¹ã‚±ãƒ¼ãƒ«
 		float scale = 1.0f;
-		// ‰ñ“]
+		// å›è»¢
 		float rotation = 0.0f;
-		// ‰Šú’l
+		// åˆæœŸå€¤
 		XMFLOAT3 s_color = {};
 		float s_scale = 1.0f;
 		float s_rotation = 0.0f;
-		// ÅI’l
+		// æœ€çµ‚å€¤
 		XMFLOAT3 e_color = {};
 		float e_scale = 0.0f;
 		float e_rotation = 0.0f;
-		// Œ»İ‚ÌŠÔ
+		// ç¾åœ¨ã®æ™‚é–“
 		Time::timeType nowTime = 0;
-		// ŠJnŠÔ
+		// é–‹å§‹æ™‚é–“
 		Time::timeType startTime = 0;
-		// I—¹ŠÔ
+		// çµ‚äº†æ™‚é–“
 		Time::timeType life = 0;
 
 		Time* timer = nullptr;
 	};
 
-	// ’è”
+	// å®šæ•°
 private:
 	static const int vertexCount = 0x10000;
 
-	// ƒƒ“ƒo•Ï”
+	// ãƒ¡ãƒ³ãƒå¤‰æ•°
 private:
-	// ƒfƒoƒCƒX
+	// ãƒ‡ãƒã‚¤ã‚¹
 	ID3D12Device* dev = nullptr;
-	// ƒfƒXƒNƒŠƒvƒ^ƒTƒCƒY
+	// ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã‚µã‚¤ã‚º
 	UINT descriptorHandleIncrementSize = 0U;
-	// ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ
+	// ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£
 	ComPtr<ID3D12RootSignature> rootsignature;
-	// ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgƒIƒuƒWƒFƒNƒg
+	// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 	ComPtr<ID3D12PipelineState> pipelinestate;
-	// ƒfƒXƒNƒŠƒvƒ^ƒq[ƒv
+	// ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—
 	ComPtr<ID3D12DescriptorHeap> descHeap;
-	// ’¸“_ƒoƒbƒtƒ@
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> vertBuff;
-	// ƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> texbuff;
-	// ƒVƒF[ƒ_ƒŠƒ\[ƒXƒrƒ…[‚Ìƒnƒ“ƒhƒ‹(CPU)
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒªã‚½ãƒ¼ã‚¹ãƒ“ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«(CPU)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV;
-	// ƒVƒF[ƒ_ƒŠƒ\[ƒXƒrƒ…[‚Ìƒnƒ“ƒhƒ‹(CPU)
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒªã‚½ãƒ¼ã‚¹ãƒ“ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«(CPU)
 	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV;
-	// ’¸“_ƒoƒbƒtƒ@ƒrƒ…[
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼
 	D3D12_VERTEX_BUFFER_VIEW vbView;
-	// ’è”ƒoƒbƒtƒ@
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> constBuff;
-	// ƒp[ƒeƒBƒNƒ‹”z—ñ
+	// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«é…åˆ—
 	std::forward_list<Particle> particles;
 	Camera* camera = nullptr;
 
-	// ƒƒ“ƒoŠÖ”
+	// ãƒ¡ãƒ³ãƒé–¢æ•°
 public:
-	static void ParticleManager::startDraw(ID3D12GraphicsCommandList* cmdList,
+	static void ParticleMgr::startDraw(ID3D12GraphicsCommandList* cmdList,
 										   Object3d::PipelineSet& ppSet,
 										   D3D12_PRIMITIVE_TOPOLOGY PrimitiveTopology = D3D12_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// ‰Šú‰»‚È‚µ
-	ParticleManager();
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯1x1ç™½ã§åˆæœŸåŒ–
+	ParticleMgr();
 
-	ParticleManager(ID3D12Device* device, const wchar_t* texFilePath, Camera* camera);
+	ParticleMgr(ID3D12Device* device, const wchar_t* texFilePath, Camera* camera);
 
 	void init(ID3D12Device* device, const wchar_t* texFilePath);
 	void update();
@@ -130,14 +130,14 @@ public:
 	inline void setCamera(Camera* camera) { this->camera = camera; }
 
 	/// <summary>
-	/// ƒp[ƒeƒBƒNƒ‹‚Ì’Ç‰Á
+	/// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®è¿½åŠ 
 	/// </summary>
-	/// <param name="life">¶‘¶ŠÔ</param>
-	/// <param name="position">‰ŠúÀ•W</param>
-	/// <param name="velocity">‘¬“x</param>
-	/// <param name="accel">‰Á‘¬“x</param>
-	/// <param name="start_scale">ŠJnƒXƒP[ƒ‹</param>
-	/// <param name="end_scale">I—¹ƒXƒP[ƒ‹</param>
+	/// <param name="life">ç”Ÿå­˜æ™‚é–“</param>
+	/// <param name="position">åˆæœŸåº§æ¨™</param>
+	/// <param name="velocity">é€Ÿåº¦</param>
+	/// <param name="accel">åŠ é€Ÿåº¦</param>
+	/// <param name="start_scale">é–‹å§‹æ™‚ã‚¹ã‚±ãƒ¼ãƒ«</param>
+	/// <param name="end_scale">çµ‚äº†æ™‚ã‚¹ã‚±ãƒ¼ãƒ«</param>
 	void add(Time* timer, int life,
 			 XMFLOAT3 position, XMFLOAT3 velocity, XMFLOAT3 accel,
 			 float start_scale, float end_scale,
@@ -145,25 +145,25 @@ public:
 			 XMFLOAT3 start_color, XMFLOAT3 end_color);
 
 	/// <summary>
-	/// ƒfƒXƒNƒŠƒvƒ^ƒq[ƒv‚Ì‰Šú‰»
+	/// ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã®åˆæœŸåŒ–
 	/// </summary>
 	/// <returns></returns>
 	void InitializeDescriptorHeap();
 
 	/// <summary>
-	/// ƒOƒ‰ƒtƒBƒbƒNƒpƒCƒvƒ‰ƒCƒ“¶¬
+	/// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ç”Ÿæˆ
 	/// </summary>
-	/// <returns>¬”Û</returns>
+	/// <returns>æˆå¦</returns>
 	void InitializeGraphicsPipeline();
 
 	/// <summary>
-	/// ƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	/// ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	/// </summary>
-	/// <returns>¬”Û</returns>
+	/// <returns>æˆå¦</returns>
 	void LoadTexture(const wchar_t* filePath);
 
 	/// <summary>
-	/// ƒ‚ƒfƒ‹ì¬
+	/// ãƒ¢ãƒ‡ãƒ«ä½œæˆ
 	/// </summary>
 	void CreateModel();
 };

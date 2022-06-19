@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "SpriteCommon.h"
 
@@ -13,62 +13,62 @@ private:
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
-	// ’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘Ì
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 	struct ConstBufferData {
-		XMFLOAT4 color; // F (RGBA)
-		XMMATRIX mat;   // ‚R‚c•ÏŠ·s—ñ
+		XMFLOAT4 color; // è‰² (RGBA)
+		XMMATRIX mat;   // ï¼“ï¼¤å¤‰æ›è¡Œåˆ—
 	};
 
-	// ’¸“_ƒf[ƒ^
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
 	struct VertexPosUv {
-		XMFLOAT3 pos; // xyzÀ•W
-		XMFLOAT2 uv;  // uvÀ•W
+		XMFLOAT3 pos; // xyzåº§æ¨™
+		XMFLOAT2 uv;  // uvåº§æ¨™
 	};
 
 	// --------------------
-	// ƒXƒvƒ‰ƒCƒg1–‡•ª‚Ìƒf[ƒ^
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ1æšåˆ†ã®ãƒ‡ãƒ¼ã‚¿
 	// --------------------
 protected:
-	//’¸“_ƒoƒbƒtƒ@;
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡;
 	ComPtr<ID3D12Resource> vertBuff;
-	//’¸“_ƒoƒbƒtƒ@ƒrƒ…[
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
-	//’è”ƒoƒbƒtƒ@;
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡;
 	ComPtr<ID3D12Resource> constBuff;
-	// ƒ[ƒ‹ƒhs—ñ
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—
 	XMMATRIX matWorld;
 
 public:
-	// Z²‰ñ‚è‚Ì‰ñ“]Šp
+	// Zè»¸å›ã‚Šã®å›è»¢è§’
 	float rotation = 0.0f;
-	// À•W
+	// åº§æ¨™
 	XMFLOAT3 position = { 0,0,0 };
-	// F(RGBA)
+	// è‰²(RGBA)
 	XMFLOAT4 color = { 1, 1, 1, 1 };
-	// ”ñ•\¦
+	// éè¡¨ç¤º
 	bool isInvisible = false;
 
 private:
-	// ƒeƒNƒXƒ`ƒƒ”Ô†
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç•ªå·
 	UINT texNumber = 0;
-	// ‘å‚«‚³
+	// å¤§ãã•
 	XMFLOAT2 size = { 100, 100 };
-	// ƒAƒ“ƒJ[ƒ|ƒCƒ“ƒg
+	// ã‚¢ãƒ³ã‚«ãƒ¼ãƒã‚¤ãƒ³ãƒˆ
 	XMFLOAT2 anchorpoint = { 0.5f, 0.5f };
-	// ¶‰E”½“]
+	// å·¦å³åè»¢
 	bool isFlipX = false;
-	// ã‰º”½“]
+	// ä¸Šä¸‹åè»¢
 	bool isFlipY = false;
-	// ƒeƒNƒXƒ`ƒƒ¶ãÀ•W
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£å·¦ä¸Šåº§æ¨™
 	XMFLOAT2 texLeftTop = { 0, 0 };
-	// ƒeƒNƒXƒ`ƒƒØ‚èo‚µƒTƒCƒY
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åˆ‡ã‚Šå‡ºã—ã‚µã‚¤ã‚º
 	XMFLOAT2 texSize = { 100, 100 };
 
 	bool dirty = false;
 
 public:
 	// --------------------
-	// ƒAƒNƒZƒbƒT
+	// ã‚¢ã‚¯ã‚»ãƒƒã‚µ
 	// --------------------
 	inline void setAnchorPoint(const XMFLOAT2& ap) { anchorpoint = ap; dirty = true; }
 	inline XMFLOAT2 getAnchorPoint() { return anchorpoint; }
@@ -92,33 +92,33 @@ public:
 
 public:
 	// --------------------
-	// ŒÂ•Ê
+	// å€‹åˆ¥
 	// --------------------
 protected:
-	// ƒXƒvƒ‰ƒCƒg’P‘Ì’¸“_ƒoƒbƒtƒ@‚Ì“]‘—
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå˜ä½“é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®è»¢é€
 	void SpriteTransferVertexBuffer(const SpriteCommon* spriteCommon);
 
 
-	// ƒXƒvƒ‰ƒCƒg¶¬
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆç”Ÿæˆ
 	void create(ID3D12Device* dev, int window_width, int window_height,
 				UINT texNumber, const SpriteCommon* spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f },
 				bool isFlipX = false, bool isFlipY = false);
 
 public:
-	// ‰Šú‰»‚È‚µ
+	// åˆæœŸåŒ–ãªã—
 	Sprite() {};
-	// ‰Šú‰»—L‚è(createŠÖ”‚ÌŒÄ‚Ño‚µ)
+	// åˆæœŸåŒ–æœ‰ã‚Š(createé–¢æ•°ã®å‘¼ã³å‡ºã—)
 	Sprite(UINT texNumber,
 		   const SpriteCommon* spriteCommon,
 		   XMFLOAT2 anchorpoint = { 0.5f,0.5f },
 		   bool isFlipX = false, bool isFlipY = false);
 
-	// ƒXƒvƒ‰ƒCƒg’P‘ÌXV
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå˜ä½“æ›´æ–°
 	void update(const SpriteCommon* spriteCommon);
 
-	// ƒXƒvƒ‰ƒCƒg’P‘Ì•`‰æ
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå˜ä½“æç”»
 	void draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon* spriteCommon, ID3D12Device* dev);
 
-	// XV‚Æ•`‰æ‚ğ“¯‚És‚¤
+	// æ›´æ–°ã¨æç”»ã‚’åŒæ™‚ã«è¡Œã†
 	void drawWithUpdate(DXBase* dxCom, const SpriteCommon* spriteCommon);
 };

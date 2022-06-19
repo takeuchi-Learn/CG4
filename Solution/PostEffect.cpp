@@ -365,14 +365,14 @@ void PostEffect::init() {
 								descHeapDSV->GetCPUDescriptorHandleForHeapStart());
 }
 
-void PostEffect::draw(DXBase *dxCom) {
+void PostEffect::draw(DXBase *dxBase) {
 
 	transferConstBuff((float)timer->getNowTime());
 
 #pragma region 描画設定
 
-	auto cmdList = dxCom->getCmdList();
-	auto dev = dxCom->getDev();
+	auto cmdList = dxBase->getCmdList();
+	auto dev = dxBase->getDev();
 
 	// パイプラインステートの設定
 	cmdList->SetPipelineState(pipelineSet.pipelinestate.Get());
@@ -419,8 +419,8 @@ void PostEffect::draw(DXBase *dxCom) {
 }
 
 
-void PostEffect::startDrawScene(DXBase *dxCom) {
-	auto cmdList = dxCom->getInstance()->getCmdList();
+void PostEffect::startDrawScene(DXBase *dxBase) {
+	auto cmdList = dxBase->getInstance()->getCmdList();
 
 	// リソースバリアを変更(シェーダーリソース -> 描画可能)
 	for (UINT i = 0; i < renderTargetNum; i++) {
@@ -465,8 +465,8 @@ void PostEffect::startDrawScene(DXBase *dxCom) {
 	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.F, 0, 0, nullptr);
 }
 
-void PostEffect::endDrawScene(DXBase *dxCom) {
-	auto cmdList = dxCom->getInstance()->getCmdList();
+void PostEffect::endDrawScene(DXBase *dxBase) {
+	auto cmdList = dxBase->getInstance()->getCmdList();
 	for (UINT i = 0; i < renderTargetNum; i++) {
 		cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texbuff[i].Get(),
 																		  D3D12_RESOURCE_STATE_RENDER_TARGET,

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <DirectXMath.h>
 #include <wrl.h>
@@ -12,42 +12,42 @@ private:
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
-	// ƒuƒŒƒ“ƒhƒ‚[ƒh
+	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰
 	enum class BLEND_MODE : USHORT {
-		ALPHA,	// ”¼“§–¾‡¬
-		ADD,	// ‰ÁZ‡¬
-		SUB,	// Œ¸Z‡¬
-		REVERSE	// ”½“]‡¬
+		ALPHA,	// åŠé€æ˜åˆæˆ
+		ADD,	// åŠ ç®—åˆæˆ
+		SUB,	// æ¸›ç®—åˆæˆ
+		REVERSE	// åè»¢åˆæˆ
 	};
 
-	// ƒpƒCƒvƒ‰ƒCƒ“ƒZƒbƒg
+	// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚»ãƒƒãƒˆ
 	struct PipelineSet {
-		// ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgƒIƒuƒWƒFƒNƒg
+		// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 		ComPtr<ID3D12PipelineState> pipelinestate;
-		// ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ
+		// ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£
 		ComPtr<ID3D12RootSignature> rootsignature;
 	};
 
 public:
-	// ƒeƒNƒXƒ`ƒƒ‚ÌÅ‘å–‡”
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æœ€å¤§æšæ•°
 	static const UINT spriteSRVCount = 512u;
 
-	// ƒpƒCƒvƒ‰ƒCƒ“ƒZƒbƒg
+	// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚»ãƒƒãƒˆ
 	PipelineSet pipelineSet;
-	// Ë‰es—ñ
+	// å°„å½±è¡Œåˆ—
 	XMMATRIX matProjection{};
-	// ƒeƒNƒXƒ`ƒƒ—pƒfƒXƒNƒŠƒvƒ^ƒq[ƒv‚Ì¶¬
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”¨ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã®ç”Ÿæˆ
 	ComPtr<ID3D12DescriptorHeap> descHeap;
-	// ƒeƒNƒXƒ`ƒƒƒŠƒ\[ƒXiƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@j‚Ì”z—ñ
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒªã‚½ãƒ¼ã‚¹ï¼ˆãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡ï¼‰ã®é…åˆ—
 	ComPtr<ID3D12Resource> texBuff[spriteSRVCount];
 
 
 
-	// Šù‚É“Ç‚İ‚ñ‚¾‰æ‘œ(ƒeƒNƒXƒ`ƒƒ)‚Ì”
+	// æ—¢ã«èª­ã¿è¾¼ã‚“ã ç”»åƒ(ãƒ†ã‚¯ã‚¹ãƒãƒ£)ã®æ•°
 	static UINT nowTexNum;
 
 private:
-	// ƒXƒvƒ‰ƒCƒg—pƒpƒCƒvƒ‰ƒCƒ“¶¬(createSpriteCommon“à‚ÅŒÄ‚Ño‚µ‚Ä‚¢‚é)
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆç”¨ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ç”Ÿæˆ(createSpriteCommonå†…ã§å‘¼ã³å‡ºã—ã¦ã„ã‚‹)
 	static SpriteCommon::PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device *dev,
 																  const wchar_t *vsPath, const wchar_t *psPath,
 																  BLEND_MODE blendMode);
@@ -57,10 +57,10 @@ public:
 				 const wchar_t *vsPath = L"Resources/Shaders/SpriteVS.hlsl",
 				 const wchar_t *psPath = L"Resources/Shaders/SpritePS.hlsl");
 
-	// ƒXƒvƒ‰ƒCƒg‹¤’ÊƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå…±é€šãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	UINT loadTexture(const wchar_t *filename, DirectX::XMFLOAT2 *pTexSize = nullptr);
 
-	// ƒXƒvƒ‰ƒCƒg‹¤’ÊƒOƒ‰ƒtƒBƒbƒNƒRƒ}ƒ“ƒh‚ÌƒZƒbƒg
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå…±é€šã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚³ãƒãƒ³ãƒ‰ã®ã‚»ãƒƒãƒˆ
 	void drawStart(ID3D12GraphicsCommandList *cmdList);
 };
 

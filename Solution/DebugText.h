@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Sprite.h"
 #include <string>
@@ -6,39 +6,39 @@
 #include <DirectXMath.h>
 
 class DebugText {
-public: // ’è”‚ÌéŒ¾    
-	static const int maxCharCount = 256;    // Å‘å•¶š”
-	// todo ‰æ‘œƒTƒCƒY‚É‡‚í‚¹‚Ä•Ï‚¦‚½‚¢(fontWidth, fontHeight)
-	static const int fontWidth = 9 * 2;         // ƒtƒHƒ“ƒg‰æ‘œ“à1•¶š•ª‚Ì‰¡•
-	static const int fontHeight = 18 * 2;       // ƒtƒHƒ“ƒg‰æ‘œ“à1•¶š•ª‚Ìc•
-	static const int fontLineCount = 14;    // ƒtƒHƒ“ƒg‰æ‘œ“à1s•ª‚Ì•¶š”
+public: // å®šæ•°ã®å®£è¨€    
+	static const int maxCharCount = 256;    // æœ€å¤§æ–‡å­—æ•°
+	// todo ç”»åƒã‚µã‚¤ã‚ºã«åˆã‚ã›ã¦å¤‰ãˆãŸã„(fontWidth, fontHeight)
+	static const int fontWidth = 9 * 2;         // ãƒ•ã‚©ãƒ³ãƒˆç”»åƒå†…1æ–‡å­—åˆ†ã®æ¨ªå¹…
+	static const int fontHeight = 18 * 2;       // ãƒ•ã‚©ãƒ³ãƒˆç”»åƒå†…1æ–‡å­—åˆ†ã®ç¸¦å¹…
+	static const int fontLineCount = 14;    // ãƒ•ã‚©ãƒ³ãƒˆç”»åƒå†…1è¡Œåˆ†ã®æ–‡å­—æ•°
 
 public:
-	UINT tabSize = 4;	// ‰Šú’l‚ÍSPACE4‚Â•ª
+	UINT tabSize = 4;	// åˆæœŸå€¤ã¯SPACE4ã¤åˆ†
 
 private:
-	// ƒƒ“ƒoŠÖ”
+	// ãƒ¡ãƒ³ãƒé–¢æ•°
 	void Initialize(UINT texnumber, const SpriteCommon* spriteCommon, UINT tabSIze = 4);
 
 public:
-	// “à•”‚Åinitialize‚ğŒÄ‚Ño‚µ‚Ä‚¢‚é
+	// å†…éƒ¨ã§initializeã‚’å‘¼ã³å‡ºã—ã¦ã„ã‚‹
 	DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSize = 4);
 
-	// n : XÀ•W‚ğ‚µ‚ÄˆÊ’u‚É–ß‚µAYÀ•W‚ğ•¶š‚Ì‚‚³•ª‰ÁZ‚·‚é
-	// t : tabSize•¶š•ª‰E‚É‚¸‚ç‚·
+	// ï¿¥n : Xåº§æ¨™ã‚’ã—ã¦ä½ç½®ã«æˆ»ã—ã€Yåº§æ¨™ã‚’æ–‡å­—ã®é«˜ã•åˆ†åŠ ç®—ã™ã‚‹
+	// ï¿¥t : tabSizeæ–‡å­—åˆ†å³ã«ãšã‚‰ã™
 	void Print(const SpriteCommon* spriteCommon, const std::string& text,
 			   const float x, const float y, const float scale = 1.0f,
 			   DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1));
 
-	// “à•”‚Åvsnprintf‚ğg—p
-	// @return vsnprintf‚Ì–ß‚è’l
+	// å†…éƒ¨ã§vsnprintfã‚’ä½¿ç”¨
+	// @return vsnprintfã®æˆ»ã‚Šå€¤
 	int formatPrint(const SpriteCommon* spriteCommon, const float x, const float y, const float scale, DirectX::XMFLOAT4 color, const char* fmt, ...);
 
-	void DrawAll(DXBase* dxCom, const SpriteCommon* spriteCommon);
+	void DrawAll(DXBase* dxBase, const SpriteCommon* spriteCommon);
 
-private: // ƒƒ“ƒo•Ï”     
-	// ƒXƒvƒ‰ƒCƒgƒf[ƒ^‚Ì”z—ñ
+private: // ãƒ¡ãƒ³ãƒå¤‰æ•°     
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆãƒ‡ãƒ¼ã‚¿ã®é…åˆ—
 	Sprite sprites[maxCharCount];
-	// ƒXƒvƒ‰ƒCƒgƒf[ƒ^”z—ñ‚Ì“Y‚¦š”Ô†
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆãƒ‡ãƒ¼ã‚¿é…åˆ—ã®æ·»ãˆå­—ç•ªå·
 	int spriteIndex = 0;
 };
