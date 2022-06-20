@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameScene.h"
 
 #include <memory>
@@ -27,16 +27,16 @@
 class PlayScene :
 	public GameScene {
 
-#pragma region ƒrƒ…[•ÏŠ·s—ñ
+#pragma region ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
 
 	//DirectX::XMMATRIX matView;
-	DirectX::XMFLOAT3 eye_local;   // ‹“_À•W
-	DirectX::XMFLOAT3 target_local;   // ’‹“_À•W
-	DirectX::XMFLOAT3 up_local;       // ã•ûŒüƒxƒNƒgƒ‹
+	DirectX::XMFLOAT3 eye_local;   // è¦–ç‚¹åº§æ¨™
+	DirectX::XMFLOAT3 target_local;   // æ³¨è¦–ç‚¹åº§æ¨™
+	DirectX::XMFLOAT3 up_local;       // ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 
-#pragma endregion ƒrƒ…[•ÏŠ·s—ñ
+#pragma endregion ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡Œåˆ—
 
-#pragma region ‰¹
+#pragma region éŸ³
 
 	std::unique_ptr<Sound::SoundCommon> soundCommon;
 
@@ -44,43 +44,43 @@ class PlayScene :
 
 	std::unique_ptr<Sound> particleSE;
 
-#pragma endregion ‰¹
+#pragma endregion éŸ³
 
-#pragma region ƒXƒvƒ‰ƒCƒg
+#pragma region ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	// --------------------
-	// ƒXƒvƒ‰ƒCƒg‹¤’Ê
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå…±é€š
 	// --------------------
 	std::unique_ptr<SpriteCommon> spriteCommon;
-	// ƒXƒvƒ‰ƒCƒg‹¤’ÊƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå…±é€šãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	UINT texNum = 0u;
 
 	// --------------------
-	// ƒXƒvƒ‰ƒCƒgŒÂ•Ê
+	// ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆå€‹åˆ¥
 	// --------------------
-	static const int SPRITES_NUM = 1;
-	Sprite sprites[SPRITES_NUM]{};
+	static const UINT SPRITES_NUM = 1;
+	std::vector<Sprite> sprites;
 
 	std::unique_ptr<Sprite> white;
 	UINT whiteTexNum = 0u;
 
 	// --------------------
-	// ƒfƒoƒbƒOƒeƒLƒXƒg
+	// ãƒ‡ãƒãƒƒã‚°ãƒ†ã‚­ã‚¹ãƒˆ
 	// --------------------
 	std::unique_ptr<DebugText> debugText;
-	// ƒfƒoƒbƒOƒeƒLƒXƒg—p‚ÌƒeƒNƒXƒ`ƒƒ”Ô†
+	// ãƒ‡ãƒãƒƒã‚°ãƒ†ã‚­ã‚¹ãƒˆç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ç•ªå·
 	UINT debugTextTexNumber;
-#pragma endregion ƒXƒvƒ‰ƒCƒg
+#pragma endregion ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 
-#pragma region ƒ‰ƒCƒg
+#pragma region ãƒ©ã‚¤ãƒˆ
 
 	std::unique_ptr<Light> light;
 
-#pragma endregion ƒ‰ƒCƒg
+#pragma endregion ãƒ©ã‚¤ãƒˆ
 
 
-#pragma region 3DƒIƒuƒWƒFƒNƒg
+#pragma region 3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
-	// 3DƒIƒuƒWƒFƒNƒg—pƒpƒCƒvƒ‰ƒCƒ“¶¬
+	// 3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”¨ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ç”Ÿæˆ
 	Object3d::PipelineSet object3dPipelineSet;
 	Object3d::PipelineSet backPipelineSet;
 
@@ -89,21 +89,21 @@ class PlayScene :
 	std::vector<Object3d> obj3d;
 	const float obj3dScale = 10.f;
 
-	DirectX::XMFLOAT2 angle{};	// Še²ü‚è‚Ì‰ñ“]Šp
+	DirectX::XMFLOAT2 angle{};	// å„è»¸å‘¨ã‚Šã®å›è»¢è§’
 
 	std::unique_ptr<Object3d> lightObj;
 
 	std::unique_ptr<ObjModel> backModel;
 	std::unique_ptr<Object3d> backObj;
 
-#pragma endregion 3DƒIƒuƒWƒFƒNƒg
+#pragma endregion 3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
-#pragma region FBXƒIƒuƒWƒFƒNƒg
+#pragma region FBXã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
 	std::unique_ptr<FbxModel> fbxModel;
 	std::unique_ptr<FbxObj3d> fbxObj3d;
 
-#pragma endregion FBXƒIƒuƒWƒFƒNƒg
+#pragma endregion FBXã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
 
 	Input* input = nullptr;
@@ -119,7 +119,7 @@ class PlayScene :
 private:
 	void createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum = 10U, const float startScale = 1.f);
 
-	// update_‰½‚Æ‚©ŠÖ”‚ğŠi”[‚·‚é
+	// update_ä½•ã¨ã‹é–¢æ•°ã‚’æ ¼ç´ã™ã‚‹
 	void (PlayScene:: *update_proc)();
 
 	void update_start();
@@ -128,7 +128,57 @@ private:
 
 	void changeEndScene();
 
+
+#pragma region åˆæœŸåŒ–é–¢æ•°
+
+	void cameraInit();
+
+	void lightInit();
+
+	void soundInit();
+
+	void spriteInit();
+
+	void obj3dInit();
+
+	void fbxInit();
+
+	void particleInit();
+
+	void timerInit();
+
+#pragma endregion åˆæœŸåŒ–é–¢æ•°
+
+#pragma region æ›´æ–°é–¢æ•°
+
+	void updateSound();
+
+	void updateMouse();
+
+	void updateCamera();
+
+	void updateLight();
+
+	void updateSprite();
+
+#pragma endregion æ›´æ–°é–¢æ•°
+
+
 public:
+
+#pragma region è§’åº¦ç³»é–¢æ•°
+	// @return 0 <= ret[rad] < 2PI
+	float angleRoundRad(float rad);
+
+	float nearSin(float rad);
+	float nearCos(float rad);
+	float nearTan(float rad);
+
+	double near_atan2(double _y, double _x);
+	float near_atan2(float _y, float _x);
+#pragma endregion è§’åº¦ç³»é–¢æ•°
+
+
 	PlayScene();
 	void init() override;
 	void update() override;

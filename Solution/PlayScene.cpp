@@ -1,4 +1,4 @@
-#include "PlayScene.h"
+Ôªø#include "PlayScene.h"
 
 #include "SceneManager.h"
 
@@ -16,144 +16,129 @@
 
 using namespace DirectX;
 
-namespace {
-	// @return 0 <= ret[rad] < 2PI
-	float angleRoundRad(float rad) {
-		float angle = rad;
+#pragma region ËßíÂ∫¶Á≥ªÈñ¢Êï∞
 
-		if (angle >= 0.f && angle < XM_2PI) return angle;
+float PlayScene::angleRoundRad(float rad) {
+	float angle = rad;
 
-		while (angle >= XM_2PI) {
-			angle -= XM_2PI;
-		}
-		while (angle < 0) {
-			angle += XM_2PI;
-		}
-		return angle;
+	if (angle >= 0.f && angle < XM_2PI) return angle;
+
+	while (angle >= XM_2PI) {
+		angle -= XM_2PI;
 	}
-
-	float nearSin(float rad) {
-		constexpr float a = +0.005859483f;
-		constexpr float b = +0.005587939f;
-		constexpr float c = -0.171570726f;
-		constexpr float d = +0.0018185485f;
-		constexpr float e = +0.9997773594f;
-
-		float x = angleRoundRad(rad);
-
-		// 0 ~ PI/2Ç™ÇÌÇ©ÇÍÇŒãÅÇﬂÇÁÇÍÇÈ
-		if (x < XM_PIDIV2) {
-			// ÇªÇÃÇ‹Ç‹
-		} else if (x >= XM_PIDIV2 && x < XM_PI) {
-			x = XM_PI - x;
-		} else if (x < XM_PI * 1.5f) {
-			x = -(x - XM_PI);
-		} else if (x < XM_2PI) {
-			x = -(XM_2PI - x);
-		}
-
-		return x * (x * (x * (x * (a * x + b) + c) + d) + e);
+	while (angle < 0) {
+		angle += XM_2PI;
 	}
-
-	float nearCos(float rad) {
-		return nearSin(rad + XM_PIDIV2);
-	}
-
-	float nearTan(float rad) {
-		return nearSin(rad) / nearCos(rad);
-	}
-
-	double near_atan2(double _y, double _x) {
-
-		const double x = abs(_x);
-		const double y = abs(_y);
-
-		const bool bigX = y < x;
-
-		double slope{};
-		if (bigX) slope = (double)y / x;
-		else  slope = (double)x / y;
-
-		constexpr auto a = -0.05026472;
-		constexpr auto b = +0.26603324;
-		constexpr auto c = -0.45255286;
-		constexpr auto d = +0.02385002;
-		constexpr auto e = +0.99836359;
-
-		auto ret = slope * (slope * (slope * (slope * (a * slope + b) + c) + d) + e); //5éüã»ê¸ãﬂéó
-
-		constexpr auto plane = XM_PI;
-		constexpr auto rightAngle = plane / 2;	// íºäp
-
-		if (bigX) {
-			if (_x > 0) {
-				if (_y < 0) ret = -ret;
-			} else {
-				if (_y > 0) ret = plane - ret;
-				if (_y < 0) ret = ret - plane;
-			}
-		} else {
-			if (_x > 0) {
-				if (_y > 0) ret = rightAngle - ret;
-				if (_y < 0) ret = ret - rightAngle;
-			}
-			if (_x < 0) {
-				if (_y > 0) ret = ret + rightAngle;
-				if (_y < 0) ret = -ret - rightAngle;
-			}
-		}
-
-		return ret;
-	}
-
-	float near_atan2(float y, float x) {
-		return (float)near_atan2((double)y, (double)x);
-	}
+	return angle;
 }
 
-PlayScene::PlayScene()
-	: update_proc(&PlayScene::update_start) {
-	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
-	dxBase = DXBase::getInstance();
+float PlayScene::nearSin(float rad) {
+	constexpr float a = +0.005859483f;
+	constexpr float b = +0.005587939f;
+	constexpr float c = -0.171570726f;
+	constexpr float d = +0.0018185485f;
+	constexpr float e = +0.9997773594f;
 
-	input = Input::getInstance();
+	float x = angleRoundRad(rad);
 
-	FbxObj3d::setDevice(dxBase->getDev());
+	// 0 ~ PI/2„Åå„Çè„Åã„Çå„Å∞Ê±Ç„ÇÅ„Çâ„Çå„Çã
+	if (x < XM_PIDIV2) {
+		// „Åù„ÅÆ„Åæ„Åæ
+	} else if (x >= XM_PIDIV2 && x < XM_PI) {
+		x = XM_PI - x;
+	} else if (x < XM_PI * 1.5f) {
+		x = -(x - XM_PI);
+	} else if (x < XM_2PI) {
+		x = -(XM_2PI - x);
+	}
 
-#pragma region ÉrÉÖÅ[ïœä∑
+	return x * (x * (x * (x * (a * x + b) + c) + d) + e);
+}
 
+float PlayScene::nearCos(float rad) {
+	return nearSin(rad + XM_PIDIV2);
+}
+
+float PlayScene::nearTan(float rad) {
+	return nearSin(rad) / nearCos(rad);
+}
+
+double PlayScene::near_atan2(double _y, double _x) {
+
+	const double x = abs(_x);
+	const double y = abs(_y);
+
+	const bool bigX = y < x;
+
+	double slope{};
+	if (bigX) slope = (double)y / x;
+	else  slope = (double)x / y;
+
+	constexpr auto a = -0.05026472;
+	constexpr auto b = +0.26603324;
+	constexpr auto c = -0.45255286;
+	constexpr auto d = +0.02385002;
+	constexpr auto e = +0.99836359;
+
+	auto ret = slope * (slope * (slope * (slope * (a * slope + b) + c) + d) + e); //5Ê¨°Êõ≤Á∑öËøë‰ºº
+
+	constexpr auto plane = XM_PI;
+	constexpr auto rightAngle = plane / 2;	// Áõ¥Ëßí
+
+	if (bigX) {
+		if (_x > 0) {
+			if (_y < 0) ret = -ret;
+		} else {
+			if (_y > 0) ret = plane - ret;
+			if (_y < 0) ret = ret - plane;
+		}
+	} else {
+		if (_x > 0) {
+			if (_y > 0) ret = rightAngle - ret;
+			if (_y < 0) ret = ret - rightAngle;
+		}
+		if (_x < 0) {
+			if (_y > 0) ret = ret + rightAngle;
+			if (_y < 0) ret = -ret - rightAngle;
+		}
+	}
+
+	return ret;
+}
+
+float PlayScene::near_atan2(float y, float x) {
+	return (float)near_atan2((double)y, (double)x);
+}
+
+#pragma endregion ËßíÂ∫¶Á≥ªÈñ¢Êï∞
+
+#pragma region ÂàùÊúüÂåñÈñ¢Êï∞
+
+void PlayScene::cameraInit() {
 	camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
 	camera->setFarZ(10000.f);
-	camera->setEye(XMFLOAT3(0, 0, -175));	// éãì_ç¿ïW
-	camera->setTarget(XMFLOAT3(0, 0, 0));	// íçéãì_ç¿ïW
-	camera->setUp(XMFLOAT3(0, 1, 0));		// è„ï˚å¸
+	camera->setEye(XMFLOAT3(0, 0, -175));	// Ë¶ñÁÇπÂ∫ßÊ®ô
+	camera->setTarget(XMFLOAT3(0, 0, 0));	// Ê≥®Ë¶ñÁÇπÂ∫ßÊ®ô
+	camera->setUp(XMFLOAT3(0, 1, 0));		// ‰∏äÊñπÂêë
 	camera->update();
+}
 
-#pragma endregion ÉrÉÖÅ[ïœä∑
-
-	FbxObj3d::setCamera(camera.get());
-	FbxObj3d::createGraphicsPipeline();
-
-#pragma region ÉâÉCÉg
-
+void PlayScene::lightInit() {
 	light.reset(new Light());
+}
 
-#pragma endregion ÉâÉCÉg
-
-
-#pragma region âπ
-
+void PlayScene::soundInit() {
 	soundCommon.reset(new Sound::SoundCommon());
 	soundData1.reset(new Sound("Resources/BGM.wav", soundCommon.get()));
 
 	particleSE.reset(new Sound("Resources/SE/Sys_Set03-click.wav", soundCommon.get()));
+}
 
-#pragma endregion âπ
+void PlayScene::spriteInit() {
 
-#pragma region ÉXÉvÉâÉCÉg
 
 	// --------------------
-	// ÉXÉvÉâÉCÉgã§í 
+	// „Çπ„Éó„É©„Ç§„ÉàÂÖ±ÈÄö
 	// --------------------
 	spriteCommon.reset(new SpriteCommon());
 
@@ -164,13 +149,14 @@ PlayScene::PlayScene()
 	white->position.y = 0.f;
 	white->color = XMFLOAT4(0, 0, 0, 1);
 
-	// ÉXÉvÉâÉCÉgã§í ÉeÉNÉXÉ`ÉÉì«Ç›çûÇ›
+	// „Çπ„Éó„É©„Ç§„ÉàÂÖ±ÈÄö„ÉÜ„ÇØ„Çπ„ÉÅ„É£Ë™≠„ÅøËæº„Åø
 	texNum = spriteCommon->loadTexture(L"Resources/texture.png");
 
-	// ÉXÉvÉâÉCÉgÇÃê∂ê¨
-	for (int i = 0; i < _countof(sprites); i++) {
+	// „Çπ„Éó„É©„Ç§„Éà„ÅÆÁîüÊàê
+	sprites.resize(SPRITES_NUM);
+	for (UINT i = 0; i < SPRITES_NUM; i++) {
 		sprites[i] = Sprite(texNum, spriteCommon.get(), { 0, 0 });
-		// ÉXÉvÉâÉCÉgÇÃç¿ïWïœçX
+		// „Çπ„Éó„É©„Ç§„Éà„ÅÆÂ∫ßÊ®ôÂ§âÊõ¥
 		sprites[i].position.x = 1280.f / 10;
 		sprites[i].position.y = 720.f / 10;
 		//sprites[i].isInvisible = true;
@@ -182,17 +168,17 @@ PlayScene::PlayScene()
 		//sprites[i].size.y = 100.0f;
 	}
 
-	// ÉfÉoÉbÉOÉeÉLÉXÉgópÇÃÉeÉNÉXÉ`ÉÉì«Ç›çûÇ›
+	// „Éá„Éê„ÉÉ„Ç∞„ÉÜ„Ç≠„Çπ„ÉàÁî®„ÅÆ„ÉÜ„ÇØ„Çπ„ÉÅ„É£Ë™≠„ÅøËæº„Åø
 	debugTextTexNumber = spriteCommon->loadTexture(L"Resources/debugfont.png");
-	// ÉfÉoÉbÉOÉeÉLÉXÉgèâä˙âª
+	// „Éá„Éê„ÉÉ„Ç∞„ÉÜ„Ç≠„Çπ„ÉàÂàùÊúüÂåñ
 	debugText.reset(new DebugText(debugTextTexNumber, spriteCommon.get()));
 
 
-#pragma endregion ÉXÉvÉâÉCÉg
+}
 
-#pragma region 3DÉIÉuÉWÉFÉNÉg
+void PlayScene::obj3dInit() {
 
-	// 3DÉIÉuÉWÉFÉNÉgópÉpÉCÉvÉâÉCÉìê∂ê¨
+	// 3D„Ç™„Éñ„Ç∏„Çß„ÇØ„ÉàÁî®„Éë„Ç§„Éó„É©„Ç§„É≥ÁîüÊàê
 	object3dPipelineSet = Object3d::createGraphicsPipeline(dxBase->getDev());
 
 	backPipelineSet = Object3d::createGraphicsPipeline(dxBase->getDev(), Object3d::BLEND_MODE::ALPHA,
@@ -225,10 +211,12 @@ PlayScene::PlayScene()
 	const float lightObjScale = obj3dScale * 0.5f;
 	lightObj->scale = XMFLOAT3(lightObjScale, lightObjScale, lightObjScale);
 	lightObj->position = obj3d[0].position;
+}
 
-#pragma endregion 3DÉIÉuÉWÉFÉNÉg
-
-#pragma region FBX
+void PlayScene::fbxInit() {
+	FbxObj3d::setDevice(dxBase->getDev());
+	FbxObj3d::setCamera(camera.get());
+	FbxObj3d::createGraphicsPipeline();
 
 	constexpr char fbxName[] = "boneTest";
 	fbxModel.reset(FbxLoader::GetInstance()->loadModelFromFile(fbxName));
@@ -239,79 +227,53 @@ PlayScene::PlayScene()
 	fbxObj3d.reset(new FbxObj3d(fbxModel.get()/*, false*/));
 	constexpr float fbxObjScale = 0.0725f;
 	fbxObj3d->setScale(XMFLOAT3(fbxObjScale, fbxObjScale, fbxObjScale));
+}
 
-#pragma endregion FBX
-
-	// ÉpÅ[ÉeÉBÉNÉãèâä˙âª
+void PlayScene::particleInit() {
 	particleMgr.reset(new ParticleMgr(dxBase->getDev(), L"Resources/effect1.png", camera.get()));
+}
 
-	// éûä‘èâä˙âª
+void PlayScene::timerInit() {
 	timer.reset(new Time());
 }
 
+#pragma endregion ÂàùÊúüÂåñÈñ¢Êï∞
+
+PlayScene::PlayScene()
+	: update_proc(&PlayScene::update_start) {
+	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
+
+	dxBase = DXBase::getInstance();
+
+	input = Input::getInstance();
+
+
+	cameraInit();
+
+	lightInit();
+
+	soundInit();
+
+	spriteInit();
+
+	obj3dInit();
+
+	fbxInit();
+
+	particleInit();
+
+	timerInit();
+}
+
 void PlayScene::init() {
-	// É^ÉCÉ}Å[äJén
+	// „Çø„Ç§„Éû„ÉºÈñãÂßã
 	timer->reset();
 }
 
-void PlayScene::update() {
-	// ÉVÅ[ÉìëJà⁄íÜÇ‡îwåiÇÕâÒÇ∑
-	backObj->rotation.y += 0.1f;
+#pragma region Êõ¥Êñ∞Èñ¢Êï∞
 
-	(this->*update_proc)();
-
-	// îwåiÉIÉuÉWÉFÉNÉgÇÃíÜêSÇÉJÉÅÉâÇ…Ç∑ÇÈ
-	backObj->position = camera->getEye();
-
-
-	light->update();
-	camera->update();
-}
-
-void PlayScene::update_start() {
-	white->color.w -= 0.75f / dxBase->getFPS();
-	if (white->color.w < 0.f) {
-		white->color.w = 1.f;
-		white->isInvisible = true;
-
-		fbxObj3d->playAnimation();
-		timer->reset();
-
-		update_proc = &PlayScene::update_play;
-	}
-}
-
-void PlayScene::update_end() {
-	white->color.w += 0.75f / dxBase->getFPS();
-	if (white->color.w > 1.f) {
-		SceneManager::getInstange()->changeScene(new EndScene());
-	}
-}
-
-void PlayScene::changeEndScene() {
-	// BGMÇ™ñ¬Ç¡ÇƒÇ¢ÇΩÇÁí‚é~Ç∑ÇÈ
-	if (Sound::checkPlaySound(soundData1.get())) {
-		Sound::SoundStopWave(soundData1.get());
-	}
-
-	// fbxÇÃÉAÉjÉÅÅ[ÉVÉáÉìÇí‚é~Ç∑ÇÈ
-	fbxObj3d->stopAnimation(false);
-
-	white->isInvisible = false;
-	white->color.w = 0.f;
-	update_proc = &PlayScene::update_end;
-}
-
-void PlayScene::update_play() {
-
-	// SPACEÇ≈ENDÉVÅ[ÉìÇ÷
-	if (input->triggerKey(DIK_SPACE)) {
-		changeEndScene();
-	}
-
-#pragma region âπ
-
-	// êîéöÇÃ0ÉLÅ[Ç™âüÇ≥ÇÍÇΩèuä‘âπÇçƒê∂ÇµÇ»Ç®Ç∑
+void PlayScene::updateSound() {
+	// Êï∞Â≠ó„ÅÆ0„Ç≠„Éº„ÅåÊäº„Åï„Çå„ÅüÁû¨ÈñìÈü≥„ÇíÂÜçÁîü„Åó„Å™„Åä„Åô
 	if (input->triggerKey(DIK_0)) {
 		//Sound::SoundStopWave(soundData1);
 
@@ -333,156 +295,104 @@ void PlayScene::update_play() {
 
 		debugText->Print(spriteCommon.get(), "P : create particle(play SE)", 0, debugText->fontHeight * 4.f);
 	}
+}
 
-#pragma endregion âπ
+void PlayScene::updateMouse() {
+	const XMFLOAT2 mousePos(float(input->getMousePos().x), float(input->getMousePos().y));
 
-#pragma region É}ÉEÉX
-
-	{
-
-		const XMFLOAT2 mousePos(float(input->getMousePos().x), float(input->getMousePos().y));
-
-		if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
-			debugText->Print(spriteCommon.get(), "input mouse left",
-							 mousePos.x, mousePos.y, 0.75f);
-		}
-		if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
-			debugText->Print(spriteCommon.get(), "input mouse right",
-							 mousePos.x,
-							 mousePos.y + debugText->fontHeight, 0.75f);
-		}
-		if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
-			debugText->Print(spriteCommon.get(), "input mouse wheel",
-							 mousePos.x,
-							 mousePos.y + debugText->fontHeight * 2, 0.75f);
-		}
-		if (input->hitMouseBotton(VK_LSHIFT)) {
-			debugText->Print(spriteCommon.get(), "LSHIFT(WinAPI)", 0, 0, 2);
-		}
+	if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
+		debugText->Print(spriteCommon.get(), "input mouse left",
+						 mousePos.x, mousePos.y, 0.75f);
+	}
+	if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
+		debugText->Print(spriteCommon.get(), "input mouse right",
+						 mousePos.x,
+						 mousePos.y + debugText->fontHeight, 0.75f);
+	}
+	if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
+		debugText->Print(spriteCommon.get(), "input mouse wheel",
+						 mousePos.x,
+						 mousePos.y + debugText->fontHeight * 2, 0.75f);
+	}
+	if (input->hitMouseBotton(VK_LSHIFT)) {
+		debugText->Print(spriteCommon.get(), "LSHIFT(WinAPI)", 0, 0, 2);
 	}
 
-	// RÇâüÇ∑ÇΩÇ—É}ÉEÉXÉJÅ[É\ÉãÇÃï\é¶îÒï\é¶ÇêÿÇËë÷Ç¶
+	// R„ÇíÊäº„Åô„Åü„Å≥„Éû„Ç¶„Çπ„Ç´„Éº„ÇΩ„É´„ÅÆË°®Á§∫ÈùûË°®Á§∫„ÇíÂàá„ÇäÊõø„Åà
 	if (input->triggerKey(DIK_R)) {
 		static bool mouseDispFlag = true;
 		mouseDispFlag = !mouseDispFlag;
 		input->changeDispMouseCursorFlag(mouseDispFlag);
 	}
 
-	// MÉLÅ[Ç≈É}ÉEÉXÉJÅ[É\Éãà íuÇ0,0Ç…à⁄ìÆ
+	// M„Ç≠„Éº„Åß„Éû„Ç¶„Çπ„Ç´„Éº„ÇΩ„É´‰ΩçÁΩÆ„Çí0,0„Å´ÁßªÂãï
 	if (input->triggerKey(DIK_M)) {
 		input->setMousePos(0, 0);
 	}
+}
 
-#pragma endregion É}ÉEÉX
+void PlayScene::updateCamera() {
+	const float rotaVal = XM_PIDIV2 / DXBase::getInstance()->getFPS();	// ÊØéÁßíÂõõÂçäÂë®
 
-#pragma region éûä‘
+	if (input->hitKey(DIK_RIGHT)) {
+		angle.y += rotaVal;
+		if (angle.y > XM_PI * 2) { angle.y = 0; }
+	} else if (input->hitKey(DIK_LEFT)) {
+		angle.y -= rotaVal;
+		if (angle.y < 0) { angle.y = XM_PI * 2; }
+	}
 
-	debugText->formatPrint(spriteCommon.get(), 0, 0, 1.f,
-						   XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxBase->getFPS());
+	if (input->hitKey(DIK_UP)) {
+		if (angle.x + rotaVal < XM_PIDIV2) angle.x += rotaVal;
+	} else if (input->hitKey(DIK_DOWN)) {
+		if (angle.x - rotaVal > -XM_PIDIV2) angle.x -= rotaVal;
+	}
 
-	if (input->hitKey(DIK_R)) timer->reset();
+	// angle„É©„Ç∏„Ç¢„É≥„Å†„ÅëYËª∏„Åæ„Çè„Çä„Å´ÂõûËª¢„ÄÇÂçäÂæÑ„ÅØ-100
+	constexpr float camRange = 100.f;	// targetLength
+	camera->rotation(camRange, angle.x, angle.y);
+
+
+	// ÁßªÂãïÈáè
+	const float moveSpeed = 75.f / dxBase->getFPS();
+	// Ë¶ñÁÇπÁßªÂãï
+	if (input->hitKey(DIK_W)) {
+		camera->moveForward(moveSpeed);
+	} else if (input->hitKey(DIK_S)) {
+		camera->moveForward(-moveSpeed);
+	}
+	if (input->hitKey(DIK_A)) {
+		camera->moveRight(-moveSpeed);
+	} else if (input->hitKey(DIK_D)) {
+		camera->moveRight(moveSpeed);
+	}
+}
+
+void PlayScene::updateLight() {
+	// ‰∏ÄÁßí„Åß‰∏ÄÂë®(2PI[rad])
+	const float timeAngle = float(timer->getNowTime()) / Time::oneSec * XM_2PI;
 
 	debugText->formatPrint(spriteCommon.get(),
-						   0, debugText->fontHeight * 15.f,
-						   1.f,
-						   XMFLOAT4(1, 1, 1, 1),
-						   "Time : %.6f[s]",
-						   float(timer->getNowTime()) / float(Time::oneSec));
+						   WinAPI::window_width / 2.f, debugText->fontHeight * 16.f, 1.f,
+						   XMFLOAT4(1, 1, 0, 1),
+						   "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
+						   timeAngle / XM_PI,
+						   angleRoundRad(timeAngle) / XM_PI);
 
-#pragma endregion éûä‘
+	constexpr float lightR = 20.f;
+	lightObj->position = obj3d[0].position;
+	lightObj->position.x += nearSin(timeAngle) * lightR;
+	lightObj->position.y += nearSin(timeAngle) * lightR;
+	lightObj->position.z += nearCos(timeAngle) * lightR;
 
-#pragma region èÓïÒï\é¶
+	light->setLightPos(lightObj->position);
+}
 
-	if (input->triggerKey(DIK_T)) {
-		debugText->tabSize++;
-		if (input->hitKey(DIK_LSHIFT)) debugText->tabSize = 4U;
-	}
-
-	debugText->formatPrint(spriteCommon.get(),
-						   debugText->fontWidth * 2.f, debugText->fontHeight * 17.f,
-						   1.f,
-						   XMFLOAT4(1, 1, 1, 1),
-						   "newLine\ntab(size %u)\tendString", debugText->tabSize);
-
-	debugText->Print(spriteCommon.get(), "SPACE : end", 0, debugText->fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
-
-	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, debugText->fontHeight * 8.f);
-	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, debugText->fontHeight * 9.f);
-
-#pragma endregion èÓïÒï\é¶
-
-#pragma region ÉJÉÅÉâà⁄ìÆâÒì]
-
-	{
-
-		const float rotaVal = XM_PIDIV2 / DXBase::getInstance()->getFPS();	// ñàïbélîºé¸
-
-		if (input->hitKey(DIK_RIGHT)) {
-			angle.y += rotaVal;
-			if (angle.y > XM_PI * 2) { angle.y = 0; }
-		} else if (input->hitKey(DIK_LEFT)) {
-			angle.y -= rotaVal;
-			if (angle.y < 0) { angle.y = XM_PI * 2; }
-		}
-
-		if (input->hitKey(DIK_UP)) {
-			if (angle.x + rotaVal < XM_PIDIV2) angle.x += rotaVal;
-		} else if (input->hitKey(DIK_DOWN)) {
-			if (angle.x - rotaVal > -XM_PIDIV2) angle.x -= rotaVal;
-		}
-
-		// angleÉâÉWÉAÉìÇæÇØYé≤Ç‹ÇÌÇËÇ…âÒì]ÅBîºåaÇÕ-100
-		constexpr float camRange = 100.f;	// targetLength
-		camera->rotation(camRange, angle.x, angle.y);
-
-
-		// à⁄ìÆó 
-		const float moveSpeed = 75.f / dxBase->getFPS();
-		// éãì_à⁄ìÆ
-		if (input->hitKey(DIK_W)) {
-			camera->moveForward(moveSpeed);
-		} else if (input->hitKey(DIK_S)) {
-			camera->moveForward(-moveSpeed);
-		}
-		if (input->hitKey(DIK_A)) {
-			camera->moveRight(-moveSpeed);
-		} else if (input->hitKey(DIK_D)) {
-			camera->moveRight(moveSpeed);
-		}
-	}
-
-	//obj3d[0].rotation.y++;
-
-#pragma endregion ÉJÉÅÉâà⁄ìÆâÒì]
-
-#pragma region ÉâÉCÉg
-	{
-		// àÍïbÇ≈àÍé¸(2PI[rad])
-		const float timeAngle = float(timer->getNowTime()) / Time::oneSec * XM_2PI;
-
-		debugText->formatPrint(spriteCommon.get(),
-							   WinAPI::window_width / 2.f, debugText->fontHeight * 16.f, 1.f,
-							   XMFLOAT4(1, 1, 0, 1),
-							   "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
-							   timeAngle / XM_PI,
-							   angleRoundRad(timeAngle) / XM_PI);
-
-		constexpr float lightR = 20.f;
-		lightObj->position = obj3d[0].position;
-		lightObj->position.x += nearSin(timeAngle) * lightR;
-		lightObj->position.y += nearSin(timeAngle) * lightR;
-		lightObj->position.z += nearCos(timeAngle) * lightR;
-
-		light->setLightPos(lightObj->position);
-	}
-#pragma endregion ÉâÉCÉg
-
-#pragma region ÉXÉvÉâÉCÉg
-
+void PlayScene::updateSprite() {
 	if (input->hitKey(DIK_I)) sprites[0].position.y -= 10; else if (input->hitKey(DIK_K)) sprites[0].position.y += 10;
 	if (input->hitKey(DIK_J)) sprites[0].position.x -= 10; else if (input->hitKey(DIK_L)) sprites[0].position.x += 10;
 
-	// PÇâüÇ∑ÇΩÇ—ÉpÅ[ÉeÉBÉNÉã50ó±í«â¡
+	// P„ÇíÊäº„Åô„Åü„Å≥„Éë„Éº„ÉÜ„Ç£„ÇØ„É´50Á≤íËøΩÂä†
 	if (input->triggerKey(DIK_P)) {
 		constexpr UINT particleNumMax = 50U, particleNumMin = 20U;
 		UINT particleNum = particleNumMin;
@@ -497,8 +407,115 @@ void PlayScene::update_play() {
 
 		Sound::SoundPlayWave(soundCommon.get(), particleSE.get());
 	}
+}
 
-#pragma endregion ÉXÉvÉâÉCÉg
+void PlayScene::update_play() {
+
+	// SPACE„ÅßEND„Ç∑„Éº„É≥„Å∏
+	if (input->triggerKey(DIK_SPACE)) {
+		changeEndScene();
+	}
+
+	// R„Åß„Çø„Ç§„Éû„Éº„Çí„É™„Çª„ÉÉ„Éà
+	if (input->hitKey(DIK_R)) timer->reset();
+
+
+	// Èü≥Èñ¢‰øÇ„ÅÆÊõ¥Êñ∞
+	updateSound();
+
+	updateMouse();
+
+	updateCamera();
+
+	updateLight();
+
+	updateSprite();
+
+#pragma region ÊÉÖÂ†±Ë°®Á§∫
+
+	if (input->triggerKey(DIK_T)) {
+		debugText->tabSize++;
+		if (input->hitKey(DIK_LSHIFT)) debugText->tabSize = 4U;
+	}
+
+	debugText->formatPrint(spriteCommon.get(), 0, 0, 1.f,
+						   XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxBase->getFPS());
+
+
+	debugText->formatPrint(spriteCommon.get(),
+						   0, debugText->fontHeight * 15.f,
+						   1.f,
+						   XMFLOAT4(1, 1, 1, 1),
+						   "Time : %.6f[s]",
+						   float(timer->getNowTime()) / float(Time::oneSec));
+
+
+	debugText->formatPrint(spriteCommon.get(),
+						   debugText->fontWidth * 2.f, debugText->fontHeight * 17.f,
+						   1.f,
+						   XMFLOAT4(1, 1, 1, 1),
+						   "newLine\ntab(size %u)\tendString", debugText->tabSize);
+
+	debugText->Print(spriteCommon.get(), "SPACE : end", 0, debugText->fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
+
+	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, debugText->fontHeight * 8.f);
+	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, debugText->fontHeight * 9.f);
+
+#pragma endregion ÊÉÖÂ†±Ë°®Á§∫
+}
+
+#pragma endregion Êõ¥Êñ∞Èñ¢Êï∞
+
+void PlayScene::update() {
+	// „Ç∑„Éº„É≥ÈÅ∑Áßª‰∏≠„ÇÇËÉåÊôØ„ÅØÂõû„Åô
+	backObj->rotation.y += 0.1f;
+
+	// ‰∏ª„Å™Âá¶ÁêÜ
+	(this->*update_proc)();
+
+	// ËÉåÊôØ„Ç™„Éñ„Ç∏„Çß„ÇØ„Éà„ÅÆ‰∏≠ÂøÉ„Çí„Ç´„É°„É©„Å´„Åô„Çã
+	backObj->position = camera->getEye();
+
+	// „É©„Ç§„Éà„Å®„Ç´„É°„É©„ÅÆÊõ¥Êñ∞
+	light->update();
+	camera->update();
+}
+
+// „Ç∑„Éº„É≥ÈñãÂßãÊôÇ„ÅÆÊºîÂá∫Áî®
+void PlayScene::update_start() {
+	white->color.w -= 0.75f / dxBase->getFPS();
+	if (white->color.w < 0.f) {
+		white->color.w = 1.f;
+		white->isInvisible = true;
+
+		fbxObj3d->playAnimation();
+		timer->reset();
+
+		update_proc = &PlayScene::update_play;
+	}
+}
+
+// „Ç∑„Éº„É≥ÁµÇ‰∫ÜÊôÇ„ÅÆÊºîÂá∫Áî®
+void PlayScene::update_end() {
+	white->color.w += 0.75f / dxBase->getFPS();
+	if (white->color.w > 1.f) {
+		SceneManager::getInstange()->changeScene(new EndScene());
+	}
+}
+
+void PlayScene::changeEndScene() {
+	// BGM„ÅåÈ≥¥„Å£„Å¶„ÅÑ„Åü„ÇâÂÅúÊ≠¢„Åô„Çã
+	if (Sound::checkPlaySound(soundData1.get())) {
+		Sound::SoundStopWave(soundData1.get());
+	}
+
+	// fbx„ÅÆ„Ç¢„Éã„É°„Éº„Ç∑„Éß„É≥„ÇíÂÅúÊ≠¢„Åô„Çã
+	fbxObj3d->stopAnimation(false);
+
+	white->isInvisible = false;
+	white->color.w = 0.f;
+
+	update_proc = &PlayScene::update_end;
 }
 
 void PlayScene::drawObj3d() {
@@ -520,13 +537,13 @@ void PlayScene::drawObj3d() {
 
 void PlayScene::drawFrontSprite() {
 	spriteCommon->drawStart(dxBase->getCmdList());
-	// ÉXÉvÉâÉCÉgï`âÊ
-	for (UINT i = 0; i < _countof(sprites); i++) {
+	// „Çπ„Éó„É©„Ç§„ÉàÊèèÁîª
+	for (UINT i = 0, len = sprites.size(); i < len; i++) {
 		sprites[i].drawWithUpdate(dxBase, spriteCommon.get());
 	}
 	white->drawWithUpdate(dxBase, spriteCommon.get());
 
-	// ÉfÉoÉbÉOÉeÉLÉXÉgï`âÊ
+	// „Éá„Éê„ÉÉ„Ç∞„ÉÜ„Ç≠„Çπ„ÉàÊèèÁîª
 	debugText->DrawAll(dxBase, spriteCommon.get());
 }
 
@@ -553,7 +570,7 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos, const UINT particle
 		constexpr float endScale = 0.f;
 		constexpr float startRota = 0.f, endRota = 0.f;
 
-		// í«â¡
+		// ËøΩÂä†
 		particleMgr->add(timer.get(),
 						 life, generatePos, vel, acc,
 						 startScale, endScale,
