@@ -11,7 +11,7 @@ using namespace Microsoft::WRL;
 
 #include <DirectXMath.h>
 
-DXBase* DXBase::getInstance() {
+DXBase *DXBase::getInstance() {
 	static DXBase dxBase{};
 	return &dxBase;
 }
@@ -19,7 +19,6 @@ DXBase* DXBase::getInstance() {
 
 
 void DXBase::initDevice() {
-	HRESULT result;
 	//DXGiファクトリ(デバイス生成後は解放されてよい)
 	//ComPtr<IDXGIFactory6> dxgiFactory;
 
@@ -34,16 +33,16 @@ void DXBase::initDevice() {
 	// アダプターの列挙用
 	std::vector<ComPtr<IDXGIAdapter1>> adapters;
 	// DXGIファクトリーの生成
-	result = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
+	HRESULT result = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
 	// ここに特定の名前を持つアダプターオブジェクトが入る
 	ComPtr<IDXGIAdapter1> tmpAdapter = nullptr;
-	for (int i = 0;
-		dxgiFactory->EnumAdapters1(i, &tmpAdapter) != DXGI_ERROR_NOT_FOUND;
-		i++) {
+	for (UINT i = 0;
+		 dxgiFactory->EnumAdapters1(i, &tmpAdapter) != DXGI_ERROR_NOT_FOUND;
+		 ++i) {
 		adapters.push_back(tmpAdapter); // 動的配列に追加する
 	}
 
-	for (int i = 0; i < adapters.size(); i++) {
+	for (UINT i = 0, len = (UINT)adapters.size(); i < len; ++i) {
 		DXGI_ADAPTER_DESC1 adesc;
 		adapters[i]->GetDesc1(&adesc);  // アダプターの情報を取得
 
@@ -71,7 +70,7 @@ void DXBase::initDevice() {
 
 	D3D_FEATURE_LEVEL featureLevel;
 
-	for (int i = 0; i < _countof(levels); i++) {
+	for (UINT i = 0, len = _countof(levels); i < len; ++i) {
 		// 採用したアダプターでデバイスを生成
 		result = D3D12CreateDevice(tmpAdapter.Get(), levels[i], IID_PPV_ARGS(&dev));
 		if (result == S_OK) {
@@ -83,17 +82,16 @@ void DXBase::initDevice() {
 }
 
 void DXBase::initCommand() {
-	HRESULT result;
 	// コマンドアロケータを生成
-	result = dev->CreateCommandAllocator(
+	HRESULT result = dev->CreateCommandAllocator(
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
 		IID_PPV_ARGS(&cmdAllocator));
 
 	// コマンドリストを生成
 	result = dev->CreateCommandList(0,
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		cmdAllocator.Get(), nullptr,
-		IID_PPV_ARGS(&cmdList));
+									D3D12_COMMAND_LIST_TYPE_DIRECT,
+									cmdAllocator.Get(), nullptr,
+									IID_PPV_ARGS(&cmdList));
 
 	// 標準設定でコマンドキューを生成
 	D3D12_COMMAND_QUEUE_DESC cmdQueueDesc{};
@@ -129,19 +127,20 @@ void DXBase::initSwapchain() {
 }
 
 void DXBase::initRTV() {
-	HRESULT result = S_FALSE;
-
 	// 各種設定をしてデスクリプタヒープを生成
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
 	heapDesc.Type =
 		D3D12_DESCRIPTOR_HEAP_TYPE_RTV; // レンダーターゲットビュー
 	heapDesc.NumDescriptors = 2;    // 裏表の２つ
 	dev->CreateDescriptorHeap(&heapDesc,
-		IID_PPV_ARGS(&rtvHeaps));
+							  IID_PPV_ARGS(&rtvHeaps));
 	// 裏表の２つ分について
-	backBuffers.resize(2);
+	constexpr UINT backBuffNum = 2u;
+	backBuffers.resize(backBuffNum);
 
-	for (int i = 0; i < 2; i++) {
+	HRESULT result = S_FALSE;
+
+	for (UINT i = 0; i < backBuffNum; ++i) {
 		// スワップチェーンからバッファを取得
 		result = swapchain->GetBuffer(i, IID_PPV_ARGS(&backBuffers[i]));
 
@@ -159,8 +158,6 @@ void DXBase::initRTV() {
 }
 
 void DXBase::initDepthBuffer() {
-	HRESULT result;
-
 	// 深度バッファリソース設定
 	CD3DX12_RESOURCE_DESC depthResDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_D32_FLOAT,
@@ -170,7 +167,7 @@ void DXBase::initDepthBuffer() {
 		1, 0,
 		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 	// 深度バッファの生成
-	result = dev->CreateCommittedResource(
+	HRESULT result = dev->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 		D3D12_HEAP_FLAG_NONE,
 		&depthResDesc,
@@ -196,15 +193,11 @@ void DXBase::initDepthBuffer() {
 }
 
 void DXBase::initFence() {
-	HRESULT result;
-
 	// フェンスの生成
-
-
-	result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	HRESULT result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 }
 
-void DXBase::ClearRenderTarget(const DirectX::XMFLOAT3& clearColor) {
+void DXBase::ClearRenderTarget(const DirectX::XMFLOAT3 &clearColor) {
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
 	// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
@@ -223,7 +216,7 @@ void DXBase::ClearDepthBuffer() {
 }
 
 DXBase::DXBase() {
-	this->winapi = WinAPI::getInstance();;
+	this->winapi = WinAPI::getInstance();
 
 	fps = -1.f;
 	updateFPS();
@@ -241,7 +234,7 @@ DXBase::~DXBase() {
 
 }
 
-void DXBase::startDraw(const DirectX::XMFLOAT3& clearColor) {
+void DXBase::startDraw(const DirectX::XMFLOAT3 &clearColor) {
 	// バックバッファの番号を取得（2つなので0番か1番）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
@@ -253,7 +246,7 @@ void DXBase::startDraw(const DirectX::XMFLOAT3& clearColor) {
 			// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvH =
 		CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvHeaps->GetCPUDescriptorHandleForHeapStart(),
-			bbIndex, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
+									  bbIndex, dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
 		);
 	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH =
@@ -284,7 +277,7 @@ void DXBase::endDraw() {
 	// 命令のクローズ
 	cmdList->Close();
 	// コマンドリストの実行
-	ID3D12CommandList* cmdLists[] = { cmdList.Get() }; // コマンドリストの配列
+	ID3D12CommandList *cmdLists[] = { cmdList.Get() }; // コマンドリストの配列
 	cmdQueue->ExecuteCommandLists(1, cmdLists);
 
 	// バッファをフリップ（裏表の入替え）
@@ -306,9 +299,9 @@ void DXBase::endDraw() {
 	flipTimeFPS();
 }
 
-ID3D12Device* DXBase::getDev() { return dev.Get(); }
+ID3D12Device *DXBase::getDev() { return dev.Get(); }
 
-ID3D12GraphicsCommandList* DXBase::getCmdList() { return cmdList.Get(); }
+ID3D12GraphicsCommandList *DXBase::getCmdList() { return cmdList.Get(); }
 
 
 // --------------------
@@ -331,7 +324,7 @@ void DXBase::flipTimeFPS() {
 
 void DXBase::updateFPS() {
 	float avgDiffTime = 0.f;
-	for (UINT i = 0; i < divNum - 1; i++) {
+	for (UINT i = 0; i < divNum - 1; ++i) {
 		avgDiffTime += fpsTime[i] - fpsTime[i + 1];
 	}
 	avgDiffTime /= divNum - 1;

@@ -1,4 +1,4 @@
-#include "SceneManager.h"
+ï»¿#include "SceneManager.h"
 
 #include "TitleScene.h"
 
@@ -19,17 +19,17 @@ SceneManager *SceneManager::getInstange() {
 
 void SceneManager::update() {
 
-	// ŽŸ‚ÌƒV[ƒ“‚ª‚ ‚Á‚½‚ç
+	// æ¬¡ã®ã‚·ãƒ¼ãƒ³ãŒã‚ã£ãŸã‚‰
 	if (nextScene != nullptr) {
 
-		// ¡‚ÌƒV[ƒ“‚ðíœ‚µAŽŸ‚ÌƒV[ƒ“‚É“ü‚ê‘Ö‚¦‚é
+		// ä»Šã®ã‚·ãƒ¼ãƒ³ã‚’å‰Šé™¤ã—ã€æ¬¡ã®ã‚·ãƒ¼ãƒ³ã«å…¥ã‚Œæ›¿ãˆã‚‹
 		delete nowScene;
 		nowScene = nextScene;
 
-		// ŽŸ‚ÌƒV[ƒ“‚Ì‰Šú‰»ˆ—
+		// æ¬¡ã®ã‚·ãƒ¼ãƒ³ã®åˆæœŸåŒ–å‡¦ç†
 		nextScene->init();
 
-		//ŽŸƒV[ƒ“‚Ìî•ñ‚ðƒNƒŠƒA
+		//æ¬¡ã‚·ãƒ¼ãƒ³ã®æƒ…å ±ã‚’ã‚¯ãƒªã‚¢
 		nextScene = nullptr;
 	}
 

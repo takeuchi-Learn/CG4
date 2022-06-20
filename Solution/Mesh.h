@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <Windows.h>
 #include <wrl.h>
@@ -11,131 +11,131 @@
 #include <unordered_map>
 
 /// <summary>
-/// Œ`óƒf[ƒ^
+/// å½¢çŠ¶ãƒ‡ãƒ¼ã‚¿
 /// </summary>
 class Mesh {
-private: // ƒGƒCƒŠƒAƒX
-	// Microsoft::WRL::‚ğÈ—ª
+private: // ã‚¨ã‚¤ãƒªã‚¢ã‚¹
+	// Microsoft::WRL::ã‚’çœç•¥
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
-	// DirectX::‚ğÈ—ª
+	// DirectX::ã‚’çœç•¥
 	using XMFLOAT2 = DirectX::XMFLOAT2;
 	using XMFLOAT3 = DirectX::XMFLOAT3;
 	using XMFLOAT4 = DirectX::XMFLOAT4;
 	using XMMATRIX = DirectX::XMMATRIX;
 
-public: // ƒTƒuƒNƒ‰ƒX
-	// ’¸“_ƒf[ƒ^\‘¢‘ÌiƒeƒNƒXƒ`ƒƒ‚ ‚èj
+public: // ã‚µãƒ–ã‚¯ãƒ©ã‚¹
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“ï¼ˆãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ã‚Šï¼‰
 	struct VertexPosNormalUv {
-		XMFLOAT3 pos; // xyzÀ•W
-		XMFLOAT3 normal; // –@üƒxƒNƒgƒ‹
-		XMFLOAT2 uv;  // uvÀ•W
+		XMFLOAT3 pos; // xyzåº§æ¨™
+		XMFLOAT3 normal; // æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+		XMFLOAT2 uv;  // uvåº§æ¨™
 	};
 
-public: // Ã“Iƒƒ“ƒoŠÖ”
+public: // é™çš„ãƒ¡ãƒ³ãƒé–¢æ•°
 
 	/// <summary>
-	/// Ã“I‰Šú‰»
+	/// é™çš„åˆæœŸåŒ–
 	/// </summary>
-	/// <param name="dev">ƒfƒoƒCƒX</param>
+	/// <param name="dev">ãƒ‡ãƒã‚¤ã‚¹</param>
 	static void staticInit(ID3D12Device* dev);
 
-private: // Ã“Iƒƒ“ƒo•Ï”
-	// ƒfƒoƒCƒX
+private: // é™çš„ãƒ¡ãƒ³ãƒå¤‰æ•°
+	// ãƒ‡ãƒã‚¤ã‚¹
 	static ID3D12Device* dev;
 
-public: // ƒƒ“ƒoŠÖ”
+public: // ãƒ¡ãƒ³ãƒé–¢æ•°
 
 	/// <summary>
-	/// –¼‘O‚ğæ“¾
+	/// åå‰ã‚’å–å¾—
 	/// </summary>
-	/// <returns>–¼‘O</returns>
+	/// <returns>åå‰</returns>
 	const std::string& getName() { return name; }
 
 	/// <summary>
-	/// –¼‘O‚ğƒZƒbƒg
+	/// åå‰ã‚’ã‚»ãƒƒãƒˆ
 	/// </summary>
-	/// <param name="name">–¼‘O</param>
+	/// <param name="name">åå‰</param>
 	void setName(const std::string& name);
 
 	/// <summary>
-	/// ’¸“_ƒf[ƒ^‚Ì’Ç‰Á
+	/// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®è¿½åŠ 
 	/// </summary>
-	/// <param name="vertex">’¸“_ƒf[ƒ^</param>
+	/// <param name="vertex">é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿</param>
 	void addVertex(const VertexPosNormalUv& vertex);
 
 	/// <summary>
-	/// ’¸“_ƒCƒ“ƒfƒbƒNƒX‚Ì’Ç‰Á
+	/// é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®è¿½åŠ 
 	/// </summary>
-	/// <param name="index">ƒCƒ“ƒfƒbƒNƒX</param>
+	/// <param name="index">ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹</param>
 	void addIndex(unsigned short index);
 
 	/// <summary>
-	/// ’¸“_ƒf[ƒ^‚Ì”‚ğæ“¾
+	/// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®æ•°ã‚’å–å¾—
 	/// </summary>
-	/// <returns>’¸“_ƒf[ƒ^‚Ì”</returns>
+	/// <returns>é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®æ•°</returns>
 	inline size_t getVertexCount() { return vertices.size(); }
 
 	/// <summary>
-	/// ƒ}ƒeƒŠƒAƒ‹‚Ìæ“¾
+	/// ãƒãƒ†ãƒªã‚¢ãƒ«ã®å–å¾—
 	/// </summary>
-	/// <returns>ƒ}ƒeƒŠƒAƒ‹</returns>
+	/// <returns>ãƒãƒ†ãƒªã‚¢ãƒ«</returns>
 	Material* getMaterial() { return material; }
 
 	/// <summary>
-	/// ƒ}ƒeƒŠƒAƒ‹‚ÌŠ„‚è“–‚Ä
+	/// ãƒãƒ†ãƒªã‚¢ãƒ«ã®å‰²ã‚Šå½“ã¦
 	/// </summary>
-	/// <param name="material">ƒ}ƒeƒŠƒAƒ‹</param>
+	/// <param name="material">ãƒãƒ†ãƒªã‚¢ãƒ«</param>
 	void setMaterial(Material* material);
 
 	/// <summary>
-	/// ƒoƒbƒtƒ@‚Ì¶¬
+	/// ãƒãƒƒãƒ•ã‚¡ã®ç”Ÿæˆ
 	/// </summary>
 	void createBuffers();
 
 	/// <summary>
-	/// ’¸“_ƒoƒbƒtƒ@æ“¾
+	/// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡å–å¾—
 	/// </summary>
-	/// <returns>’¸“_ƒoƒbƒtƒ@</returns>
+	/// <returns>é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡</returns>
 	const D3D12_VERTEX_BUFFER_VIEW& getVBView() { return vbView; }
 
 	/// <summary>
-	/// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@æ“¾
+	/// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡å–å¾—
 	/// </summary>
-	/// <returns>ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@</returns>
+	/// <returns>ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡</returns>
 	const D3D12_INDEX_BUFFER_VIEW& getIBView() { return ibView; }
 
 	/// <summary>
-	/// •`‰æ
+	/// æç”»
 	/// </summary>
-	/// <param name="cmdList">–½—ß”­sæƒRƒ}ƒ“ƒhƒŠƒXƒg</param>
+	/// <param name="cmdList">å‘½ä»¤ç™ºè¡Œå…ˆã‚³ãƒãƒ³ãƒ‰ãƒªã‚¹ãƒˆ</param>
 	void draw(ID3D12GraphicsCommandList* cmdList);
 
 	/// <summary>
-	/// ƒGƒbƒW•½ŠŠ‰»ƒf[ƒ^’Ç‰Á
+	/// ã‚¨ãƒƒã‚¸å¹³æ»‘åŒ–ãƒ‡ãƒ¼ã‚¿è¿½åŠ 
 	/// </summary>
-	/// <param name="indexPosition">À•WƒCƒ“ƒfƒbƒNƒX</param>
-	/// <param name="indexVertex">’¸“_ƒCƒ“ƒfƒbƒNƒX</param>
+	/// <param name="indexPosition">åº§æ¨™ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹</param>
+	/// <param name="indexVertex">é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹</param>
 	void addSmoothData(unsigned short indexPosition, unsigned short indexVertex);
 
-	// •½ŠŠ‰»‚³‚ê‚½’¸“_–@ü‚ÌŒvZ
+	// å¹³æ»‘åŒ–ã•ã‚ŒãŸé ‚ç‚¹æ³•ç·šã®è¨ˆç®—
 	void calculateSmoothedVertexNormals();
 
-private: // ƒƒ“ƒo•Ï”
-	// –¼‘O
+private: // ãƒ¡ãƒ³ãƒå¤‰æ•°
+	// åå‰
 	std::string name;
-	// ’¸“_ƒoƒbƒtƒ@
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> vertBuff;
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> indexBuff;
-	// ’¸“_ƒoƒbƒtƒ@ƒrƒ…[
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
-	// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒrƒ…[
+	// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼
 	D3D12_INDEX_BUFFER_VIEW ibView{};
-	// ’¸“_ƒf[ƒ^”z—ñ
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿é…åˆ—
 	std::vector<VertexPosNormalUv> vertices;
-	// ’¸“_ƒCƒ“ƒfƒbƒNƒX”z—ñ
+	// é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é…åˆ—
 	std::vector<unsigned short> indices;
-	// ƒ}ƒeƒŠƒAƒ‹
+	// ãƒãƒ†ãƒªã‚¢ãƒ«
 	Material* material = nullptr;
 	std::unordered_map<unsigned short, std::vector<unsigned short>> smoothData;
 };

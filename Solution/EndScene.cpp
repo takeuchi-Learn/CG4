@@ -1,4 +1,4 @@
-#include "EndScene.h"
+ï»¿#include "EndScene.h"
 
 #include "SceneManager.h"
 
@@ -13,7 +13,7 @@ EndScene::EndScene() {
 
 	spCom.reset(new SpriteCommon());
 
-	// ƒfƒoƒbƒOƒeƒLƒXƒg—p‚ÌƒeƒNƒXƒ`ƒƒ“Ç‚Ýž‚Ý
+	// ãƒ‡ãƒãƒƒã‚°ãƒ†ã‚­ã‚¹ãƒˆç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	debugTextTexNumber = spCom->loadTexture(L"Resources/debugfont.png");
 
 	debugText.reset(new DebugText(debugTextTexNumber, spCom.get()));

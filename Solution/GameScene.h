@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 class GameScene {
 public:
-	virtual ~GameScene() {};	// À‘•‚Í”CˆÓ
+	virtual ~GameScene() {};	// å®Ÿè£…ã¯ä»»æ„
 
-	virtual void init() {};		// À‘•‚Í”CˆÓ
-	virtual void update() = 0;	// À‘••K{
-	virtual void drawObj3d(){};			// À‘•‚Í”CˆÓ
-	virtual void drawFrontSprite(){};	// À‘•‚Í”CˆÓ
+	virtual void init() {};		// å®Ÿè£…ã¯ä»»æ„
+	virtual void update() = 0;	// å®Ÿè£…å¿…é ˆ
+	virtual void drawObj3d(){};			// å®Ÿè£…ã¯ä»»æ„
+	virtual void drawFrontSprite(){};	// å®Ÿè£…ã¯ä»»æ„
 };
 

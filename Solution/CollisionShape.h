@@ -1,43 +1,43 @@
-#pragma once
+ï»¿#pragma once
 
-// “–‚½‚è”»’èƒvƒŠƒ~ƒeƒBƒu
+// å½“ãŸã‚Šåˆ¤å®šãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–
 
 #include <DirectXMath.h>
 
-// ‹…
+// çƒ
 struct Sphere {
-	// ’†SÀ•W
+	// ä¸­å¿ƒåº§æ¨™
 	DirectX::XMVECTOR center = { 0, 0, 0, 1 };
-	// ”¼Œa
+	// åŠå¾„
 	float radius = 1.f;
 };
 
-// •½–Ê
+// å¹³é¢
 struct Plane {
-	// –@üƒxƒNƒgƒ‹
+	// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	DirectX::XMVECTOR normal = { 0, 1, 0, 0 };
-	// Œ´“_(0, 0, 0)‚©‚ç‚Ì‹——£
+	// åŸç‚¹(0, 0, 0)ã‹ã‚‰ã®è·é›¢
 	float distance = 0.f;
 };
 
-// –@ü•t‚«OŠpŒ`(Œv‰ñ‚è‚ª•\)
+// æ³•ç·šä»˜ãä¸‰è§’å½¢(æ™‚è¨ˆå›ã‚ŠãŒè¡¨)
 class Triangle {
 public:
-	//’¸“_î•ñ3‚Â
+	//é ‚ç‚¹æƒ…å ±3ã¤
 	DirectX::XMVECTOR p0;
 	DirectX::XMVECTOR p1;
 	DirectX::XMVECTOR p2;
-	//–@üƒxƒNƒgƒ‹
+	//æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 	DirectX::XMVECTOR normal;
 
-	// –@ü‚ÌŒvZ
+	// æ³•ç·šã®è¨ˆç®—
 	void ComputeNormal();
 };
 
-// ƒŒƒC(”¼’¼ü)
+// ãƒ¬ã‚¤(åŠç›´ç·š)
 struct Ray {
-	// n“_
+	// å§‹ç‚¹
 	DirectX::XMVECTOR start = { 0,0,0,1 };
-	// •ûŒü
+	// æ–¹å‘
 	DirectX::XMVECTOR dir = { 1,0,0,0 };
 };

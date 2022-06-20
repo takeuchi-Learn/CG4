@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include<random>
 
@@ -16,24 +16,24 @@ private:
 	static RandomNum* getInstance();
 
 private:
-	// ˆê—l—”
+	// ä¸€æ§˜ä¹±æ•°
 	int local_getRand(const int min, const int max);
 	double local_getRand(const double min, const double max);
 
-	// ³‹K•ª•z—”
+	// æ­£è¦åˆ†å¸ƒä¹±æ•°
 	double local_getRandNormally(const double center, const double range);
 
 public:
-	// ˆê—l—”_®”
+	// ä¸€æ§˜ä¹±æ•°_æ•´æ•°
 	static int getRand(const int min, const int max);
-	// ˆê—l—”_¬”(double)
+	// ä¸€æ§˜ä¹±æ•°_å°æ•°(double)
 	static double getRand(const double min, const double max);
-	// ˆê—l—”_¬”(float)
+	// ä¸€æ§˜ä¹±æ•°_å°æ•°(float)
 	static float getRandf(const float min, const float max);
 
-	// ³‹K•ª•z—”_double
+	// æ­£è¦åˆ†å¸ƒä¹±æ•°_double
 	static double getRandNormally(const double center, const double range);
-	// ³‹K•ª•z—”_float
+	// æ­£è¦åˆ†å¸ƒä¹±æ•°_float
 	static float getRandNormallyf(const float center, const float range);
 };
 

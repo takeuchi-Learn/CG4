@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <string>
 
@@ -34,24 +34,24 @@ public:
 
 
 
-	// ƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX‚ÌÅ‘å”
+	// ãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æœ€å¤§æ•°
 	static const int MAX_BONE_INDICES = 4;
 
 
 
 	struct Node {
 		std::string name;
-		// ƒ[ƒJƒ‹ƒXƒP[ƒ‹
+		// ãƒ­ãƒ¼ã‚«ãƒ«ã‚¹ã‚±ãƒ¼ãƒ«
 		DirectX::XMVECTOR scaling = { 1,1,1,0 };
-		// ƒ[ƒJƒ‹‰ñ“]Šp
+		// ãƒ­ãƒ¼ã‚«ãƒ«å›è»¢è§’
 		DirectX::XMVECTOR rotation = { 0,0,0,0 };
-		// ƒ[ƒJƒ‹ˆÚ“®
+		// ãƒ­ãƒ¼ã‚«ãƒ«ç§»å‹•
 		DirectX::XMVECTOR translation = { 0,0,0,1 };
-		// ƒ[ƒJƒ‹•ÏŒ`s—ñ
+		// ãƒ­ãƒ¼ã‚«ãƒ«å¤‰å½¢è¡Œåˆ—
 		DirectX::XMMATRIX transform{};
-		// ƒOƒ[ƒoƒ‹•ÏŒ`s—ñ
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰å½¢è¡Œåˆ—
 		DirectX::XMMATRIX globalTransform{};
-		// eƒm[ƒh
+		// è¦ªãƒãƒ¼ãƒ‰
 		Node* parent = nullptr;
 	};
 
@@ -59,30 +59,30 @@ public:
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 normal;
 		DirectX::XMFLOAT2 uv;
-		UINT boneIndex[MAX_BONE_INDICES];	// ƒ{[ƒ“”Ô†
-		float boneWeight[MAX_BONE_INDICES];	// d‚İ
+		UINT boneIndex[MAX_BONE_INDICES];	// ãƒœãƒ¼ãƒ³ç•ªå·
+		float boneWeight[MAX_BONE_INDICES];	// é‡ã¿
 	};
 
-	// ƒ{[ƒ“‚Ì\‘¢‘Ì
+	// ãƒœãƒ¼ãƒ³ã®æ§‹é€ ä½“
 	struct Bone {
-		// –¼‘O
+		// åå‰
 		std::string name{};
-		// ‰Šúp¨‚Ì‹ts—ñ
+		// åˆæœŸå§¿å‹¢ã®é€†è¡Œåˆ—
 		DirectX::XMMATRIX invInitialPose{};
-		// ƒNƒ‰ƒXƒ^[(FBX‘¤‚Ìƒ{[ƒ“î•ñ)
+		// ã‚¯ãƒ©ã‚¹ã‚¿ãƒ¼(FBXå´ã®ãƒœãƒ¼ãƒ³æƒ…å ±)
 		FbxCluster* fbxCluster = nullptr;
-		// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		Bone(const std::string& name) : name(name) {};
 	};
 
-	// ’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘ÌB1
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“B1
 	struct ConstBufferDataB1 {
-		DirectX::XMFLOAT3 ambient;	// ƒAƒ“ƒrƒGƒ“ƒg
-		float pad1;		// ƒpƒfƒBƒ“ƒO
-		DirectX::XMFLOAT3 diffuse;	// ƒfƒBƒtƒ…[ƒY
-		float pad2;		// ƒpƒfƒBƒ“ƒO
-		DirectX::XMFLOAT3 specular;	// ƒXƒyƒLƒ…ƒ‰[
-		float alpha;	// ƒAƒ‹ƒtƒ@
+		DirectX::XMFLOAT3 ambient;	// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆ
+		float pad1;		// ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°
+		DirectX::XMFLOAT3 diffuse;	// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚º
+		float pad2;		// ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°
+		DirectX::XMFLOAT3 specular;	// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼
+		float alpha;	// ã‚¢ãƒ«ãƒ•ã‚¡
 	};
 
 private:
@@ -90,13 +90,13 @@ private:
 	std::string name;
 	std::vector<Node> nodes;
 
-	// ƒƒbƒVƒ…‚ğ‚Âƒm[ƒh
+	// ãƒ¡ãƒƒã‚·ãƒ¥ã‚’æŒã¤ãƒãƒ¼ãƒ‰
 	Node* meshNode = nullptr;
 
-	// ’¸“_ƒf[ƒ^
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
 	std::vector<VertexPosNormalUvSkin> vertices;
 
-	// ’¸“_ƒCƒ“ƒfƒbƒNƒX
+	// é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	std::vector<unsigned int> indices;
 
 	DirectX::XMFLOAT3 ambient = { 0.5f, 0.5f, 0.5f };
@@ -113,14 +113,14 @@ private:
 	D3D12_INDEX_BUFFER_VIEW ibView = {};
 	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
 
-	// ƒ{[ƒ“”z—ñ
+	// ãƒœãƒ¼ãƒ³é…åˆ—
 	std::vector<Bone> bones;
 
 
-	// ’è”ƒoƒbƒtƒ@
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> constBuffB1;
 
-	// FBXƒV[ƒ“
+	// FBXã‚·ãƒ¼ãƒ³
 	FbxScene* fbxScene = nullptr;
 
 	bool materialDirty = true;

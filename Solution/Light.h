@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <wrl.h>
 #include <DirectXMath.h>
@@ -11,9 +11,9 @@ private:
 
 public:
 	struct ConstBufferData {
-		DirectX::XMFLOAT3 lightPos{ 0, 0, 0 };		// ƒ‰ƒCƒg‚ÌˆÊ’u(ƒ[ƒ‹ƒh)
+		DirectX::XMFLOAT3 lightPos{ 0, 0, 0 };		// ãƒ©ã‚¤ãƒˆã®ä½ç½®(ãƒ¯ãƒ¼ãƒ«ãƒ‰)
 		float pad{};
-		DirectX::XMFLOAT3 lightColor{ 1, 1, 1 };	// ƒ‰ƒCƒgF
+		DirectX::XMFLOAT3 lightColor{ 1, 1, 1 };	// ãƒ©ã‚¤ãƒˆè‰²
 	};
 
 private:
@@ -23,27 +23,27 @@ public:
 	static void staticInit(ID3D12Device *dev);
 
 private:
-	ComPtr<ID3D12Resource> constBuff;	// ’è”ƒoƒbƒtƒ@
-	DirectX::XMFLOAT3 pos = { 0, 0, 0 };	// ƒ‰ƒCƒg‚ÌˆÊ’u
-	DirectX::XMFLOAT3 color = { 1, 1, 1 };	// ƒ‰ƒCƒg‚ÌF
+	ComPtr<ID3D12Resource> constBuff;	// å®šæ•°ãƒãƒƒãƒ•ã‚¡
+	DirectX::XMFLOAT3 pos = { 0, 0, 0 };	// ãƒ©ã‚¤ãƒˆã®ä½ç½®
+	DirectX::XMFLOAT3 color = { 1, 1, 1 };	// ãƒ©ã‚¤ãƒˆã®è‰²
 	bool dirty = false;
 
 public:
-	// “à•”‚ÅinitŠÖ”‚ğŒÄ‚Ño‚µ‚Ä‚¢‚é
+	// å†…éƒ¨ã§inité–¢æ•°ã‚’å‘¼ã³å‡ºã—ã¦ã„ã‚‹
 	Light();
 
-	//’è”ƒoƒbƒtƒ@“]‘—
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡è»¢é€
 	void transferConstBuffer();
 
 	void init();
 
-	// Œõü‚Ì•ûŒü‚ğƒZƒbƒg
+	// å…‰ç·šã®æ–¹å‘ã‚’ã‚»ãƒƒãƒˆ
 	void setLightPos(const DirectX::XMFLOAT3 &lightPos);
 	void setLightColor(const DirectX::XMFLOAT3 &lightColor);
 
 	void update();
 
-	// @param rootParamIndex : Object3dƒNƒ‰ƒX‚ÌcreateGraphicsPipelineŠÖ”“à‚ÌrootParams‚Ì—v‘f”
+	// @param rootParamIndex : Object3dã‚¯ãƒ©ã‚¹ã®createGraphicsPipelineé–¢æ•°å†…ã®rootParamsã®è¦ç´ æ•°
 	void draw(DXBase *dxCom, UINT rootParamIndex);
 };
 

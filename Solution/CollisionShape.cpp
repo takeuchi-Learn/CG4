@@ -1,4 +1,4 @@
-#include "CollisionShape.h"
+ï»¿#include "CollisionShape.h"
 
 using namespace DirectX;
 
@@ -6,7 +6,7 @@ void Triangle::ComputeNormal() {
 	XMVECTOR p0_p1 = p1 - p0;
 	XMVECTOR p0_p2 = p2 - p0;
 
-	//ŠOÏ‚É‚æ‚èB2•Ó‚É‚’¼‚ÈƒxƒNƒgƒ‹‚ğZo
+	//å¤–ç©ã«ã‚ˆã‚Šã€‚2è¾ºã«å‚ç›´ãªãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
 	normal = XMVector3Cross(p0_p1, p0_p2);
 	normal = XMVector3Normalize(normal);
 }

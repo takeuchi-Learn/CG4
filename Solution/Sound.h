@@ -1,45 +1,45 @@
-#pragma once
+ï»¿#pragma once
 #include <xaudio2.h>
 #include <cstdint>
 #include <wrl.h>
 
 class Sound {
 public:
-#pragma region ƒ`ƒƒƒ“ƒN
-	// ƒ`ƒƒƒ“ƒNƒwƒbƒ_
+#pragma region ãƒãƒ£ãƒ³ã‚¯
+	// ãƒãƒ£ãƒ³ã‚¯ãƒ˜ãƒƒãƒ€
 	struct ChunkHeader {
-		char id[4]; // ƒ`ƒƒƒ“ƒN–ˆ‚ÌID
-		int32_t size;  // ƒ`ƒƒƒ“ƒNƒTƒCƒY
+		char id[4]; // ãƒãƒ£ãƒ³ã‚¯æ¯ã®ID
+		int32_t size;  // ãƒãƒ£ãƒ³ã‚¯ã‚µã‚¤ã‚º
 	};
 
-	// RIFFƒwƒbƒ_ƒ`ƒƒƒ“ƒN
+	// RIFFãƒ˜ãƒƒãƒ€ãƒãƒ£ãƒ³ã‚¯
 	struct RiffHeader {
 		ChunkHeader chunk;   // "RIFF"
 		char type[4]; // "WAVE"
 	};
 
-	// FMTƒ`ƒƒƒ“ƒN
+	// FMTãƒãƒ£ãƒ³ã‚¯
 	struct FormatChunk {
 		ChunkHeader chunk; // "fmt "
-		WAVEFORMATEX fmt; // ”gŒ`ƒtƒH[ƒ}ƒbƒg
+		WAVEFORMATEX fmt; // æ³¢å½¢ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	};
 #pragma endregion
 
 	class XAudio2VoiceCallback : public IXAudio2VoiceCallback {
 	public:
-		// ƒ{ƒCƒXˆ—ƒpƒX‚ÌŠJn
+		// ãƒœã‚¤ã‚¹å‡¦ç†ãƒ‘ã‚¹ã®é–‹å§‹æ™‚
 		STDMETHOD_(void, OnVoiceProcessingPassStart) (THIS_ UINT32 BytesRequired) {};
-		// ƒ{ƒCƒXˆ—ƒpƒX‚ÌI—¹
+		// ãƒœã‚¤ã‚¹å‡¦ç†ãƒ‘ã‚¹ã®çµ‚äº†æ™‚
 		STDMETHOD_(void, OnVoiceProcessingPassEnd) (THIS) {};
-		// ƒoƒbƒtƒ@ƒXƒgƒŠ[ƒ€‚ÌÄ¶‚ªI—¹‚µ‚½
+		// ãƒãƒƒãƒ•ã‚¡ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®å†ç”ŸãŒçµ‚äº†ã—ãŸæ™‚
 		STDMETHOD_(void, OnStreamEnd) (THIS) {};
-		// ƒoƒbƒtƒ@‚Ìg—pŠJn
+		// ãƒãƒƒãƒ•ã‚¡ã®ä½¿ç”¨é–‹å§‹æ™‚
 		STDMETHOD_(void, OnBufferStart) (THIS_ void* pBufferContext) {};
-		// ƒoƒbƒtƒ@‚Ì––”ö‚É’B‚µ‚½
+		// ãƒãƒƒãƒ•ã‚¡ã®æœ«å°¾ã«é”ã—ãŸæ™‚
 		STDMETHOD_(void, OnBufferEnd) (THIS_ void* pBufferContext) {};
-		// Ä¶‚ªƒ‹[ƒvˆÊ’u‚É’B‚µ‚½
+		// å†ç”ŸãŒãƒ«ãƒ¼ãƒ—ä½ç½®ã«é”ã—ãŸæ™‚
 		STDMETHOD_(void, OnLoopEnd) (THIS_ void* pBufferContext) {};
-		// ƒ{ƒCƒX‚ÌÀsƒGƒ‰[
+		// ãƒœã‚¤ã‚¹ã®å®Ÿè¡Œã‚¨ãƒ©ãƒ¼æ™‚
 		STDMETHOD_(void, OnVoiceError) (THIS_ void* pBufferContext, HRESULT Error) {};
 	};
 
@@ -54,14 +54,14 @@ public:
 	};
 
 	// --------------------
-	// ƒƒ“ƒo•Ï”
+	// ãƒ¡ãƒ³ãƒå¤‰æ•°
 	// --------------------
 private:
-	//”gŒ`ƒtƒH[ƒ}ƒbƒg
+	//æ³¢å½¢ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 	WAVEFORMATEX wfex;
-	//ƒoƒbƒtƒ@‚Ìæ“ªƒAƒhƒŒƒX
+	//ãƒãƒƒãƒ•ã‚¡ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
 	BYTE* pBuffer;
-	//ƒoƒbƒtƒ@‚ÌƒTƒCƒY
+	//ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º
 	unsigned int bufferSize;
 
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
@@ -69,37 +69,37 @@ private:
 
 
 	// --------------------
-	// ƒƒ“ƒoŠÖ”
+	// ãƒ¡ãƒ³ãƒé–¢æ•°
 	// --------------------
 public:
-	// ‰¹ºƒf[ƒ^‚Ì“Ç‚İ‚İ
+	// éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿
 	Sound(const char* filename, Sound::SoundCommon* soundCommon);
 
-	// ‰¹ºƒf[ƒ^‚Ì‰ğ•ú
+	// éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã®è§£æ”¾
 	~Sound();
 
 
 
 	// --------------------
-	// staticŠÖ”
+	// staticé–¢æ•°
 	// --------------------
 private:
 	static void createSourceVoice(SoundCommon* soundCommon, Sound* soundData);
 
 public:
-	// ‰¹ºÄ¶’â~
+	// éŸ³å£°å†ç”Ÿåœæ­¢
 	static void SoundStopWave(Sound* soundData);
 
 	/// <summary>
-	/// ‰¹ºÄ¶
+	/// éŸ³å£°å†ç”Ÿ
 	/// </summary>
-	/// <param name="loopCount">0‚ÅŒJ‚è•Ô‚µ–³‚µAXAUDIO2_LOOP_INFINITE‚Å‰i‰“</param>
+	/// <param name="loopCount">0ã§ç¹°ã‚Šè¿”ã—ç„¡ã—ã€XAUDIO2_LOOP_INFINITEã§æ°¸é </param>
 	/// <param name="volume">0 ~ 1</param>
 	static void SoundPlayWave(SoundCommon* soundCommon,
 		Sound* soundData,
 		int loopCount = 0, float volume = 0.2);
 
-	//Ä¶ó‘Ô‚ÌŠm”F
+	//å†ç”ŸçŠ¶æ…‹ã®ç¢ºèª
 	static bool checkPlaySound(Sound* soundData);
 };
 

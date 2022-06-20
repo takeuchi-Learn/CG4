@@ -1,4 +1,4 @@
-#include <random>
+ï»¿#include <random>
 #include "RandomNum.h"
 
 RandomNum* RandomNum::getInstance() {
@@ -12,7 +12,7 @@ int RandomNum::local_getRand(const int min, const int max) {
 		minLocal = max;
 		maxLocal = min;
 	}
-	std::uniform_int_distribution<> myRand(minLocal, maxLocal);	// ”ÍˆÍw’è‚Ì—”
+	std::uniform_int_distribution<> myRand(minLocal, maxLocal);	// ç¯„å›²æŒ‡å®šã®ä¹±æ•°
 	return myRand(mt);
 }
 
@@ -22,7 +22,7 @@ double RandomNum::local_getRand(const double min, const double max) {
 		minLocal = max;
 		maxLocal = min;
 	}
-	std::uniform_real_distribution<> myRand(minLocal, maxLocal);	// ”ÍˆÍw’è‚Ì—”
+	std::uniform_real_distribution<> myRand(minLocal, maxLocal);	// ç¯„å›²æŒ‡å®šã®ä¹±æ•°
 	return myRand(mt);
 }
 
@@ -31,7 +31,7 @@ double RandomNum::local_getRandNormally(const double center, const double range)
 	if (range < 0.0) rangeLocal = -rangeLocal;
 	else if (range == 0.0) rangeLocal = 1.f;
 
-	std::normal_distribution<> myRand(center, rangeLocal);	// ”ÍˆÍw’è‚Ì—”
+	std::normal_distribution<> myRand(center, rangeLocal);	// ç¯„å›²æŒ‡å®šã®ä¹±æ•°
 	return myRand(mt);
 }
 

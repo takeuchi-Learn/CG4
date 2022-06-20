@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "DXBase.h"
 
 #include "Time.h"
@@ -8,20 +8,20 @@
 class PostEffect {
 
 public:
-	// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ì” = ‚±‚ÌƒNƒ‰ƒX‚ÌƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@‚Ì”
-	// ƒVƒF[ƒ_[‚É‡‚í‚¹‚é
+	// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ•° = ã“ã®ã‚¯ãƒ©ã‚¹ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡ã®æ•°
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«åˆã‚ã›ã‚‹
 	static const UINT renderTargetNum = 2;
 
 private:
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
-	// ’¸“_ƒf[ƒ^
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
 	struct VertexPosUv {
-		DirectX::XMFLOAT3 pos; // xyzÀ•W
-		DirectX::XMFLOAT2 uv;  // uvÀ•W
+		DirectX::XMFLOAT3 pos; // xyzåº§æ¨™
+		DirectX::XMFLOAT2 uv;  // uvåº§æ¨™
 	};
 
-	// ’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘Ì
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 	struct ConstBufferData {
 		float oneSec;
 		float nowTime;
@@ -31,41 +31,41 @@ private:
 		float vignIntensity = 0.9f;
 	};
 
-	// ƒpƒCƒvƒ‰ƒCƒ“ƒZƒbƒg
+	// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚»ãƒƒãƒˆ
 	struct PipelineSet {
-		// ƒpƒCƒvƒ‰ƒCƒ“ƒXƒe[ƒgƒIƒuƒWƒFƒNƒg
+		// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‚¹ãƒ†ãƒ¼ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 		ComPtr<ID3D12PipelineState> pipelinestate;
-		// ƒ‹[ƒgƒVƒOƒlƒ`ƒƒ
+		// ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£
 		ComPtr<ID3D12RootSignature> rootsignature;
 	};
 
 
-	//’¸“_ƒoƒbƒtƒ@;
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡;
 	ComPtr<ID3D12Resource> vertBuff;
-	//’¸“_ƒoƒbƒtƒ@ƒrƒ…[;
+	//é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ“ãƒ¥ãƒ¼;
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
-	//’è”ƒoƒbƒtƒ@;
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡;
 	ComPtr<ID3D12Resource> constBuff;
 
-	// ƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> texbuff[renderTargetNum];
-	// SRV—p‚ÌƒfƒXƒNƒŠƒvƒ^ƒq[ƒv
+	// SRVç”¨ã®ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—
 	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
 
-	// [“xƒoƒbƒtƒ@
+	// æ·±åº¦ãƒãƒƒãƒ•ã‚¡
 	ComPtr<ID3D12Resource> depthBuff;
-	// RTV—pƒfƒXƒNƒŠƒvƒ^ƒq[ƒv
+	// RTVç”¨ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—
 	ComPtr<ID3D12DescriptorHeap> descHeapRTV;
-	// DSV—pƒfƒXƒNƒŠƒvƒ^ƒq[ƒv
+	// DSVç”¨ãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—
 	ComPtr<ID3D12DescriptorHeap> descHeapDSV;
 
-	// ‰æ–ÊƒNƒŠƒA‚ÌF
+	// ç”»é¢ã‚¯ãƒªã‚¢ã®è‰²
 	static const float clearColor[4];
 
 	ComPtr<ID3D12PipelineState> pipelineState;
 	ComPtr<ID3D12RootSignature> rootSignature;
 
-	// ƒpƒCƒvƒ‰ƒCƒ“‚Æƒ‹[ƒgƒVƒOƒlƒ`ƒƒ‚ÌƒZƒbƒg
+	// ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã¨ãƒ«ãƒ¼ãƒˆã‚·ã‚°ãƒãƒãƒ£ã®ã‚»ãƒƒãƒˆ
 	PipelineSet pipelineSet;
 
 	std::unique_ptr<Time> timer;

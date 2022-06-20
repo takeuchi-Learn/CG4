@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include <DirectXMath.h>
 
 class Camera {
 private:
-	// ƒGƒCƒŠƒAƒX
-	// DirectX::‚ğÈ—ª
+	// ã‚¨ã‚¤ãƒªã‚¢ã‚¹
+	// DirectX::ã‚’çœç•¥
 	using XMFLOAT2 = DirectX::XMFLOAT2;
 	using XMFLOAT3 = DirectX::XMFLOAT3;
 	using XMFLOAT4 = DirectX::XMFLOAT4;
@@ -13,27 +13,27 @@ private:
 	using XMMATRIX = DirectX::XMMATRIX;
 
 private:
-	// ƒrƒ…[s—ñ
+	// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—
 	XMMATRIX matView = DirectX::XMMatrixIdentity();
-	// ƒrƒ‹ƒ{[ƒhs—ñ
+	// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰è¡Œåˆ—
 	XMMATRIX matBillboard = DirectX::XMMatrixIdentity();
-	// Y²‰ñ‚èƒrƒ‹ƒ{[ƒhs—ñ
+	// Yè»¸å›ã‚Šãƒ“ãƒ«ãƒœãƒ¼ãƒ‰è¡Œåˆ—
 	XMMATRIX matBillboardY = DirectX::XMMatrixIdentity();
-	// Ë‰es—ñ
+	// å°„å½±è¡Œåˆ—
 	XMMATRIX matProjection = DirectX::XMMatrixIdentity();
-	// ƒrƒ…[Ë‰es—ñ
+	// ãƒ“ãƒ¥ãƒ¼å°„å½±è¡Œåˆ—
 	XMMATRIX matViewProjection = DirectX::XMMatrixIdentity();
-	// ƒrƒ…[s—ñƒ_[ƒeƒBƒtƒ‰ƒO
+	// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ãƒ€ãƒ¼ãƒ†ã‚£ãƒ•ãƒ©ã‚°
 	bool viewDirty = false;
-	// Ë‰es—ñƒ_[ƒeƒBƒtƒ‰ƒO
+	// å°„å½±è¡Œåˆ—ãƒ€ãƒ¼ãƒ†ã‚£ãƒ•ãƒ©ã‚°
 	bool projectionDirty = false;
-	// ‹“_À•W
+	// è¦–ç‚¹åº§æ¨™
 	XMFLOAT3 eye = { 0, 0, -20 };
-	// ’‹“_À•W
+	// æ³¨è¦–ç‚¹åº§æ¨™
 	XMFLOAT3 target = { 0, 0, 0 };
-	// ã•ûŒüƒxƒNƒgƒ‹
+	// ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 	XMFLOAT3 up = { 0, 1, 0 };
-	// ƒAƒXƒyƒNƒg”ä
+	// ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”
 	float aspectRatio = 1.0f;
 
 	float nearZ = 0.1f;
@@ -41,49 +41,49 @@ private:
 	float fogAngleYRad = DirectX::XM_PI / 3.f;
 
 	// --------------------
-	// ƒƒ“ƒoŠÖ”
+	// ãƒ¡ãƒ³ãƒé–¢æ•°
 	// --------------------
 private:
 
-	// ƒrƒ…[s—ñ‚ğXV
+	// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã‚’æ›´æ–°
 	void updateViewMatrix();
 
-	// Ë‰es—ñ‚ğXV
+	// å°„å½±è¡Œåˆ—ã‚’æ›´æ–°
 	void updateProjectionMatrix();
 
 public:
-	// ƒrƒ…[s—ñ‚Ìæ“¾
+	// ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã®å–å¾—
 	// @return matView
 	inline const XMMATRIX& getViewMatrix() { return matView; }
 
-	// Ë‰es—ñ‚Ìæ“¾
+	// å°„å½±è¡Œåˆ—ã®å–å¾—
 	// @return matProjection
 	inline const XMMATRIX& getProjectionMatrix() { return matProjection; }
 
-	// ƒrƒ…[Ë‰es—ñ‚Ìæ“¾
+	// ãƒ“ãƒ¥ãƒ¼å°„å½±è¡Œåˆ—ã®å–å¾—
 	inline const XMMATRIX& getViewProjectionMatrix() { return matViewProjection; }
 
-	// ƒrƒ‹ƒ{[ƒhs—ñ‚Ìæ“¾
+	// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰è¡Œåˆ—ã®å–å¾—
 	inline const XMMATRIX& getBillboardMatrix() { return matBillboard; }
 
-	// Y²ŒÅ’èƒrƒ‹ƒ{[ƒhs—ñ‚Ìæ“¾
+	// Yè»¸å›ºå®šãƒ“ãƒ«ãƒœãƒ¼ãƒ‰è¡Œåˆ—ã®å–å¾—
 	inline const XMMATRIX& getBillboardMatrixY() { return matBillboardY; }
 
-	// ‹“_À•W‚Ìæ“¾
+	// è¦–ç‚¹åº§æ¨™ã®å–å¾—
 	inline const XMFLOAT3& getEye() { return eye; }
 
-	// ‹“_À•W‚Ìİ’è
+	// è¦–ç‚¹åº§æ¨™ã®è¨­å®š
 	inline void setEye(const XMFLOAT3& eye) { this->eye = eye; viewDirty = true; }
 
-	// ’‹“_À•W‚Ìæ“¾
+	// æ³¨è¦–ç‚¹åº§æ¨™ã®å–å¾—
 	inline const XMFLOAT3& getTarget() { return target; }
 
-	// ’‹“_À•W‚Ìİ’è
+	// æ³¨è¦–ç‚¹åº§æ¨™ã®è¨­å®š
 	inline void setTarget(const XMFLOAT3& target) { this->target = target; viewDirty = true; }
 
-	// ã•ûŒüƒxƒNƒgƒ‹‚Ìæ“¾
+	// ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®å–å¾—
 	inline const XMFLOAT3& getUp() { return up; }
-	// ã•ûŒüƒxƒNƒgƒ‹‚Ìİ’è
+	// ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã®è¨­å®š
 	inline void setUp(const XMFLOAT3& up) { this->up = up; viewDirty = true; }
 
 	inline void setNearZ(const float nearZ) { this->nearZ = nearZ; projectionDirty = true; }
@@ -99,11 +99,11 @@ public:
 	XMFLOAT3 getLook() const;
 
 	/// <summary>
-	/// ƒJƒƒ‰‚ğ‰ñ“]
+	/// ã‚«ãƒ¡ãƒ©ã‚’å›è»¢
 	/// </summary>
-	/// <param name="targetlength">ƒJƒƒ‰‚©‚ç’‹“_‚Ü‚Å‚Ì‹——£</param>
-	/// <param name="angleX">X²ü‚è‚Ì‰ñ“]Šp(-PI/2 ~ PI/2‚Ì”ÍˆÍ‚Å‘—‚é)</param>
-	/// <param name="angleY">Y²ü‚è‚Ì‰ñ“]Šp(0 ~ 2PI‚Ì”ÍˆÍ‚Å‘—‚é)</param>
+	/// <param name="targetlength">ã‚«ãƒ¡ãƒ©ã‹ã‚‰æ³¨è¦–ç‚¹ã¾ã§ã®è·é›¢</param>
+	/// <param name="angleX">Xè»¸å‘¨ã‚Šã®å›è»¢è§’(-PI/2 ~ PI/2ã®ç¯„å›²ã§é€ã‚‹)</param>
+	/// <param name="angleY">Yè»¸å‘¨ã‚Šã®å›è»¢è§’(0 ~ 2PIã®ç¯„å›²ã§é€ã‚‹)</param>
 	void rotation(const float targetlength,
 						const float angleX, const float angleY);
 
@@ -113,16 +113,16 @@ public:
 
 
 	/// <summary>
-	/// ƒxƒNƒgƒ‹‚É‚æ‚é‹“_ˆÚ“®(eye‚Ì‚İ‚ÌˆÚ“®Atarget‚Í•Ï‚í‚ç‚È‚¢)
+	/// ãƒ™ã‚¯ãƒˆãƒ«ã«ã‚ˆã‚‹è¦–ç‚¹ç§»å‹•(eyeã®ã¿ã®ç§»å‹•ã€targetã¯å¤‰ã‚ã‚‰ãªã„)
 	/// </summary>
-	/// <param name="move">ˆÚ“®—Ê</param>
+	/// <param name="move">ç§»å‹•é‡</param>
 	void moveEye(const XMFLOAT3& move);
 	void moveEye(const XMVECTOR& move);
 
 	/// <summary>
-	/// ƒxƒNƒgƒ‹‚É‚æ‚éˆÚ“®(eye‚Ætarget‚ğˆÚ“®)
+	/// ãƒ™ã‚¯ãƒˆãƒ«ã«ã‚ˆã‚‹ç§»å‹•(eyeã¨targetã‚’ç§»å‹•)
 	/// </summary>
-	/// <param name="move">ˆÚ“®—Ê</param>
+	/// <param name="move">ç§»å‹•é‡</param>
 	void moveCamera(const XMFLOAT3& move);
 	void moveCamera(const XMVECTOR& move);
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <Windows.h>
 
@@ -48,12 +48,12 @@ public:
 		WHEEL = VK_MBUTTON
 	};
 
-	// @param Input::MOUSE::‚È‚ñ‚Æ‚©
+	// @param Input::MOUSE::ãªã‚“ã¨ã‹
 	bool hitMouseBotton(_In_ BYTE keyCode);
 	bool hitPreMouseBotton(_In_ BYTE keyCode);
 	bool triggerMouseBotton(_In_ BYTE keyCode);
 
-	// @return POINTŒ^(LONG x ‚ÆLONG y ‚Ì‚İ‚Ì\‘¢‘Ì)
+	// @return POINTå‹(LONG x ã¨LONG y ã®ã¿ã®æ§‹é€ ä½“)
 	POINT getMousePos();
 	bool setMousePos(int x, int y);
 

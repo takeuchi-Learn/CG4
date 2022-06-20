@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <d3d12.h>
 #include <d3dx12.h>
@@ -9,14 +9,14 @@
 class Material {
 
 public:
-	// ’è”ƒoƒbƒtƒ@—pƒf[ƒ^\‘¢‘ÌB1
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”¨ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“B1
 	struct ConstBufferDataB1 {
-		DirectX::XMFLOAT3 ambient;	// ƒAƒ“ƒrƒGƒ“ƒg
-		float pad1;		// ƒpƒfƒBƒ“ƒO
-		DirectX::XMFLOAT3 diffuse;	// ƒfƒBƒtƒ…[ƒY
-		float pad2;		// ƒpƒfƒBƒ“ƒO
-		DirectX::XMFLOAT3 specular;	// ƒXƒyƒLƒ…ƒ‰[
-		float alpha;	// ƒAƒ‹ƒtƒ@
+		DirectX::XMFLOAT3 ambient;	// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆ
+		float pad1;		// ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°
+		DirectX::XMFLOAT3 diffuse;	// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚º
+		float pad2;		// ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°
+		DirectX::XMFLOAT3 specular;	// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ãƒ¼
+		float alpha;	// ã‚¢ãƒ«ãƒ•ã‚¡
 	};
 
 public:
@@ -28,22 +28,22 @@ private:
 
 
 
-	// ƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> texbuff;
-	// ’è”ƒoƒbƒtƒ@
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuff;
-	// ƒVƒF[ƒ_ƒŠƒ\[ƒXƒrƒ…[‚Ìƒnƒ“ƒhƒ‹(CPU)
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒªã‚½ãƒ¼ã‚¹ãƒ“ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«(CPU)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescHandleSRV;
-	// ƒVƒF[ƒ_ƒŠƒ\[ƒXƒrƒ…[‚Ìƒnƒ“ƒhƒ‹(CPU)
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒªã‚½ãƒ¼ã‚¹ãƒ“ãƒ¥ãƒ¼ã®ãƒãƒ³ãƒ‰ãƒ«(CPU)
 	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV;
 
 public:
-	std::string name;			// ƒ}ƒeƒŠƒAƒ‹–¼
-	DirectX::XMFLOAT3 ambient;	// ƒAƒ“ƒrƒGƒ“ƒg‰e‹¿“x
-	DirectX::XMFLOAT3 diffuse;	// ƒfƒBƒtƒ…[ƒY‰e‹¿“x
-	DirectX::XMFLOAT3 specular;	// ƒX‚ØƒLƒ…ƒ‰[‰e‹¿“x
+	std::string name;			// ãƒãƒ†ãƒªã‚¢ãƒ«å
+	DirectX::XMFLOAT3 ambient;	// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆå½±éŸ¿åº¦
+	DirectX::XMFLOAT3 diffuse;	// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºå½±éŸ¿åº¦
+	DirectX::XMFLOAT3 specular;	// ã‚¹ãºã‚­ãƒ¥ãƒ©ãƒ¼å½±éŸ¿åº¦
 	float alpha;
-	std::string texFileName;	// ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹–¼
+	std::string texFileName;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«å
 
 	Material();
 

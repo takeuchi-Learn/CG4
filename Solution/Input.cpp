@@ -1,4 +1,4 @@
-#include "Input.h"
+ï»¿#include "Input.h"
 
 #include <dinput.h>
 #pragma comment(lib, "dinput8.lib")
@@ -27,7 +27,7 @@ void Input::init() {
 
 	result = dinput->CreateDevice(GUID_SysKeyboard, &devkeyboard, NULL);
 
-	result = devkeyboard->SetDataFormat(&c_dfDIKeyboard); // •W€Œ`Ž®
+	result = devkeyboard->SetDataFormat(&c_dfDIKeyboard); // æ¨™æº–å½¢å¼
 
 	result = devkeyboard->SetCooperativeLevel(
 		WinAPI::getInstance()->getHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);

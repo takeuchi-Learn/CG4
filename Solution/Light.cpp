@@ -1,4 +1,4 @@
-#include "Light.h"
+ï»¿#include "Light.h"
 #include <cassert>
 #include <d3dx12.h>
 
@@ -18,7 +18,7 @@ Light::Light() {
 
 void Light::transferConstBuffer() {
 	HRESULT result = S_FALSE;
-	//’è”ƒoƒbƒtƒ@‚Öƒf[ƒ^“]‘—
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ã¸ãƒ‡ãƒ¼ã‚¿è»¢é€
 	ConstBufferData *constMap = nullptr;
 	result = constBuff->Map(0, nullptr, (void **)&constMap);
 	if (SUCCEEDED(result)) {
@@ -29,7 +29,7 @@ void Light::transferConstBuffer() {
 }
 
 void Light::init() {
-	//’è”ƒoƒbƒtƒ@¶¬
+	//å®šæ•°ãƒãƒƒãƒ•ã‚¡ç”Ÿæˆ
 	HRESULT result = dev->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
@@ -40,7 +40,7 @@ void Light::init() {
 	);
 	assert(SUCCEEDED(result));
 
-	// ’è”ƒoƒbƒtƒ@‚Öƒf[ƒ^“]‘—
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã¸ãƒ‡ãƒ¼ã‚¿è»¢é€
 	transferConstBuffer();
 }
 

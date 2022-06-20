@@ -1,4 +1,4 @@
-#include "System.h"
+ï»¿#include "System.h"
 
 #include "WinAPI.h"
 #include "DXBase.h"
@@ -19,7 +19,7 @@ System::System() {
 
 void System::update() {
 	if (error == false) {
-		// ƒQ[ƒ€ƒ‹[ƒv
+		// ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ—
 		while (!WinAPI::getInstance()->processMessage()
 			   && !Looper::getInstance()->loop()) {
 

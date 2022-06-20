@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <chrono>
 
@@ -17,14 +17,14 @@ public:
 
 	Time();
 
-	// ˆê”‚ÌŠÔ‚ğæ“¾
+	// ä¸€æ‹ã®æ™‚é–“ã‚’å–å¾—
 	inline static timeType getOneBeatTime(const float bpm) { return timeType(std::chrono::duration_cast<timeUnit>(std::chrono::seconds(60ll)).count() / bpm); };
 
-	// Œ»İ‚Ü‚Å‚ÌŠÔ‚ğæ“¾
-	// reset()ÅŒã‚ÉÀs‚µ‚½ŠÔ‚ª‹N“_
-	// Às‚µ‚Ä‚¢‚È‚¯‚ê‚ÎƒNƒ‰ƒX¶¬‚ÌŠÔ‚ª‹N“_
+	// ç¾åœ¨ã¾ã§ã®æ™‚é–“ã‚’å–å¾—
+	// reset()æœ€å¾Œã«å®Ÿè¡Œã—ãŸæ™‚é–“ãŒèµ·ç‚¹
+	// å®Ÿè¡Œã—ã¦ã„ãªã‘ã‚Œã°ã‚¯ãƒ©ã‚¹ç”Ÿæˆæ™‚ã®æ™‚é–“ãŒèµ·ç‚¹
 	timeType getNowTime();
 
-	// Œ»İ‚ğ0‚Æ‚·‚é
+	// ç¾åœ¨ã‚’0ã¨ã™ã‚‹
 	void reset();
 };

@@ -154,7 +154,7 @@ void PlayScene::spriteInit() {
 
 	// スプライトの生成
 	sprites.resize(SPRITES_NUM);
-	for (UINT i = 0; i < SPRITES_NUM; i++) {
+	for (UINT i = 0; i < SPRITES_NUM; ++i) {
 		sprites[i] = Sprite(texNum, spriteCommon.get(), { 0, 0 });
 		// スプライトの座標変更
 		sprites[i].position.x = 1280.f / 10;
@@ -200,7 +200,7 @@ void PlayScene::obj3dInit() {
 	model.reset(new ObjModel("Resources/model/", "model", obj3dTexNum, true));
 
 	constexpr UINT obj3dNum = 1;
-	for (UINT i = 0; i < obj3dNum; i++) {
+	for (UINT i = 0; i < obj3dNum; ++i) {
 		obj3d.emplace_back(Object3d(DXBase::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
 		obj3d[i].scale = { obj3dScale, obj3dScale, obj3dScale };
 		obj3d[i].position = { i * obj3dScale, 0, 0 };
@@ -528,7 +528,7 @@ void PlayScene::drawObj3d() {
 
 	Object3d::startDraw(dxBase->getCmdList(), object3dPipelineSet);
 	lightObj->drawWithUpdate(dxBase, light.get());
-	for (UINT i = 0; i < obj3d.size(); i++) {
+	for (UINT i = 0; i < obj3d.size(); ++i) {
 		obj3d[i].drawWithUpdate(dxBase, light.get());
 	}
 
@@ -538,7 +538,7 @@ void PlayScene::drawObj3d() {
 void PlayScene::drawFrontSprite() {
 	spriteCommon->drawStart(dxBase->getCmdList());
 	// スプライト描画
-	for (UINT i = 0, len = sprites.size(); i < len; i++) {
+	for (UINT i = 0, len = sprites.size(); i < len; ++i) {
 		sprites[i].drawWithUpdate(dxBase, spriteCommon.get());
 	}
 	white->drawWithUpdate(dxBase, spriteCommon.get());
@@ -547,8 +547,10 @@ void PlayScene::drawFrontSprite() {
 	debugText->DrawAll(dxBase, spriteCommon.get());
 }
 
-void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum, const float startScale) {
-	for (UINT i = 0U; i < particleNum; i++) {
+void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos,
+							   const UINT particleNum,
+							   const float startScale) {
+	for (UINT i = 0U; i < particleNum; ++i) {
 
 		const float theata = RandomNum::getRandf(0, XM_PI);
 		const float phi = RandomNum::getRandf(0, XM_PI * 2.f);

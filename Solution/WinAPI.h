@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <Windows.h>
 
 class WinAPI {
@@ -9,10 +9,10 @@ private:
 	WinAPI();
 	~WinAPI();
 
-	WNDCLASSEX w{}; // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚Ìİ’è
+	WNDCLASSEX w{}; // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®è¨­å®š
 	HWND hwnd;
 
-	//ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 public:
@@ -26,8 +26,8 @@ public:
 
 	void setWindowText(const LPCSTR window_title);
 
-	//ƒQ[ƒ€ƒ‹[ƒv“à‚Å–ˆ‰ñŒÄ‚Ñ‚¾‚·Btrue‚ª•Ô‚Á‚Ä‚«‚½‚ç‚·‚®‚ÉI—¹‚³‚¹‚é‚×‚«
-	//@return ˆÙí‚Ì—L–³‚ğboolŒ^‚Å•Ô‚·(true == ˆÙí , false == ³í)
+	//ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ—å†…ã§æ¯å›å‘¼ã³ã ã™ã€‚trueãŒè¿”ã£ã¦ããŸã‚‰ã™ãã«çµ‚äº†ã•ã›ã‚‹ã¹ã
+	//@return ç•°å¸¸ã®æœ‰ç„¡ã‚’boolå‹ã§è¿”ã™(true == ç•°å¸¸ , false == æ­£å¸¸)
 	bool processMessage();
 };
 

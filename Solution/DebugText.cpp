@@ -2,21 +2,21 @@
 
 #include <DirectXMath.h>
 
-DebugText::DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSize) {
+DebugText::DebugText(UINT texNum, const SpriteCommon *spriteCommon, UINT tabSize) {
 	Initialize(texNum, spriteCommon, tabSize);
 }
 
-void DebugText::Initialize(UINT texnumber, const SpriteCommon* spriteCommon,
+void DebugText::Initialize(UINT texnumber, const SpriteCommon *spriteCommon,
 						   UINT tabSize) {
 	this->tabSize = tabSize;
 	// 全てのスプライトデータについて
-	for (int i = 0; i < _countof(sprites); i++) {
+	for (UINT i = 0, len = _countof(sprites); i < len; ++i) {
 		// スプライトを生成する
 		sprites[i] = Sprite(texnumber, spriteCommon, { 0, 0 });
 	}
 }
 
-void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
+void DebugText::Print(const SpriteCommon *spriteCommon, const std::string &text,
 					  const float x, const float y, const float scale,
 					  DirectX::XMFLOAT4 color) {
 	std::string textLocal = text;
@@ -24,7 +24,7 @@ void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
 	int posNumX = 0, posNumY = 0;
 
 	// 全ての文字について
-	for (UINT i = 0; i < text.size(); i++, posNumX++) {
+	for (UINT i = 0, len= text.size(); i < len; ++i, ++posNumX) {
 
 		// 最大文字数超過
 		if (spriteIndex >= maxCharCount) {
@@ -47,7 +47,7 @@ void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
 		}
 
 		// 1文字取り出す(※ASCIIコードでしか成り立たない)
-		const unsigned char& character = textLocal[i];
+		const unsigned char &character = textLocal[i];
 
 		// ASCIIコードの2段分飛ばした番号を計算
 		int fontIndex = character - 32;
@@ -72,9 +72,9 @@ void DebugText::Print(const SpriteCommon* spriteCommon, const std::string& text,
 	}
 }
 
-int DebugText::formatPrint(const SpriteCommon* spriteCommon,
+int DebugText::formatPrint(const SpriteCommon *spriteCommon,
 						   const float x, const float y, const float scale,
-						   DirectX::XMFLOAT4 color, const char* fmt, ...) {
+						   DirectX::XMFLOAT4 color, const char *fmt, ...) {
 
 	char outStrChar[maxCharCount]{};
 
@@ -90,9 +90,9 @@ int DebugText::formatPrint(const SpriteCommon* spriteCommon,
 }
 
 // まとめて描画
-void DebugText::DrawAll(DXBase* dxBase, const SpriteCommon* spriteCommon) {
+void DebugText::DrawAll(DXBase *dxBase, const SpriteCommon *spriteCommon) {
 	// 全ての文字のスプライトについて
-	for (int i = 0; i < spriteIndex; i++) {
+	for (UINT i = 0; i < spriteIndex; ++i) {
 		// スプライト描画
 		sprites[i].draw(dxBase->getCmdList(), spriteCommon, dxBase->getDev());
 	}

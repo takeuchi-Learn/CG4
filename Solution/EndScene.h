@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameScene.h"
 
 #include "DebugText.h"
@@ -11,11 +11,11 @@ class EndScene :
     public GameScene {
 
 	// --------------------
-	// ƒfƒoƒbƒOƒeƒLƒXƒg
+	// ãƒ‡ãƒãƒƒã‚°ãƒ†ã‚­ã‚¹ãƒˆ
 	// --------------------
 	std::unique_ptr<SpriteCommon> spCom;
 	std::unique_ptr<DebugText> debugText;
-	// ƒfƒoƒbƒOƒeƒLƒXƒg—p‚ÌƒeƒNƒXƒ`ƒƒ”Ô†
+	// ãƒ‡ãƒãƒƒã‚°ãƒ†ã‚­ã‚¹ãƒˆç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ç•ªå·
 	UINT debugTextTexNumber;
 
 	Input* input = nullptr;

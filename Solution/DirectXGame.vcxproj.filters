@@ -19,9 +19,6 @@
     <Filter Include="Camera">
       <UniqueIdentifier>{a1e0cbaf-3197-4c1d-94b2-278cf0d1c83b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sceme">
-      <UniqueIdentifier>{86a5f2ac-cda4-4b54-abf6-e62b548c4b43}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Object共通">
       <UniqueIdentifier>{94bc1451-ed14-473b-9b23-b9eff326d1ce}</UniqueIdentifier>
     </Filter>
@@ -79,6 +76,9 @@
     <Filter Include="RandomNum">
       <UniqueIdentifier>{dbb5bc90-58d2-406f-8584-3f1bbf586040}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{86a5f2ac-cda4-4b54-abf6-e62b548c4b43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -106,13 +106,13 @@
       <Filter>Camera</Filter>
     </ClCompile>
     <ClCompile Include="EndScene.cpp">
-      <Filter>Sceme</Filter>
+      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="PlayScene.cpp">
-      <Filter>Sceme</Filter>
+      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
-      <Filter>Sceme</Filter>
+      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="RandomNum.cpp">
       <Filter>RandomNum</Filter>
@@ -177,13 +177,13 @@
       <Filter>Camera</Filter>
     </ClInclude>
     <ClInclude Include="EndScene.h">
-      <Filter>Sceme</Filter>
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="PlayScene.h">
-      <Filter>Sceme</Filter>
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="TitleScene.h">
-      <Filter>Sceme</Filter>
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="RandomNum.h">
       <Filter>RandomNum</Filter>

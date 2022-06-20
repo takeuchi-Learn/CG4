@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "FbxModel.h"
 #include "Camera.h"
@@ -21,7 +21,7 @@ protected:
 	using XMMATRIX = DirectX::XMMATRIX;
 
 public:
-	// ƒ{[ƒ“‚ÌÅ‘å”(hlsl‚Ì’è”‚Æ‡‚í‚¹‚é)
+	// ãƒœãƒ¼ãƒ³ã®æœ€å¤§æ•°(hlslã®å®šæ•°ã¨åˆã‚ã›ã‚‹)
 	static const int MAX_BONES = 32;
 
 	struct ConstBufferDataTransform {
@@ -49,13 +49,13 @@ private:
 	static ComPtr<ID3D12PipelineState> pipelinestate;
 
 public:
-	// ƒ‚ƒfƒ‹–¢“Ç‚İ‚İ
+	// ãƒ¢ãƒ‡ãƒ«æœªèª­ã¿è¾¼ã¿
 	FbxObj3d(bool animLoop = true);
-	// ƒ‚ƒfƒ‹“Ç‚İ‚Ş
+	// ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã‚€
 	FbxObj3d(FbxModel* model, bool animLoop = true);
 
 
-	void init();	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^“à‚ÅŒÄ‚Ño‚µ‚Ä‚¢‚é
+	void init();	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿å†…ã§å‘¼ã³å‡ºã—ã¦ã„ã‚‹
 	void update();
 	void draw(ID3D12GraphicsCommandList* cmdList, Light* light);
 
@@ -81,7 +81,7 @@ protected:
 	XMMATRIX matWorld;
 	FbxModel* model = nullptr;
 
-	// ’è”ƒoƒbƒtƒ@(ƒXƒLƒ“)
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡(ã‚¹ã‚­ãƒ³)
 	ComPtr<ID3D12Resource> constBuffSkin;
 
 	FbxTime frameTime;
