@@ -6,7 +6,7 @@
 
 using namespace DirectX;
 
-const float PostEffect::clearColor[4] = { 0.f, 0.5f, 0.75f, 1.f };
+const float PostEffect::clearColor[4] = { 0.f, 0.f, 0.f, 1.f };
 
 PostEffect::PostEffect()
 	: mosaicNum({ WinAPI::window_width, WinAPI::window_height }) {
@@ -24,9 +24,15 @@ void PostEffect::transferConstBuff(float nowTime, float oneSec) {
 	constMap->noiseIntensity = noiseIntensity;
 	constMap->mosaicNum = mosaicNum;
 	constMap->vignIntensity = vignIntensity;
+	constMap->alpha = alpha;
 	constBuff->Unmap(0, nullptr);
 
 	assert(SUCCEEDED(result));
+}
+
+PostEffect *PostEffect::getInstance() {
+	static PostEffect ps{};
+	return &ps;
 }
 
 void PostEffect::initBuffer() {

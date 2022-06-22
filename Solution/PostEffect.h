@@ -6,11 +6,17 @@
 #include <memory>
 
 class PostEffect {
+	PostEffect();
+	~PostEffect() = default;
+	PostEffect(const PostEffect &obj) = delete;
+	void operator=(const PostEffect &obj) = delete;
 
 public:
 	// レンダーターゲットの数 = このクラスのテクスチャバッファの数
 	// シェーダーに合わせる
 	static const UINT renderTargetNum = 2;
+
+	static PostEffect *getInstance();
 
 private:
 	template<class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -29,6 +35,7 @@ private:
 		float noiseIntensity = 0.f;
 		DirectX::XMFLOAT2 mosaicNum;
 		float vignIntensity = 0.9f;
+		float alpha = 1.f;	// 不透明度(通常は1)
 	};
 
 	// パイプラインセット
@@ -73,24 +80,29 @@ private:
 	float noiseIntensity = 0.f;
 	DirectX::XMFLOAT2 mosaicNum;
 	float vignIntensity = 0.9f;
+	float alpha = 1.f;
 
 private:
 	void initBuffer();
 
-	void createGraphicsPipelineState(const wchar_t* vsPath = L"Resources/Shaders/PostEffectVS.hlsl",
-									 const wchar_t* psPath = L"Resources/Shaders/PostEffectPS.hlsl");
+	void createGraphicsPipelineState(const wchar_t *vsPath = L"Resources/Shaders/PostEffectVS.hlsl",
+									 const wchar_t *psPath = L"Resources/Shaders/PostEffectPS.hlsl");
 
 	void transferConstBuff(float nowTime, float oneSec = Time::oneSec);
+
+	void init();
 
 public:
 	// @param 0 ~ 1
 	inline void setNoiseIntensity(float intensity) { noiseIntensity = intensity; }
+	inline float getNoiseIntensity() const { return noiseIntensity; }
 
 	inline void setMosaicNum(const DirectX::XMFLOAT2 &mosaicNum) { this->mosaicNum = mosaicNum; }
+	inline DirectX::XMFLOAT2 getMosaicNum() const { return mosaicNum; }
 
-	PostEffect();
+	inline void setAlpha(float alpha) { this->alpha = alpha; }
+	inline float getAlpha() const { return alpha; }
 
-	void init();
 
 	void draw(DXBase *dxCom);
 

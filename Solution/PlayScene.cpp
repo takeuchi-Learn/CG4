@@ -14,6 +14,8 @@
 
 #include "EndScene.h"
 
+#include "PostEffect.h"
+
 using namespace DirectX;
 
 #pragma region 角度系関数
@@ -74,16 +76,16 @@ double PlayScene::near_atan2(double _y, double _x) {
 	if (bigX) slope = (double)y / x;
 	else  slope = (double)x / y;
 
-	constexpr auto a = -0.05026472;
-	constexpr auto b = +0.26603324;
-	constexpr auto c = -0.45255286;
-	constexpr auto d = +0.02385002;
-	constexpr auto e = +0.99836359;
+	constexpr double a = -0.05026472;
+	constexpr double b = +0.26603324;
+	constexpr double c = -0.45255286;
+	constexpr double d = +0.02385002;
+	constexpr double e = +0.99836359;
 
-	auto ret = slope * (slope * (slope * (slope * (a * slope + b) + c) + d) + e); //5次曲線近似
+	double ret = slope * (slope * (slope * (slope * (a * slope + b) + c) + d) + e); //5次曲線近似
 
-	constexpr auto plane = XM_PI;
-	constexpr auto rightAngle = plane / 2;	// 直角
+	constexpr float plane = XM_PI;
+	constexpr float rightAngle = plane / 2.f;	// 直角
 
 	if (bigX) {
 		if (_x > 0) {
@@ -141,13 +143,6 @@ void PlayScene::spriteInit() {
 	// スプライト共通
 	// --------------------
 	spriteCommon.reset(new SpriteCommon());
-
-	whiteTexNum = spriteCommon->loadTexture(L"Resources/white.png");
-	white.reset(new Sprite(whiteTexNum, spriteCommon.get(), XMFLOAT2(0.f, 0.f)));
-	white->setSize(XMFLOAT2(WinAPI::window_width, WinAPI::window_height));
-	white->position.x = 0.f;
-	white->position.y = 0.f;
-	white->color = XMFLOAT4(0, 0, 0, 1);
 
 	// スプライト共通テクスチャ読み込み
 	texNum = spriteCommon->loadTexture(L"Resources/texture.png");
@@ -289,11 +284,15 @@ void PlayScene::updateSound() {
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
 		}
-		debugText->formatPrint(spriteCommon.get(), 0, debugText->fontHeight * 2.f, 1.f, XMFLOAT4(1, 1, 1, 1), "BGM_STATE : %s", stateStr.c_str());
+		debugText->formatPrint(spriteCommon.get(),
+							   0, DebugText::fontHeight * 2.f,
+							   1.f,
+							   XMFLOAT4(1, 1, 1, 1),
+							   "BGM_STATE : %s", stateStr.c_str());
 
-		debugText->Print(spriteCommon.get(), "0 : Play/Stop BGM", 0, debugText->fontHeight * 3.f);
+		debugText->Print(spriteCommon.get(), "0 : Play/Stop BGM", 0, DebugText::fontHeight * 3.f);
 
-		debugText->Print(spriteCommon.get(), "P : create particle(play SE)", 0, debugText->fontHeight * 4.f);
+		debugText->Print(spriteCommon.get(), "P : create particle(play SE)", 0, DebugText::fontHeight * 4.f);
 	}
 }
 
@@ -307,12 +306,12 @@ void PlayScene::updateMouse() {
 	if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
 		debugText->Print(spriteCommon.get(), "input mouse right",
 						 mousePos.x,
-						 mousePos.y + debugText->fontHeight, 0.75f);
+						 mousePos.y + DebugText::fontHeight, 0.75f);
 	}
 	if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
 		debugText->Print(spriteCommon.get(), "input mouse wheel",
 						 mousePos.x,
-						 mousePos.y + debugText->fontHeight * 2, 0.75f);
+						 mousePos.y + DebugText::fontHeight * 2, 0.75f);
 	}
 	if (input->hitMouseBotton(VK_LSHIFT)) {
 		debugText->Print(spriteCommon.get(), "LSHIFT(WinAPI)", 0, 0, 2);
@@ -348,7 +347,7 @@ void PlayScene::updateCamera() {
 		if (angle.x - rotaVal > -XM_PIDIV2) angle.x -= rotaVal;
 	}
 
-	// angleラジアンだけY軸まわりに回転。半径は-100
+	// angleラジアンだけY軸まわりに回転。半径は100
 	constexpr float camRange = 100.f;	// targetLength
 	camera->rotation(camRange, angle.x, angle.y);
 
@@ -373,7 +372,7 @@ void PlayScene::updateLight() {
 	const float timeAngle = float(timer->getNowTime()) / Time::oneSec * XM_2PI;
 
 	debugText->formatPrint(spriteCommon.get(),
-						   WinAPI::window_width / 2.f, debugText->fontHeight * 16.f, 1.f,
+						   WinAPI::window_width / 2.f, DebugText::fontHeight * 16.f, 1.f,
 						   XMFLOAT4(1, 1, 0, 1),
 						   "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
 						   timeAngle / XM_PI,
@@ -443,7 +442,7 @@ void PlayScene::update_play() {
 
 
 	debugText->formatPrint(spriteCommon.get(),
-						   0, debugText->fontHeight * 15.f,
+						   0, DebugText::fontHeight * 15.f,
 						   1.f,
 						   XMFLOAT4(1, 1, 1, 1),
 						   "Time : %.6f[s]",
@@ -451,15 +450,15 @@ void PlayScene::update_play() {
 
 
 	debugText->formatPrint(spriteCommon.get(),
-						   debugText->fontWidth * 2.f, debugText->fontHeight * 17.f,
+						   DebugText::fontWidth * 2.f, DebugText::fontHeight * 17.f,
 						   1.f,
 						   XMFLOAT4(1, 1, 1, 1),
 						   "newLine\ntab(size %u)\tendString", debugText->tabSize);
 
-	debugText->Print(spriteCommon.get(), "SPACE : end", 0, debugText->fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
+	debugText->Print(spriteCommon.get(), "SPACE : end", 0, DebugText::fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
 
-	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, debugText->fontHeight * 8.f);
-	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, debugText->fontHeight * 9.f);
+	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, DebugText::fontHeight * 8.f);
+	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, DebugText::fontHeight * 9.f);
 
 #pragma endregion 情報表示
 }
@@ -483,24 +482,38 @@ void PlayScene::update() {
 
 // シーン開始時の演出用
 void PlayScene::update_start() {
-	white->color.w -= 0.75f / dxBase->getFPS();
-	if (white->color.w < 0.f) {
-		white->color.w = 1.f;
-		white->isInvisible = true;
+	drawAlpha += 0.5f / dxBase->getFPS();
+
+	if (drawAlpha > 1.f) {
+		drawAlpha = 1.f;
 
 		fbxObj3d->playAnimation();
 		timer->reset();
 
 		update_proc = &PlayScene::update_play;
 	}
+	PostEffect::getInstance()->setAlpha(drawAlpha);
+
+	// drawAlphaを基準としたモザイクでの入り
+	constexpr XMFLOAT2 mosNumMin{ 1.f, 1.f };
+	constexpr XMFLOAT2 mosNumMax{ WinAPI::window_width, WinAPI::window_height };
+	const float raito = pow(drawAlpha, 5);
+	XMFLOAT2 mosNum = mosNumMax;
+
+	mosNum.x = mosNumMin.x + raito * (mosNumMax.x - mosNumMin.x);
+	mosNum.y = mosNumMin.y + raito * (mosNumMax.y - mosNumMin.y);
+
+	PostEffect::getInstance()->setMosaicNum(mosNum);
 }
 
 // シーン終了時の演出用
 void PlayScene::update_end() {
-	white->color.w += 0.75f / dxBase->getFPS();
-	if (white->color.w > 1.f) {
+	drawAlpha -= 0.75f / dxBase->getFPS();
+	if (drawAlpha < 0.f) {
 		SceneManager::getInstange()->changeScene(new EndScene());
 	}
+
+	PostEffect::getInstance()->setAlpha(drawAlpha);
 }
 
 void PlayScene::changeEndScene() {
@@ -509,11 +522,15 @@ void PlayScene::changeEndScene() {
 		Sound::SoundStopWave(soundData1.get());
 	}
 
+	for (Sprite &i : sprites) {
+		i.isInvisible = true;
+	}
+
 	// fbxのアニメーションを停止する
 	fbxObj3d->stopAnimation(false);
 
-	white->isInvisible = false;
-	white->color.w = 0.f;
+	drawAlpha = 1.f;
+	PostEffect::getInstance()->setAlpha(drawAlpha);
 
 	update_proc = &PlayScene::update_end;
 }
@@ -541,7 +558,6 @@ void PlayScene::drawFrontSprite() {
 	for (UINT i = 0, len = sprites.size(); i < len; ++i) {
 		sprites[i].drawWithUpdate(dxBase, spriteCommon.get());
 	}
-	white->drawWithUpdate(dxBase, spriteCommon.get());
 
 	// デバッグテキスト描画
 	debugText->DrawAll(dxBase, spriteCommon.get());
@@ -567,7 +583,7 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos,
 		XMFLOAT3 acc{};
 
 
-		constexpr auto startCol = XMFLOAT3(1, 1, 0.25f), endCol = XMFLOAT3(1, 0, 1);
+		constexpr XMFLOAT3 startCol = XMFLOAT3(1, 1, 0.25f), endCol = XMFLOAT3(1, 0, 1);
 		constexpr int life = Time::oneSec / 4;
 		constexpr float endScale = 0.f;
 		constexpr float startRota = 0.f, endRota = 0.f;

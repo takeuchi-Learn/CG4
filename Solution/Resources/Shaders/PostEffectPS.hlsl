@@ -49,7 +49,7 @@ float4 main(VSOutput input) : SV_TARGET
 
 	float noiseNum = noise(input.uv, time);
 
-	float4 drawCol = float4(col.rgb + sLineNum + vignNum + noiseNum, 1);
+	float4 drawCol = float4(col.rgb + sLineNum + vignNum + noiseNum, alpha);
 
 	return drawCol;
 }

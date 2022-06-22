@@ -21,8 +21,6 @@ Looper::Looper() {
 	Object3d::staticInit(DXBase::getInstance()->getDev());
 
 	Light::staticInit(DXBase::getInstance()->getDev());
-
-	postEffect.reset(new PostEffect());
 }
 
 Looper::~Looper() {
@@ -54,14 +52,14 @@ bool Looper::loopDraw() {
 	// --------------------
 	// シーンマネージャーの描画
 	// --------------------
-	postEffect->startDrawScene(DXBase::getInstance());
+	PostEffect::getInstance()->startDrawScene(DXBase::getInstance());
 	SceneManager::getInstange()->drawObj3d();
-	postEffect->endDrawScene(DXBase::getInstance());
+	PostEffect::getInstance()->endDrawScene(DXBase::getInstance());
 
-	constexpr DirectX::XMFLOAT3 clearColor = { 0.1f, 0.25f, 0.5f };	//青っぽい色
+	constexpr DirectX::XMFLOAT3 clearColor = { 0.f, 0.f, 0.f };	//黒色
 	DXBase::getInstance()->startDraw(clearColor);
 
-	postEffect->draw(DXBase::getInstance());
+	PostEffect::getInstance()->draw(DXBase::getInstance());
 
 
 	SceneManager::getInstange()->drawFrontSprite();

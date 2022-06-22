@@ -60,9 +60,6 @@ class PlayScene :
 	static const UINT SPRITES_NUM = 1;
 	std::vector<Sprite> sprites;
 
-	std::unique_ptr<Sprite> white;
-	UINT whiteTexNum = 0u;
-
 	// --------------------
 	// デバッグテキスト
 	// --------------------
@@ -104,6 +101,8 @@ class PlayScene :
 	std::unique_ptr<FbxObj3d> fbxObj3d;
 
 #pragma endregion FBXオブジェクト
+
+	float drawAlpha = 0.f;
 
 
 	Input* input = nullptr;
