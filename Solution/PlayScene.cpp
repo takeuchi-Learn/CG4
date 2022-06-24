@@ -482,7 +482,7 @@ void PlayScene::update() {
 
 // シーン開始時の演出用
 void PlayScene::update_start() {
-	drawAlpha += 0.5f / dxBase->getFPS();
+	drawAlpha = (float)timer->getNowTime() / sceneTransTime;
 
 	if (drawAlpha > 1.f) {
 		drawAlpha = 1.f;
@@ -497,23 +497,38 @@ void PlayScene::update_start() {
 	// drawAlphaを基準としたモザイクでの入り
 	constexpr XMFLOAT2 mosNumMin{ 1.f, 1.f };
 	constexpr XMFLOAT2 mosNumMax{ WinAPI::window_width, WinAPI::window_height };
-	const float raito = pow(drawAlpha, 5);
+	const float mosRaito = pow(drawAlpha, 5);
 	XMFLOAT2 mosNum = mosNumMax;
 
-	mosNum.x = mosNumMin.x + raito * (mosNumMax.x - mosNumMin.x);
-	mosNum.y = mosNumMin.y + raito * (mosNumMax.y - mosNumMin.y);
+	mosNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
+	mosNum.y = mosNumMin.y + mosRaito * (mosNumMax.y - mosNumMin.y);
 
 	PostEffect::getInstance()->setMosaicNum(mosNum);
 }
 
 // シーン終了時の演出用
 void PlayScene::update_end() {
-	drawAlpha -= 0.75f / dxBase->getFPS();
-	if (drawAlpha < 0.f) {
+	const float raito = (float)timer->getNowTime() / sceneTransTime;
+
+	drawAlpha = 1.f - raito;
+	if (raito > 1.f) {
+		drawAlpha = 0.f;
 		SceneManager::getInstange()->changeScene(new EndScene());
 	}
 
 	PostEffect::getInstance()->setAlpha(drawAlpha);
+
+	// drawAlphaを基準としたモザイク
+	constexpr XMFLOAT2 mosNumMin{ 1.f, 1.f };
+	constexpr XMFLOAT2 mosNumMax{ WinAPI::window_width, WinAPI::window_height };
+
+	const float mosRaito = pow(1.f - raito, 5);
+
+	XMFLOAT2 mosNum = mosNumMax;
+	mosNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
+	mosNum.y = mosNumMin.y + mosRaito * (mosNumMax.y - mosNumMin.y);
+
+	PostEffect::getInstance()->setMosaicNum(mosNum);
 }
 
 void PlayScene::changeEndScene() {
@@ -533,6 +548,7 @@ void PlayScene::changeEndScene() {
 	PostEffect::getInstance()->setAlpha(drawAlpha);
 
 	update_proc = &PlayScene::update_end;
+	timer->reset();
 }
 
 void PlayScene::drawObj3d() {

@@ -103,9 +103,10 @@ class PlayScene :
 #pragma endregion FBXオブジェクト
 
 	float drawAlpha = 0.f;
+	Time::timeType sceneTransTime = Time::oneSec;
 
 
-	Input* input = nullptr;
+	Input *input = nullptr;
 
 	std::unique_ptr<Time> timer;
 
@@ -113,10 +114,10 @@ class PlayScene :
 
 	std::unique_ptr<ParticleMgr> particleMgr;
 
-	DXBase* dxBase = nullptr;
+	DXBase *dxBase = nullptr;
 
 private:
-	void createParticle(const DirectX::XMFLOAT3& pos, const UINT particleNum = 10U, const float startScale = 1.f);
+	void createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum = 10U, const float startScale = 1.f);
 
 	// update_何とか関数を格納する
 	void (PlayScene:: *update_proc)();
