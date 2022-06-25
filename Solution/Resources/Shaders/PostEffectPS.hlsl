@@ -30,9 +30,27 @@ float4 main(VSOutput input) : SV_TARGET
 	float vignNum = vignatte(uv);
 
 	// ëñç∏ê¸ÇÃÇÊÇ§Ç»Ç‡ÇÃ
-	float sinNum = uv.y * 96.f + time * 4.f;
-	float sLineNum = sin(sinNum) * sin(sinNum + 0.75f) + 1;
-	sLineNum *= -0.03125f;	// sLineNum /= 32
+	float sSpeed = 8.f;
+	float sDivLevel = 96.f;
+	float sPower = 24.f;
+	float sinNum = uv.y * sDivLevel + time * sSpeed;
+	float sLineNum = fracNoise(float2(time, uv.y)) * sin(sinNum) * sin(sinNum + 0.75f) + 1;
+	sLineNum /= -sPower;
+
+	// ëñç∏ê¸
+	float slSpeed = 0.25f;
+	float slSize = 0.03125f;
+	float slPower = 0.0625f;
+	float sbTime = frac(time * slSpeed);
+	float seTime = sbTime + slSize;
+
+	// 6.28318f = 2PI
+	float2 slUv = float2(
+		uv.x + sin(smoothstep(sbTime, seTime, uv.y) *
+				   6.28318f) * slPower,
+		uv.y
+	);
+	uv = slUv;
 
 	// rgbÇ∏ÇÁÇµ
 	float rgbUvNum = 0.005f * sin(time * 3.141592653589793f);
