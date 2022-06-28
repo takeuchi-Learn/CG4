@@ -130,7 +130,7 @@ void PlayScene::lightInit() {
 }
 
 void PlayScene::soundInit() {
-	soundCommon.reset(new Sound::SoundCommon());
+	soundCommon.reset(new SoundCommon());
 	soundData1.reset(new Sound("Resources/BGM.wav", soundCommon.get()));
 
 	particleSE.reset(new Sound("Resources/SE/Sys_Set03-click.wav", soundCommon.get()));

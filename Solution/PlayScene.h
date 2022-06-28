@@ -38,7 +38,7 @@ class PlayScene :
 
 #pragma region 音
 
-	std::unique_ptr<Sound::SoundCommon> soundCommon;
+	std::unique_ptr<SoundCommon> soundCommon;
 
 	std::unique_ptr<Sound> soundData1;
 

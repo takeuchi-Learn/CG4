@@ -6,24 +6,7 @@
 #include <fstream>
 #include <cassert>
 
-Sound::SoundCommon::SoundCommon() {
-	// XAudioエンジンのインスタンスを生成
-	HRESULT result = XAudio2Create(&xAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
-	assert(SUCCEEDED(result));
-
-	// マスターボイスを生成
-	result = xAudio2->CreateMasteringVoice(&masterVoice);
-	assert(SUCCEEDED(result));
-}
-
-Sound::SoundCommon::~SoundCommon() {
-	this->xAudio2.Reset();
-}
-
-
-
-
-Sound::Sound(const char* filename, Sound::SoundCommon* soundCommon) {
+Sound::Sound(const char* filename, SoundCommon* soundCommon) {
 	//1.ファイルオープン
 	//ファイル入力ストリームのインスタンス
 	std::ifstream file;

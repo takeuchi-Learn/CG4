@@ -166,6 +166,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjModel.cpp" />
+    <ClCompile Include="SoundCommon.cpp" />
     <ClCompile Include="SpriteCommon.cpp" />
     <ClCompile Include="Object3d.cpp" />
     <ClCompile Include="ParticleMgr.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ObjModel.h" />
+    <ClInclude Include="SoundCommon.h" />
     <ClInclude Include="SpriteCommon.h" />
     <ClInclude Include="Object3d.h" />
     <ClInclude Include="ParticleMgr.h" />
