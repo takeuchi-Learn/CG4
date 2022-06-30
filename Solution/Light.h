@@ -3,7 +3,7 @@
 #include <wrl.h>
 #include <DirectXMath.h>
 #include <d3d12.h>
-#include "DXBase.h"
+#include "DX12Base.h"
 
 class Light {
 private:
@@ -44,6 +44,6 @@ public:
 	void update();
 
 	// @param rootParamIndex : Object3dクラスのcreateGraphicsPipeline関数内のrootParamsの要素数
-	void draw(DXBase *dxCom, UINT rootParamIndex);
+	void draw(DX12Base *dxCom, UINT rootParamIndex);
 };
 

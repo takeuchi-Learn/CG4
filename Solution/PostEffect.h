@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "DXBase.h"
+#include "DX12Base.h"
 
 #include "Time.h"
 
@@ -104,10 +104,10 @@ public:
 	inline float getAlpha() const { return alpha; }
 
 
-	void draw(DXBase *dxCom);
+	void draw(DX12Base *dxCom);
 
-	void startDrawScene(DXBase *dxCom);
+	void startDrawScene(DX12Base *dxCom);
 
-	void endDrawScene(DXBase *dxCom);
+	void endDrawScene(DX12Base *dxCom);
 };
 

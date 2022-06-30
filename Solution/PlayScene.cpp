@@ -184,11 +184,11 @@ void PlayScene::obj3dInit() {
 
 	backModel.reset(new ObjModel("Resources/back/", "back", 1u, true));
 
-	backObj.reset(new Object3d(DXBase::getInstance()->getDev(), camera.get(), backModel.get(), 1u));
+	backObj.reset(new Object3d(DX12Base::getInstance()->getDev(), camera.get(), backModel.get(), 1u));
 	constexpr float backScale = 10.f;
 	backObj->scale = { backScale, backScale, backScale };
 
-	/*model.reset(new ObjModel(DXBase::getInstance()->getDev(),
+	/*model.reset(new ObjModel(DX12Base::getInstance()->getDev(),
 						  L"Resources/model/model.obj", L"Resources/model/tex.png",
 						  WinAPI::window_width, WinAPI::window_height,
 						  Object3d::constantBufferNum, obj3dTexNum));*/
@@ -196,13 +196,13 @@ void PlayScene::obj3dInit() {
 
 	constexpr UINT obj3dNum = 1;
 	for (UINT i = 0; i < obj3dNum; ++i) {
-		obj3d.emplace_back(Object3d(DXBase::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
+		obj3d.emplace_back(Object3d(DX12Base::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
 		obj3d[i].scale = { obj3dScale, obj3dScale, obj3dScale };
 		obj3d[i].position = { i * obj3dScale, 0, 0 };
 		obj3d[i].rotation.y = 180.f;
 	}
 
-	lightObj.reset(new Object3d(Object3d(DXBase::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum)));
+	lightObj.reset(new Object3d(Object3d(DX12Base::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum)));
 	const float lightObjScale = obj3dScale * 0.5f;
 	lightObj->scale = XMFLOAT3(lightObjScale, lightObjScale, lightObjScale);
 	lightObj->position = obj3d[0].position;
@@ -238,7 +238,7 @@ PlayScene::PlayScene()
 	: update_proc(&PlayScene::update_start) {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 
-	dxBase = DXBase::getInstance();
+	dxBase = DX12Base::getInstance();
 
 	input = Input::getInstance();
 
@@ -331,7 +331,7 @@ void PlayScene::updateMouse() {
 }
 
 void PlayScene::updateCamera() {
-	const float rotaVal = XM_PIDIV2 / DXBase::getInstance()->getFPS();	// 毎秒四半周
+	const float rotaVal = XM_PIDIV2 / DX12Base::getInstance()->getFPS();	// 毎秒四半周
 
 	if (input->hitKey(DIK_RIGHT)) {
 		angle.y += rotaVal;
@@ -497,7 +497,7 @@ void PlayScene::update_start() {
 	// drawAlphaを基準としたモザイクでの入り
 	constexpr XMFLOAT2 mosNumMin{ 1.f, 1.f };
 	constexpr XMFLOAT2 mosNumMax{ WinAPI::window_width, WinAPI::window_height };
-	const float mosRaito = pow(drawAlpha, 5);
+	const float mosRaito = powf(drawAlpha, 5);
 	XMFLOAT2 mosNum = mosNumMax;
 
 	mosNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
@@ -522,7 +522,7 @@ void PlayScene::update_end() {
 	constexpr XMFLOAT2 mosNumMin{ 1.f, 1.f };
 	constexpr XMFLOAT2 mosNumMax{ WinAPI::window_width, WinAPI::window_height };
 
-	const float mosRaito = pow(1.f - raito, 5);
+	const float mosRaito = powf(1.f - raito, 5);
 
 	XMFLOAT2 mosNum = mosNumMax;
 	mosNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
@@ -571,7 +571,7 @@ void PlayScene::drawObj3d() {
 void PlayScene::drawFrontSprite() {
 	spriteCommon->drawStart(dxBase->getCmdList());
 	// スプライト描画
-	for (UINT i = 0, len = sprites.size(); i < len; ++i) {
+	for (UINT i = 0, len = (UINT)sprites.size(); i < len; ++i) {
 		sprites[i].drawWithUpdate(dxBase, spriteCommon.get());
 	}
 

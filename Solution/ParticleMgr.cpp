@@ -66,7 +66,7 @@ void ParticleMgr::init(ID3D12Device* device, const wchar_t* texFilePath) {
 }
 
 ParticleMgr::ParticleMgr() {
-	init(DXBase::getInstance()->getDev(), L"Resources/white.png");
+	init(DX12Base::getInstance()->getDev(), L"Resources/white.png");
 }
 
 ParticleMgr::ParticleMgr(ID3D12Device* device,

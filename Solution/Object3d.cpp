@@ -100,7 +100,7 @@ void Object3d::update(ID3D12Device* dev) {
 	//model->update(dev);
 }
 
-void Object3d::draw(DXBase* dxBase, Light* light) {
+void Object3d::draw(DX12Base* dxBase, Light* light) {
 	// 定数バッファビューをセット
 	dxBase->getCmdList()->SetGraphicsRootConstantBufferView(0, constBuffB0->GetGPUVirtualAddress());
 
@@ -109,7 +109,7 @@ void Object3d::draw(DXBase* dxBase, Light* light) {
 	model->draw(dxBase->getCmdList());
 }
 
-void Object3d::drawWithUpdate(DXBase* dxBase, Light* light) {
+void Object3d::drawWithUpdate(DX12Base* dxBase, Light* light) {
 	update(dxBase->getDev());
 	draw(dxBase, light);
 }

@@ -2,7 +2,7 @@
 
 #include "SpriteCommon.h"
 
-#include "DXBase.h"
+#include "DX12Base.h"
 
 class Sprite {
 private:
@@ -120,5 +120,5 @@ public:
 	void draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon* spriteCommon, ID3D12Device* dev);
 
 	// 更新と描画を同時に行う
-	void drawWithUpdate(DXBase* dxCom, const SpriteCommon* spriteCommon);
+	void drawWithUpdate(DX12Base* dxCom, const SpriteCommon* spriteCommon);
 };

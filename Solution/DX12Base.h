@@ -9,12 +9,12 @@
 
 #include <DirectXMath.h>
 
-class DXBase {
-	DXBase(const DXBase& dxBase) = delete;
-	DXBase& operator=(const DXBase& dxBase) = delete;
+class DX12Base {
+	DX12Base(const DX12Base& dxBase) = delete;
+	DX12Base& operator=(const DX12Base& dxBase) = delete;
 
-	DXBase();
-	~DXBase();
+	DX12Base();
+	~DX12Base();
 
 #pragma region privateメンバ変数
 
@@ -66,7 +66,7 @@ private:
 	void ClearDepthBuffer();
 
 public:
-	static DXBase* getInstance();
+	static DX12Base* getInstance();
 
 	// @param clearColor 何もない場所の描画色。既定引数は暗い黄色っぽい色
 	void startDraw(const DirectX::XMFLOAT3& clearColor = DirectX::XMFLOAT3(0.5f, 0.5f, 0.f));

@@ -24,7 +24,7 @@ void DebugText::Print(const SpriteCommon *spriteCommon, const std::string &text,
 	int posNumX = 0, posNumY = 0;
 
 	// 全ての文字について
-	for (UINT i = 0, len= text.size(); i < len; ++i, ++posNumX) {
+	for (UINT i = 0, len = (UINT)text.size(); i < len; ++i, ++posNumX) {
 
 		// 最大文字数超過
 		if (spriteIndex >= maxCharCount) {
@@ -90,9 +90,9 @@ int DebugText::formatPrint(const SpriteCommon *spriteCommon,
 }
 
 // まとめて描画
-void DebugText::DrawAll(DXBase *dxBase, const SpriteCommon *spriteCommon) {
+void DebugText::DrawAll(DX12Base *dxBase, const SpriteCommon *spriteCommon) {
 	// 全ての文字のスプライトについて
-	for (UINT i = 0; i < spriteIndex; ++i) {
+	for (UINT i = 0; i < (UINT)spriteIndex; ++i) {
 		// スプライト描画
 		sprites[i].draw(dxBase->getCmdList(), spriteCommon, dxBase->getDev());
 	}

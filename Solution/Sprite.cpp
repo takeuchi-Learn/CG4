@@ -83,7 +83,7 @@ Sprite::Sprite(UINT texNumber,
 			   const SpriteCommon* spriteCommon,
 			   XMFLOAT2 anchorpoint,
 			   bool isFlipX, bool isFlipY) {
-	create(DXBase::getInstance()->getDev(),
+	create(DX12Base::getInstance()->getDev(),
 		   WinAPI::window_width, WinAPI::window_height,
 		   texNumber,
 		   spriteCommon,
@@ -203,7 +203,7 @@ void Sprite::draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon* sprite
 }
 
 // 更新と描画を同時に行う
-void Sprite::drawWithUpdate(DXBase* dxBase,
+void Sprite::drawWithUpdate(DX12Base* dxBase,
 							const SpriteCommon* spriteCommon) {
 	update(spriteCommon);
 	draw(dxBase->getCmdList(), spriteCommon, dxBase->getDev());

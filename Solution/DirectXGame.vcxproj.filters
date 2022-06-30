@@ -87,7 +87,7 @@
     <ClCompile Include="WinAPI.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="DXBase.cpp">
+    <ClCompile Include="DX12Base.cpp">
       <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="Collision.cpp">
@@ -203,7 +203,7 @@
     <ClInclude Include="CollisionShape.h">
       <Filter>Collision</Filter>
     </ClInclude>
-    <ClInclude Include="DXBase.h">
+    <ClInclude Include="DX12Base.h">
       <Filter>System</Filter>
     </ClInclude>
     <ClInclude Include="GameScene.h">

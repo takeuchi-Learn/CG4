@@ -6,7 +6,7 @@
 #include <d3d12.h>
 
 #include "ObjModel.h"
-#include "DXBase.h"
+#include "DX12Base.h"
 #include "Camera.h"
 
 #include "Light.h"
@@ -122,9 +122,9 @@ public:
 
 	void update(ID3D12Device* dev);
 
-	void draw(DXBase* dxCom, Light* light);
+	void draw(DX12Base* dxCom, Light* light);
 
-	void drawWithUpdate(DXBase* dxCom, Light* light);
+	void drawWithUpdate(DX12Base* dxCom, Light* light);
 
 
 	~Object3d();

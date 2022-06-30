@@ -1,7 +1,7 @@
 ﻿#include "System.h"
 
 #include "WinAPI.h"
-#include "DXBase.h"
+#include "DX12Base.h"
 
 #include "Input.h"
 #include "Looper.h"

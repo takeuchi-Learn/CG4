@@ -2,7 +2,7 @@
 
 #include "Input.h"
 
-#include "DXBase.h"
+#include "DX12Base.h"
 #include "SceneManager.h"
 
 #include <DirectXMath.h>
@@ -15,12 +15,12 @@
 
 Looper::Looper() {
 
-	FbxLoader::GetInstance()->init(DXBase::getInstance()->getDev());
+	FbxLoader::GetInstance()->init(DX12Base::getInstance()->getDev());
 
 
-	Object3d::staticInit(DXBase::getInstance()->getDev());
+	Object3d::staticInit(DX12Base::getInstance()->getDev());
 
-	Light::staticInit(DXBase::getInstance()->getDev());
+	Light::staticInit(DX12Base::getInstance()->getDev());
 }
 
 Looper::~Looper() {
@@ -52,19 +52,19 @@ bool Looper::loopDraw() {
 	// --------------------
 	// シーンマネージャーの描画
 	// --------------------
-	PostEffect::getInstance()->startDrawScene(DXBase::getInstance());
+	PostEffect::getInstance()->startDrawScene(DX12Base::getInstance());
 	SceneManager::getInstange()->drawObj3d();
-	PostEffect::getInstance()->endDrawScene(DXBase::getInstance());
+	PostEffect::getInstance()->endDrawScene(DX12Base::getInstance());
 
 	constexpr DirectX::XMFLOAT3 clearColor = { 0.f, 0.f, 0.f };	//黒色
-	DXBase::getInstance()->startDraw(clearColor);
+	DX12Base::getInstance()->startDraw(clearColor);
 
-	PostEffect::getInstance()->draw(DXBase::getInstance());
+	PostEffect::getInstance()->draw(DX12Base::getInstance());
 
 
 	SceneManager::getInstange()->drawFrontSprite();
 
-	DXBase::getInstance()->endDraw();
+	DX12Base::getInstance()->endDraw();
 
 	return false;
 }

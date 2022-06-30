@@ -5,7 +5,7 @@
 #include <d3dcompiler.h>
 #pragma comment(lib, "d3dcompiler.lib")
 
-#include "DXBase.h"
+#include "DX12Base.h"
 
 #include <d3dx12.h>
 
@@ -191,7 +191,7 @@ UINT SpriteCommon::loadTexture(const wchar_t *filename, DirectX::XMFLOAT2 *pTexS
 
 	++nowTexNum;
 
-	auto dev = DXBase::getInstance()->getDev();
+	auto dev = DX12Base::getInstance()->getDev();
 
 	HRESULT result = S_FALSE;
 
@@ -275,7 +275,7 @@ void SpriteCommon::drawStart(ID3D12GraphicsCommandList *cmdList) {
 SpriteCommon::SpriteCommon(BLEND_MODE blendMode,
 						   const wchar_t *vsPath, const wchar_t *psPath) {
 	// スプライト用パイプライン生成
-	pipelineSet = SpriteCreateGraphicsPipeline(DXBase::getInstance()->getDev(), vsPath, psPath, blendMode);
+	pipelineSet = SpriteCreateGraphicsPipeline(DX12Base::getInstance()->getDev(), vsPath, psPath, blendMode);
 
 	// 並行投影の射影行列生成
 	matProjection = XMMatrixOrthographicOffCenterLH(
@@ -286,5 +286,5 @@ SpriteCommon::SpriteCommon(BLEND_MODE blendMode,
 	descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	descHeapDesc.NumDescriptors = SpriteCommon::spriteSRVCount;
-	HRESULT result = DXBase::getInstance()->getDev()->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
+	HRESULT result = DX12Base::getInstance()->getDev()->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
 }

@@ -1,4 +1,4 @@
-﻿#include "DXBase.h"
+﻿#include "DX12Base.h"
 
 #include <cassert>
 
@@ -11,14 +11,14 @@ using namespace Microsoft::WRL;
 
 #include <DirectXMath.h>
 
-DXBase *DXBase::getInstance() {
-	static DXBase dxBase{};
+DX12Base *DX12Base::getInstance() {
+	static DX12Base dxBase{};
 	return &dxBase;
 }
 
 
 
-void DXBase::initDevice() {
+void DX12Base::initDevice() {
 	//DXGiファクトリ(デバイス生成後は解放されてよい)
 	//ComPtr<IDXGIFactory6> dxgiFactory;
 
@@ -81,7 +81,7 @@ void DXBase::initDevice() {
 	}
 }
 
-void DXBase::initCommand() {
+void DX12Base::initCommand() {
 	// コマンドアロケータを生成
 	HRESULT result = dev->CreateCommandAllocator(
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
@@ -99,7 +99,7 @@ void DXBase::initCommand() {
 	dev->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&cmdQueue));
 }
 
-void DXBase::initSwapchain() {
+void DX12Base::initSwapchain() {
 	// 各種設定をしてスワップチェーンを生成
 	DXGI_SWAP_CHAIN_DESC1 swapchainDesc{};
 	swapchainDesc.Width = 1280;
@@ -126,7 +126,7 @@ void DXBase::initSwapchain() {
 	swapchain1.As(&swapchain);
 }
 
-void DXBase::initRTV() {
+void DX12Base::initRTV() {
 	// 各種設定をしてデスクリプタヒープを生成
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
 	heapDesc.Type =
@@ -157,7 +157,7 @@ void DXBase::initRTV() {
 	}
 }
 
-void DXBase::initDepthBuffer() {
+void DX12Base::initDepthBuffer() {
 	// 深度バッファリソース設定
 	CD3DX12_RESOURCE_DESC depthResDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_D32_FLOAT,
@@ -192,12 +192,12 @@ void DXBase::initDepthBuffer() {
 		dsvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void DXBase::initFence() {
+void DX12Base::initFence() {
 	// フェンスの生成
 	HRESULT result = dev->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 }
 
-void DXBase::ClearRenderTarget(const DirectX::XMFLOAT3 &clearColor) {
+void DX12Base::ClearRenderTarget(const DirectX::XMFLOAT3 &clearColor) {
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
 	// レンダーターゲットビュー用ディスクリプタヒープのハンドルを取得
@@ -208,14 +208,14 @@ void DXBase::ClearRenderTarget(const DirectX::XMFLOAT3 &clearColor) {
 	cmdList->ClearRenderTargetView(rtvH, clearColorTmp, 0, nullptr);
 }
 
-void DXBase::ClearDepthBuffer() {
+void DX12Base::ClearDepthBuffer() {
 	// 深度ステンシルビュー用デスクリプタヒープのハンドルを取得
 	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap->GetCPUDescriptorHandleForHeapStart());
 	// 深度バッファのクリア
 	cmdList->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
-DXBase::DXBase() {
+DX12Base::DX12Base() {
 	this->winapi = WinAPI::getInstance();
 
 	fps = -1.f;
@@ -230,11 +230,11 @@ DXBase::DXBase() {
 	initFence();
 }
 
-DXBase::~DXBase() {
+DX12Base::~DX12Base() {
 
 }
 
-void DXBase::startDraw(const DirectX::XMFLOAT3 &clearColor) {
+void DX12Base::startDraw(const DirectX::XMFLOAT3 &clearColor) {
 	// バックバッファの番号を取得（2つなので0番か1番）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
@@ -266,7 +266,7 @@ void DXBase::startDraw(const DirectX::XMFLOAT3 &clearColor) {
 
 }
 
-void DXBase::endDraw() {
+void DX12Base::endDraw() {
 	// バックバッファの番号を取得（2つなので0番か1番）
 	UINT bbIndex = swapchain->GetCurrentBackBufferIndex();
 
@@ -299,9 +299,9 @@ void DXBase::endDraw() {
 	flipTimeFPS();
 }
 
-ID3D12Device *DXBase::getDev() { return dev.Get(); }
+ID3D12Device *DX12Base::getDev() { return dev.Get(); }
 
-ID3D12GraphicsCommandList *DXBase::getCmdList() { return cmdList.Get(); }
+ID3D12GraphicsCommandList *DX12Base::getCmdList() { return cmdList.Get(); }
 
 
 // --------------------
@@ -313,7 +313,7 @@ namespace {
 	constexpr auto oneSec = std::chrono::duration_cast<myTimeUnit>(std::chrono::seconds(1)).count();
 }
 
-void DXBase::flipTimeFPS() {
+void DX12Base::flipTimeFPS() {
 	for (UINT i = divNum - 1; i > 0; i--) {
 		fpsTime[i] = fpsTime[i - 1];
 	}
@@ -322,7 +322,7 @@ void DXBase::flipTimeFPS() {
 		).count();
 }
 
-void DXBase::updateFPS() {
+void DX12Base::updateFPS() {
 	float avgDiffTime = 0.f;
 	for (UINT i = 0; i < divNum - 1; ++i) {
 		avgDiffTime += fpsTime[i] - fpsTime[i + 1];
@@ -333,4 +333,4 @@ void DXBase::updateFPS() {
 	if (avgDiffTime != 0) fps = oneSec / avgDiffTime;
 }
 
-float DXBase::getFPS() { return fps; }
+float DX12Base::getFPS() { return fps; }

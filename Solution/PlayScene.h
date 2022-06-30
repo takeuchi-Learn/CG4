@@ -14,7 +14,7 @@
 
 #include "ParticleMgr.h"
 
-#include "DXBase.h"
+#include "DX12Base.h"
 
 #include "Input.h"
 
@@ -114,7 +114,7 @@ class PlayScene :
 
 	std::unique_ptr<ParticleMgr> particleMgr;
 
-	DXBase *dxBase = nullptr;
+	DX12Base *dxBase = nullptr;
 
 private:
 	void createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum = 10U, const float startScale = 1.f);

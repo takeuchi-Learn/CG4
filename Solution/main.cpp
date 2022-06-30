@@ -29,7 +29,7 @@ using namespace Microsoft::WRL;
 
 #include "WinAPI.h"
 
-#include "DXBase.h"
+#include "DX12Base.h"
 
 #include "SpriteCommon.h"
 
