@@ -225,7 +225,7 @@ void PlayScene::fbxInit() {
 }
 
 void PlayScene::particleInit() {
-	particleMgr.reset(new ParticleMgr(dxBase->getDev(), L"Resources/effect1.png", camera.get()));
+	particleMgr.reset(new ParticleMgr(L"Resources/effect1.png", camera.get()));
 }
 
 void PlayScene::timerInit() {
@@ -332,7 +332,8 @@ void PlayScene::updateMouse() {
 }
 
 void PlayScene::updateCamera() {
-	const float rotaVal = XM_PIDIV2 / DX12Base::getInstance()->getFPS();	// 毎秒四半周
+	// 毎秒1/4周
+	const float rotaVal = XM_PIDIV2 / DX12Base::getInstance()->getFPS();
 
 	if (input->hitKey(DIK_RIGHT)) {
 		angle.y += rotaVal;

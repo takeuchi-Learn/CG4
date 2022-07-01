@@ -119,7 +119,7 @@ public:
 	// テクスチャは1x1白で初期化
 	ParticleMgr();
 
-	ParticleMgr(ID3D12Device* device, const wchar_t* texFilePath, Camera* camera);
+	ParticleMgr(const wchar_t* texFilePath, Camera* camera);
 
 	void init(ID3D12Device* device, const wchar_t* texFilePath);
 	void update();

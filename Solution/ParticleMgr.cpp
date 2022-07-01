@@ -69,10 +69,9 @@ ParticleMgr::ParticleMgr() {
 	init(DX12Base::getInstance()->getDev(), L"Resources/white.png");
 }
 
-ParticleMgr::ParticleMgr(ID3D12Device* device,
-								 const wchar_t* texFilePath,
+ParticleMgr::ParticleMgr(const wchar_t* texFilePath,
 								 Camera* camera) {
-	init(device, texFilePath);
+	init(DX12Base::getInstance()->getDev(), texFilePath);
 	setCamera(camera);
 }
 
