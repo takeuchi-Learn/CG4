@@ -235,7 +235,7 @@ void PlayScene::timerInit() {
 #pragma endregion 初期化関数
 
 PlayScene::PlayScene()
-	: update_proc(&PlayScene::update_start) {
+	: update_proc(std::bind(&PlayScene::update_start,this)) {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 
 	dxBase = DX12Base::getInstance();
@@ -279,6 +279,7 @@ void PlayScene::updateSound() {
 		}
 	}
 
+	// 音状態表示
 	{
 		std::string stateStr = "STOP []";
 		if (Sound::checkPlaySound(soundData1.get())) {
@@ -422,12 +423,16 @@ void PlayScene::update_play() {
 	// 音関係の更新
 	updateSound();
 
+	// マウス情報の更新
 	updateMouse();
 
+	// カメラの更新
 	updateCamera();
 
+	// ライトの更新
 	updateLight();
 
+	// スプライトの更新
 	updateSprite();
 
 #pragma region 情報表示
@@ -470,7 +475,7 @@ void PlayScene::update() {
 	backObj->rotation.y += 0.1f;
 
 	// 主な処理
-	(this->*update_proc)();
+	update_proc();
 
 	// 背景オブジェクトの中心をカメラにする
 	backObj->position = camera->getEye();
@@ -490,7 +495,7 @@ void PlayScene::update_start() {
 		fbxObj3d->playAnimation();
 		timer->reset();
 
-		update_proc = &PlayScene::update_play;
+		update_proc = std::bind(&PlayScene::update_play, this);
 	}
 	PostEffect::getInstance()->setAlpha(drawAlpha);
 
@@ -547,7 +552,7 @@ void PlayScene::changeEndScene() {
 	drawAlpha = 1.f;
 	PostEffect::getInstance()->setAlpha(drawAlpha);
 
-	update_proc = &PlayScene::update_end;
+	update_proc = std::bind(&PlayScene::update_end, this);
 	timer->reset();
 }
 

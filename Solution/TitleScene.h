@@ -9,6 +9,8 @@
 
 #include <DirectXMath.h>
 
+#include <functional>
+
 class TitleScene :
 	public GameScene {
 
@@ -25,7 +27,7 @@ class TitleScene :
 	DirectX::XMFLOAT2 titleStrPos{};
 
 	// update_何とか関数を格納する
-	void (TitleScene:: *update_proc)();
+	std::function<void()> update_proc;
 
 	void update_end();
 	void update_normal();

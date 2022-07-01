@@ -8,7 +8,7 @@
 
 TitleScene::TitleScene()
 	: titleStrPos(0.f, 0.f),
-	update_proc(&TitleScene::update_normal) {
+	update_proc(std::bind(&TitleScene::update_normal, this)) {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Title");
 
 	input = Input::getInstance();
@@ -22,13 +22,13 @@ TitleScene::TitleScene()
 }
 
 void TitleScene::update() {
-	(this->*update_proc)();
+	update_proc();
 	debugText->Print(spCom.get(), "TITLE", titleStrPos.x, titleStrPos.y, 10.f);
 }
 
 void TitleScene::update_normal() {
 	if (input->triggerKey(DIK_SPACE)) {
-		update_proc = &TitleScene::update_end;
+		update_proc = std::bind(&TitleScene::update_end, this);
 	}
 }
 

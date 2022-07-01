@@ -24,6 +24,8 @@
 
 #include "FbxObj3d.h"
 
+#include <functional>
+
 class PlayScene :
 	public GameScene {
 
@@ -120,7 +122,7 @@ private:
 	void createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum = 10U, const float startScale = 1.f);
 
 	// update_何とか関数を格納する
-	void (PlayScene:: *update_proc)();
+	std::function<void()> update_proc;
 
 	void update_start();
 	void update_play();
