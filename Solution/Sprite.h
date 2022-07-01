@@ -96,12 +96,12 @@ public:
 	// --------------------
 protected:
 	// スプライト単体頂点バッファの転送
-	void SpriteTransferVertexBuffer(const SpriteCommon* spriteCommon);
+	void SpriteTransferVertexBuffer(const SpriteBase* spriteCommon);
 
 
 	// スプライト生成
 	void create(ID3D12Device* dev, int window_width, int window_height,
-				UINT texNumber, const SpriteCommon* spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f },
+				UINT texNumber, const SpriteBase* spriteCommon, XMFLOAT2 anchorpoint = { 0.5f,0.5f },
 				bool isFlipX = false, bool isFlipY = false);
 
 public:
@@ -109,16 +109,16 @@ public:
 	Sprite() {};
 	// 初期化有り(create関数の呼び出し)
 	Sprite(UINT texNumber,
-		   const SpriteCommon* spriteCommon,
+		   const SpriteBase* spriteCommon,
 		   XMFLOAT2 anchorpoint = { 0.5f,0.5f },
 		   bool isFlipX = false, bool isFlipY = false);
 
 	// スプライト単体更新
-	void update(const SpriteCommon* spriteCommon);
+	void update(const SpriteBase* spriteCommon);
 
 	// スプライト単体描画
-	void draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon* spriteCommon, ID3D12Device* dev);
+	void draw(ID3D12GraphicsCommandList* cmdList, const SpriteBase* spriteCommon, ID3D12Device* dev);
 
 	// 更新と描画を同時に行う
-	void drawWithUpdate(DX12Base* dxCom, const SpriteCommon* spriteCommon);
+	void drawWithUpdate(DX12Base* dxCom, const SpriteBase* spriteCommon);
 };

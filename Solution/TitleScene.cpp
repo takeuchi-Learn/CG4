@@ -13,7 +13,7 @@ TitleScene::TitleScene()
 
 	input = Input::getInstance();
 
-	spCom.reset(new SpriteCommon());
+	spCom.reset(new SpriteBase());
 
 	// デバッグテキスト用のテクスチャ読み込み
 	debugTextTexNumber = spCom->loadTexture(L"Resources/debugfont.png");

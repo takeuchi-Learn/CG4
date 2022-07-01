@@ -1,8 +1,8 @@
-#include "SoundCommon.h"
+#include "SoundBase.h"
 #include <cassert>
 
 
-SoundCommon::SoundCommon() {
+SoundBase::SoundBase() {
 	// XAudioエンジンのインスタンスを生成
 	HRESULT result = XAudio2Create(&xAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
 	assert(SUCCEEDED(result));
@@ -12,6 +12,6 @@ SoundCommon::SoundCommon() {
 	assert(SUCCEEDED(result));
 }
 
-SoundCommon::~SoundCommon() {
+SoundBase::~SoundBase() {
 	this->xAudio2.Reset();
 }

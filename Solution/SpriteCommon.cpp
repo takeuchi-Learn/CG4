@@ -14,10 +14,10 @@
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
-UINT SpriteCommon::nowTexNum = 0u;
+UINT SpriteBase::nowTexNum = 0u;
 
 // スプライト用パイプライン生成
-SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Device *dev,
+SpriteBase::PipelineSet SpriteBase::SpriteCreateGraphicsPipeline(ID3D12Device *dev,
 																	 const wchar_t *vsPath, const wchar_t *psPath,
 																	 BLEND_MODE blendMode) {
 	HRESULT result;
@@ -108,19 +108,19 @@ SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Devic
 	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;    // デストの値を   0% 使う
 
 	switch (blendMode) {
-	case SpriteCommon::BLEND_MODE::ADD:
+	case SpriteBase::BLEND_MODE::ADD:
 		//---加算
 		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
 		blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
 		blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
 		break;
-	case SpriteCommon::BLEND_MODE::SUB:
+	case SpriteBase::BLEND_MODE::SUB:
 		//---減算
 		blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;	//デストからソースを減算
 		blenddesc.SrcBlend = D3D12_BLEND_ONE;				//ソースの値を100%使う
 		blenddesc.DestBlend = D3D12_BLEND_ONE;			//デストの値を100%使う
 		break;
-	case SpriteCommon::BLEND_MODE::REVERSE:
+	case SpriteBase::BLEND_MODE::REVERSE:
 		//---反転
 		blenddesc.BlendOp = D3D12_BLEND_OP_ADD;			//加算
 		blenddesc.SrcBlend = D3D12_BLEND_INV_DEST_COLOR;	//1.0 - デストカラーの値
@@ -162,7 +162,7 @@ SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Devic
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
 	// パイプラインとルートシグネチャのセット
-	SpriteCommon::PipelineSet pipelineSet;
+	SpriteBase::PipelineSet pipelineSet;
 
 	// ルートシグネチャの生成
 	// ルートシグネチャの設定
@@ -185,9 +185,9 @@ SpriteCommon::PipelineSet SpriteCommon::SpriteCreateGraphicsPipeline(ID3D12Devic
 }
 
 // スプライト共通テクスチャ読み込み
-UINT SpriteCommon::loadTexture(const wchar_t *filename, DirectX::XMFLOAT2 *pTexSize) {
+UINT SpriteBase::loadTexture(const wchar_t *filename, DirectX::XMFLOAT2 *pTexSize) {
 	// 異常な番号の指定を検出
-	assert(nowTexNum + 1 <= SpriteCommon::spriteSRVCount - 1);
+	assert(nowTexNum + 1 <= SpriteBase::spriteSRVCount - 1);
 
 	++nowTexNum;
 
@@ -259,7 +259,7 @@ UINT SpriteCommon::loadTexture(const wchar_t *filename, DirectX::XMFLOAT2 *pTexS
 
 
 // スプライト共通グラフィックコマンドのセット
-void SpriteCommon::drawStart(ID3D12GraphicsCommandList *cmdList) {
+void SpriteBase::drawStart(ID3D12GraphicsCommandList *cmdList) {
 	// パイプラインステートの設定
 	cmdList->SetPipelineState(pipelineSet.pipelinestate.Get());
 	// ルートシグネチャの設定
@@ -272,7 +272,7 @@ void SpriteCommon::drawStart(ID3D12GraphicsCommandList *cmdList) {
 	cmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
-SpriteCommon::SpriteCommon(BLEND_MODE blendMode,
+SpriteBase::SpriteBase(BLEND_MODE blendMode,
 						   const wchar_t *vsPath, const wchar_t *psPath) {
 	// スプライト用パイプライン生成
 	pipelineSet = SpriteCreateGraphicsPipeline(DX12Base::getInstance()->getDev(), vsPath, psPath, blendMode);
@@ -285,6 +285,6 @@ SpriteCommon::SpriteCommon(BLEND_MODE blendMode,
 	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
 	descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	descHeapDesc.NumDescriptors = SpriteCommon::spriteSRVCount;
+	descHeapDesc.NumDescriptors = SpriteBase::spriteSRVCount;
 	HRESULT result = DX12Base::getInstance()->getDev()->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&descHeap));
 }

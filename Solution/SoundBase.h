@@ -2,7 +2,7 @@
 #include <xaudio2.h>
 #include <cstdint>
 #include <wrl.h>
-class SoundCommon {
+class SoundBase {
 
 	class XAudio2VoiceCallback : public IXAudio2VoiceCallback {
 	public:
@@ -26,7 +26,7 @@ public:
 	IXAudio2MasteringVoice *masterVoice;
 	XAudio2VoiceCallback voiceCallback;
 
-	SoundCommon();
-	~SoundCommon();
+	SoundBase();
+	~SoundBase();
 };
 

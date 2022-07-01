@@ -13,7 +13,7 @@ class EndScene :
 	// --------------------
 	// デバッグテキスト
 	// --------------------
-	std::unique_ptr<SpriteCommon> spCom;
+	std::unique_ptr<SpriteBase> spCom;
 	std::unique_ptr<DebugText> debugText;
 	// デバッグテキスト用のテクスチャ番号
 	UINT debugTextTexNumber;

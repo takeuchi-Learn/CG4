@@ -130,10 +130,10 @@ void PlayScene::lightInit() {
 }
 
 void PlayScene::soundInit() {
-	soundCommon.reset(new SoundCommon());
-	soundData1.reset(new Sound("Resources/BGM.wav", soundCommon.get()));
+	soundBase.reset(new SoundBase());
+	soundData1.reset(new Sound("Resources/BGM.wav", soundBase.get()));
 
-	particleSE.reset(new Sound("Resources/SE/Sys_Set03-click.wav", soundCommon.get()));
+	particleSE.reset(new Sound("Resources/SE/Sys_Set03-click.wav", soundBase.get()));
 }
 
 void PlayScene::spriteInit() {
@@ -142,15 +142,15 @@ void PlayScene::spriteInit() {
 	// --------------------
 	// スプライト共通
 	// --------------------
-	spriteCommon.reset(new SpriteCommon());
+	spriteBase.reset(new SpriteBase());
 
 	// スプライト共通テクスチャ読み込み
-	texNum = spriteCommon->loadTexture(L"Resources/texture.png");
+	texNum = spriteBase->loadTexture(L"Resources/texture.png");
 
 	// スプライトの生成
 	sprites.resize(SPRITES_NUM);
 	for (UINT i = 0; i < SPRITES_NUM; ++i) {
-		sprites[i] = Sprite(texNum, spriteCommon.get(), { 0, 0 });
+		sprites[i] = Sprite(texNum, spriteBase.get(), { 0, 0 });
 		// スプライトの座標変更
 		sprites[i].position.x = 1280.f / 10;
 		sprites[i].position.y = 720.f / 10;
@@ -164,9 +164,9 @@ void PlayScene::spriteInit() {
 	}
 
 	// デバッグテキスト用のテクスチャ読み込み
-	debugTextTexNumber = spriteCommon->loadTexture(L"Resources/debugfont.png");
+	debugTextTexNumber = spriteBase->loadTexture(L"Resources/debugfont.png");
 	// デバッグテキスト初期化
-	debugText.reset(new DebugText(debugTextTexNumber, spriteCommon.get()));
+	debugText.reset(new DebugText(debugTextTexNumber, spriteBase.get()));
 
 
 }
@@ -275,7 +275,7 @@ void PlayScene::updateSound() {
 		if (Sound::checkPlaySound(soundData1.get())) {
 			Sound::SoundStopWave(soundData1.get());
 		} else {
-			Sound::SoundPlayWave(soundCommon.get(), soundData1.get(), XAUDIO2_LOOP_INFINITE);
+			Sound::SoundPlayWave(soundBase.get(), soundData1.get(), XAUDIO2_LOOP_INFINITE);
 		}
 	}
 
@@ -285,15 +285,15 @@ void PlayScene::updateSound() {
 		if (Sound::checkPlaySound(soundData1.get())) {
 			stateStr = "PLAY |>";
 		}
-		debugText->formatPrint(spriteCommon.get(),
+		debugText->formatPrint(spriteBase.get(),
 							   0, DebugText::fontHeight * 2.f,
 							   1.f,
 							   XMFLOAT4(1, 1, 1, 1),
 							   "BGM_STATE : %s", stateStr.c_str());
 
-		debugText->Print(spriteCommon.get(), "0 : Play/Stop BGM", 0, DebugText::fontHeight * 3.f);
+		debugText->Print(spriteBase.get(), "0 : Play/Stop BGM", 0, DebugText::fontHeight * 3.f);
 
-		debugText->Print(spriteCommon.get(), "P : create particle(play SE)", 0, DebugText::fontHeight * 4.f);
+		debugText->Print(spriteBase.get(), "P : create particle(play SE)", 0, DebugText::fontHeight * 4.f);
 	}
 }
 
@@ -301,21 +301,21 @@ void PlayScene::updateMouse() {
 	const XMFLOAT2 mousePos(float(input->getMousePos().x), float(input->getMousePos().y));
 
 	if (input->hitMouseBotton(Input::MOUSE::LEFT)) {
-		debugText->Print(spriteCommon.get(), "input mouse left",
+		debugText->Print(spriteBase.get(), "input mouse left",
 						 mousePos.x, mousePos.y, 0.75f);
 	}
 	if (input->hitMouseBotton(Input::MOUSE::RIGHT)) {
-		debugText->Print(spriteCommon.get(), "input mouse right",
+		debugText->Print(spriteBase.get(), "input mouse right",
 						 mousePos.x,
 						 mousePos.y + DebugText::fontHeight, 0.75f);
 	}
 	if (input->hitMouseBotton(Input::MOUSE::WHEEL)) {
-		debugText->Print(spriteCommon.get(), "input mouse wheel",
+		debugText->Print(spriteBase.get(), "input mouse wheel",
 						 mousePos.x,
 						 mousePos.y + DebugText::fontHeight * 2, 0.75f);
 	}
 	if (input->hitMouseBotton(VK_LSHIFT)) {
-		debugText->Print(spriteCommon.get(), "LSHIFT(WinAPI)", 0, 0, 2);
+		debugText->Print(spriteBase.get(), "LSHIFT(WinAPI)", 0, 0, 2);
 	}
 
 	// Rを押すたびマウスカーソルの表示非表示を切り替え
@@ -372,7 +372,7 @@ void PlayScene::updateLight() {
 	// 一秒で一周(2PI[rad])
 	const float timeAngle = float(timer->getNowTime()) / Time::oneSec * XM_2PI;
 
-	debugText->formatPrint(spriteCommon.get(),
+	debugText->formatPrint(spriteBase.get(),
 						   WinAPI::window_width / 2.f, DebugText::fontHeight * 16.f, 1.f,
 						   XMFLOAT4(1, 1, 0, 1),
 						   "light angle : %f PI [rad]\n\t\t\t->%f PI [rad]",
@@ -405,7 +405,7 @@ void PlayScene::updateSprite() {
 		}
 		createParticle(obj3d[0].position, particleNum, startScale);
 
-		Sound::SoundPlayWave(soundCommon.get(), particleSE.get());
+		Sound::SoundPlayWave(soundBase.get(), particleSE.get());
 	}
 }
 
@@ -442,11 +442,11 @@ void PlayScene::update_play() {
 		if (input->hitKey(DIK_LSHIFT)) debugText->tabSize = 4U;
 	}
 
-	debugText->formatPrint(spriteCommon.get(), 0, 0, 1.f,
+	debugText->formatPrint(spriteBase.get(), 0, 0, 1.f,
 						   XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxBase->getFPS());
 
 
-	debugText->formatPrint(spriteCommon.get(),
+	debugText->formatPrint(spriteBase.get(),
 						   0, DebugText::fontHeight * 15.f,
 						   1.f,
 						   XMFLOAT4(1, 1, 1, 1),
@@ -454,16 +454,16 @@ void PlayScene::update_play() {
 						   float(timer->getNowTime()) / float(Time::oneSec));
 
 
-	debugText->formatPrint(spriteCommon.get(),
+	debugText->formatPrint(spriteBase.get(),
 						   DebugText::fontWidth * 2.f, DebugText::fontHeight * 17.f,
 						   1.f,
 						   XMFLOAT4(1, 1, 1, 1),
 						   "newLine\ntab(size %u)\tendString", debugText->tabSize);
 
-	debugText->Print(spriteCommon.get(), "SPACE : end", 0, DebugText::fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
+	debugText->Print(spriteBase.get(), "SPACE : end", 0, DebugText::fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
 
-	debugText->Print(spriteCommon.get(), "WASD : move camera", 0, DebugText::fontHeight * 8.f);
-	debugText->Print(spriteCommon.get(), "arrow : rotation camera", 0, DebugText::fontHeight * 9.f);
+	debugText->Print(spriteBase.get(), "WASD : move camera", 0, DebugText::fontHeight * 8.f);
+	debugText->Print(spriteBase.get(), "arrow : rotation camera", 0, DebugText::fontHeight * 9.f);
 
 #pragma endregion 情報表示
 }
@@ -574,14 +574,14 @@ void PlayScene::drawObj3d() {
 }
 
 void PlayScene::drawFrontSprite() {
-	spriteCommon->drawStart(dxBase->getCmdList());
+	spriteBase->drawStart(dxBase->getCmdList());
 	// スプライト描画
 	for (UINT i = 0, len = (UINT)sprites.size(); i < len; ++i) {
-		sprites[i].drawWithUpdate(dxBase, spriteCommon.get());
+		sprites[i].drawWithUpdate(dxBase, spriteBase.get());
 	}
 
 	// デバッグテキスト描画
-	debugText->DrawAll(dxBase, spriteCommon.get());
+	debugText->DrawAll(dxBase, spriteBase.get());
 }
 
 void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos,

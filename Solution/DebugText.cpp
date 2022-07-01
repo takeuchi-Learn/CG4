@@ -2,11 +2,11 @@
 
 #include <DirectXMath.h>
 
-DebugText::DebugText(UINT texNum, const SpriteCommon *spriteCommon, UINT tabSize) {
+DebugText::DebugText(UINT texNum, const SpriteBase *spriteCommon, UINT tabSize) {
 	Initialize(texNum, spriteCommon, tabSize);
 }
 
-void DebugText::Initialize(UINT texnumber, const SpriteCommon *spriteCommon,
+void DebugText::Initialize(UINT texnumber, const SpriteBase *spriteCommon,
 						   UINT tabSize) {
 	this->tabSize = tabSize;
 	// 全てのスプライトデータについて
@@ -16,7 +16,7 @@ void DebugText::Initialize(UINT texnumber, const SpriteCommon *spriteCommon,
 	}
 }
 
-void DebugText::Print(const SpriteCommon *spriteCommon, const std::string &text,
+void DebugText::Print(const SpriteBase *spriteCommon, const std::string &text,
 					  const float x, const float y, const float scale,
 					  DirectX::XMFLOAT4 color) {
 	std::string textLocal = text;
@@ -72,7 +72,7 @@ void DebugText::Print(const SpriteCommon *spriteCommon, const std::string &text,
 	}
 }
 
-int DebugText::formatPrint(const SpriteCommon *spriteCommon,
+int DebugText::formatPrint(const SpriteBase *spriteCommon,
 						   const float x, const float y, const float scale,
 						   DirectX::XMFLOAT4 color, const char *fmt, ...) {
 
@@ -90,7 +90,7 @@ int DebugText::formatPrint(const SpriteCommon *spriteCommon,
 }
 
 // まとめて描画
-void DebugText::DrawAll(DX12Base *dxBase, const SpriteCommon *spriteCommon) {
+void DebugText::DrawAll(DX12Base *dxBase, const SpriteBase *spriteCommon) {
 	// 全ての文字のスプライトについて
 	for (UINT i = 0; i < (UINT)spriteIndex; ++i) {
 		// スプライト描画

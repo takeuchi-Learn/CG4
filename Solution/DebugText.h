@@ -18,23 +18,23 @@ public:
 
 private:
 	// メンバ関数
-	void Initialize(UINT texnumber, const SpriteCommon* spriteCommon, UINT tabSIze = 4);
+	void Initialize(UINT texnumber, const SpriteBase* spriteCommon, UINT tabSIze = 4);
 
 public:
 	// 内部でinitializeを呼び出している
-	DebugText(UINT texNum, const SpriteCommon* spriteCommon, UINT tabSize = 4);
+	DebugText(UINT texNum, const SpriteBase* spriteCommon, UINT tabSize = 4);
 
 	// ￥n : X座標をして位置に戻し、Y座標を文字の高さ分加算する
 	// ￥t : tabSize文字分右にずらす
-	void Print(const SpriteCommon* spriteCommon, const std::string& text,
+	void Print(const SpriteBase* spriteCommon, const std::string& text,
 			   const float x, const float y, const float scale = 1.0f,
 			   DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1, 1, 1, 1));
 
 	// 内部でvsnprintfを使用
 	// @return vsnprintfの戻り値
-	int formatPrint(const SpriteCommon* spriteCommon, const float x, const float y, const float scale, DirectX::XMFLOAT4 color, const char* fmt, ...);
+	int formatPrint(const SpriteBase* spriteCommon, const float x, const float y, const float scale, DirectX::XMFLOAT4 color, const char* fmt, ...);
 
-	void DrawAll(DX12Base* dxBase, const SpriteCommon* spriteCommon);
+	void DrawAll(DX12Base* dxBase, const SpriteBase* spriteCommon);
 
 private: // メンバ変数     
 	// スプライトデータの配列

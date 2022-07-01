@@ -6,7 +6,7 @@
 #include <fstream>
 #include <cassert>
 
-Sound::Sound(const char* filename, SoundCommon* soundCommon) {
+Sound::Sound(const char* filename, SoundBase* soundCommon) {
 	//1.ファイルオープン
 	//ファイル入力ストリームのインスタンス
 	std::ifstream file;
@@ -83,7 +83,7 @@ Sound::~Sound() {
 	this->wfex = {};
 }
 
-void Sound::createSourceVoice(SoundCommon* soundCommon, Sound* soundData) {
+void Sound::createSourceVoice(SoundBase* soundCommon, Sound* soundData) {
 	//波形フォーマットをもとにSourceVoiceの生成
 	HRESULT result = soundCommon->xAudio2->CreateSourceVoice(&soundData->pSourceVoice, &soundData->wfex);
 	assert(SUCCEEDED(result));
@@ -96,7 +96,7 @@ void Sound::SoundStopWave(Sound* soundData) {
 	result = soundData.pSourceVoice->SubmitSourceBuffer(&buf);*/
 }
 
-void Sound::SoundPlayWave(SoundCommon* soundCommon, Sound* soundData, int loopCount, float volume) {
+void Sound::SoundPlayWave(SoundBase* soundCommon, Sound* soundData, int loopCount, float volume) {
 	//波形フォーマットをもとにSourceVoiceの生成
 	createSourceVoice(soundCommon, soundData);
 

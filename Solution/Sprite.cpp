@@ -21,7 +21,7 @@ using namespace Microsoft::WRL;
 
 
 // スプライト単体頂点バッファの転送
-void Sprite::SpriteTransferVertexBuffer(const SpriteCommon* spriteCommon) {
+void Sprite::SpriteTransferVertexBuffer(const SpriteBase* spriteCommon) {
 	HRESULT result = S_FALSE;
 
 	// 頂点データ
@@ -80,7 +80,7 @@ void Sprite::SpriteTransferVertexBuffer(const SpriteCommon* spriteCommon) {
 }
 
 Sprite::Sprite(UINT texNumber,
-			   const SpriteCommon* spriteCommon,
+			   const SpriteBase* spriteCommon,
 			   XMFLOAT2 anchorpoint,
 			   bool isFlipX, bool isFlipY) {
 	create(DX12Base::getInstance()->getDev(),
@@ -93,7 +93,7 @@ Sprite::Sprite(UINT texNumber,
 
 // スプライト生成
 void Sprite::create(ID3D12Device* dev, int window_width, int window_height,
-					UINT texNumber, const SpriteCommon* spriteCommon, XMFLOAT2 anchorpoint,
+					UINT texNumber, const SpriteBase* spriteCommon, XMFLOAT2 anchorpoint,
 					bool isFlipX, bool isFlipY) {
 	HRESULT result = S_FALSE;
 
@@ -155,7 +155,7 @@ void Sprite::create(ID3D12Device* dev, int window_width, int window_height,
 }
 
 // スプライト単体更新
-void Sprite::update(const SpriteCommon* spriteCommon) {
+void Sprite::update(const SpriteBase* spriteCommon) {
 	if (dirty) {
 		SpriteTransferVertexBuffer(spriteCommon);
 		dirty = false;
@@ -177,7 +177,7 @@ void Sprite::update(const SpriteCommon* spriteCommon) {
 }
 
 // スプライト単体描画
-void Sprite::draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon* spriteCommon, ID3D12Device* dev) {
+void Sprite::draw(ID3D12GraphicsCommandList* cmdList, const SpriteBase* spriteCommon, ID3D12Device* dev) {
 	if (isInvisible) {
 		return;
 	}
@@ -204,7 +204,7 @@ void Sprite::draw(ID3D12GraphicsCommandList* cmdList, const SpriteCommon* sprite
 
 // 更新と描画を同時に行う
 void Sprite::drawWithUpdate(DX12Base* dxBase,
-							const SpriteCommon* spriteCommon) {
+							const SpriteBase* spriteCommon) {
 	update(spriteCommon);
 	draw(dxBase->getCmdList(), spriteCommon, dxBase->getDev());
 }

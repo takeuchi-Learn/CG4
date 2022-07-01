@@ -5,7 +5,7 @@
 
 #include <d3d12.h>
 
-class SpriteCommon {
+class SpriteBase {
 
 private:
 	using XMMATRIX = DirectX::XMMATRIX;
@@ -48,12 +48,12 @@ public:
 
 private:
 	// スプライト用パイプライン生成(createSpriteCommon内で呼び出している)
-	static SpriteCommon::PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device *dev,
+	static SpriteBase::PipelineSet SpriteCreateGraphicsPipeline(ID3D12Device *dev,
 																  const wchar_t *vsPath, const wchar_t *psPath,
 																  BLEND_MODE blendMode);
 
 public:
-	SpriteCommon(BLEND_MODE blendMode = BLEND_MODE::ALPHA,
+	SpriteBase(BLEND_MODE blendMode = BLEND_MODE::ALPHA,
 				 const wchar_t *vsPath = L"Resources/Shaders/SpriteVS.hlsl",
 				 const wchar_t *psPath = L"Resources/Shaders/SpritePS.hlsl");
 

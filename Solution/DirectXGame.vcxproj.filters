@@ -171,7 +171,7 @@
     <ClCompile Include="FbxObj3d.cpp">
       <Filter>Object共通\3Dオブジェクト\fbx</Filter>
     </ClCompile>
-    <ClCompile Include="SoundCommon.cpp">
+    <ClCompile Include="SoundBase.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
   </ItemGroup>
@@ -263,7 +263,7 @@
     <ClInclude Include="FbxModel.h">
       <Filter>Object共通\3Dオブジェクト\fbx</Filter>
     </ClInclude>
-    <ClInclude Include="SoundCommon.h">
+    <ClInclude Include="SoundBase.h">
       <Filter>Sound</Filter>
     </ClInclude>
   </ItemGroup>

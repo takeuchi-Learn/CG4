@@ -29,18 +29,9 @@
 class PlayScene :
 	public GameScene {
 
-#pragma region ビュー変換行列
-
-	//DirectX::XMMATRIX matView;
-	DirectX::XMFLOAT3 eye_local;   // 視点座標
-	DirectX::XMFLOAT3 target_local;   // 注視点座標
-	DirectX::XMFLOAT3 up_local;       // 上方向ベクトル
-
-#pragma endregion ビュー変換行列
-
 #pragma region 音
 
-	std::unique_ptr<SoundCommon> soundCommon;
+	std::unique_ptr<SoundBase> soundBase;
 
 	std::unique_ptr<Sound> soundData1;
 
@@ -52,8 +43,7 @@ class PlayScene :
 	// --------------------
 	// スプライト共通
 	// --------------------
-	std::unique_ptr<SpriteCommon> spriteCommon;
-	// スプライト共通テクスチャ読み込み
+	std::unique_ptr<SpriteBase> spriteBase;
 	UINT texNum = 0u;
 
 	// --------------------

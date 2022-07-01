@@ -2,7 +2,7 @@
 #include <xaudio2.h>
 #include <cstdint>
 #include <wrl.h>
-#include "SoundCommon.h"
+#include "SoundBase.h"
 
 class Sound {
 public:
@@ -46,7 +46,7 @@ private:
 	// --------------------
 public:
 	// 音声データの読み込み
-	Sound(const char* filename, SoundCommon* soundCommon);
+	Sound(const char* filename, SoundBase* SoundBase);
 
 	// 音声データの解放
 	~Sound();
@@ -57,7 +57,7 @@ public:
 	// static関数
 	// --------------------
 private:
-	static void createSourceVoice(SoundCommon* soundCommon, Sound* soundData);
+	static void createSourceVoice(SoundBase* SoundBase, Sound* soundData);
 
 public:
 	// 音声再生停止
@@ -68,7 +68,7 @@ public:
 	/// </summary>
 	/// <param name="loopCount">0で繰り返し無し、XAUDIO2_LOOP_INFINITEで永遠</param>
 	/// <param name="volume">0 ~ 1</param>
-	static void SoundPlayWave(SoundCommon* soundCommon,
+	static void SoundPlayWave(SoundBase* SoundBase,
 		Sound* soundData,
 		int loopCount = 0, float volume = 0.2);
 
