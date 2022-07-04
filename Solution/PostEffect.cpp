@@ -97,15 +97,50 @@ void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_
 	ComPtr<ID3DBlob> psBlob = nullptr; // ピクセルシェーダオブジェクト
 	ComPtr<ID3DBlob> errorBlob = nullptr; // エラーオブジェクト
 
-	// 頂点シェーダの読み込みとコンパイル
-	result = D3DCompileFromFile(
-		vsPath,  // シェーダファイル名
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
-		"main", "vs_5_0", // エントリーポイント名、シェーダーモデル指定
-		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-		0,
-		&vsBlob, &errorBlob);
+	//// 頂点シェーダの読み込みとコンパイル
+	//result = D3DCompileFromFile(
+	//	vsPath,  // シェーダファイル名
+	//	nullptr,
+	//	D3D_COMPILE_STANDARD_FILE_INCLUDE, // インクルード可能にする
+	//	"main", "vs_5_0", // エントリーポイント名、シェーダーモデル指定
+	//	D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+	//	0,
+	//	&vsBlob, &errorBlob);
+	{
+		// undone PostEffect.hlsliと同じ内容
+		std::string head = "cbuffer cbuff0 : register(b0) {\
+  float oneSec;\
+  float nowTime;\
+  float2 winSize;\
+  float noizeIntensity;\
+  float2 mosaicNum;\
+  float vignIntensity;\
+  float alpha;\
+ }\
+ struct VSOutput {\
+  float4 svpos : SV_POSITION;\
+  float2 uv  :TEXCOORD;\
+ };";
+
+		// undone PostEffect.VSと同じ内容
+		std::string PostEffVS = head + "VSOutput main(float4 pos : POSITION, float2 uv : TEXCOORD) {\
+  VSOutput output;\
+  output.svpos = pos;\
+  output.uv = uv;\
+  return output;\
+ }";
+
+		result = D3DCompile(PostEffVS.c_str(),
+							PostEffVS.size(),
+							nullptr,
+							nullptr,
+							D3D_COMPILE_STANDARD_FILE_INCLUDE,
+							"main", "vs_5_0",
+							D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
+							0,
+							&vsBlob, &errorBlob);
+
+	}
 
 	if (FAILED(result)) {
 		// errorBlobからエラー内容をstring型にコピー
@@ -117,7 +152,7 @@ void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_
 					errstr.begin());
 		errstr += "\n";
 		// エラー内容を出力ウィンドウに表示
-		OutputDebugStringA(errstr.c_str());
+		OutputDebugStringA(("あああ" + errstr).c_str());
 		assert(0);
 	}
 
