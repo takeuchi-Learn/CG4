@@ -235,12 +235,14 @@ void PlayScene::timerInit() {
 #pragma endregion 初期化関数
 
 PlayScene::PlayScene()
-	: update_proc(std::bind(&PlayScene::update_start,this)) {
+	: update_proc(std::bind(&PlayScene::update_start, this)) {
 	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 
 	dxBase = DX12Base::getInstance();
 
 	input = Input::getInstance();
+
+	postEff2Num = PostEffect::getInstance()->addPipeLine(L"Resources/Shaders/PostEffectPS_2.hlsl");
 
 
 	cameraInit();
@@ -419,6 +421,14 @@ void PlayScene::update_play() {
 
 	// Rでタイマーをリセット
 	if (input->hitKey(DIK_R)) timer->reset();
+
+	if (input->triggerKey(DIK_M)) {
+		UINT nextEffNum = 0u;
+		if (PostEffect::getInstance()->getPipeLineNum() == 0u) {
+			nextEffNum = postEff2Num;
+		}
+		PostEffect::getInstance()->changePipeLine(nextEffNum);
+	}
 
 
 	// 音関係の更新

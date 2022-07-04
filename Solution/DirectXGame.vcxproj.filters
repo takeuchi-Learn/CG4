@@ -307,6 +307,9 @@
     <FxCompile Include="Resources\Shaders\BackVS.hlsl">
       <Filter>シェーダーファイル\Back</Filter>
     </FxCompile>
+    <FxCompile Include="Resources\Shaders\PostEffectPS_2.hlsl">
+      <Filter>シェーダーファイル\PostEffect</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Basic.hlsli">

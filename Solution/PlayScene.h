@@ -97,6 +97,8 @@ class PlayScene :
 	float drawAlpha = 0.f;
 	Time::timeType sceneTransTime = Time::oneSec;
 
+	UINT postEff2Num = 0u;
+
 
 	Input *input = nullptr;
 

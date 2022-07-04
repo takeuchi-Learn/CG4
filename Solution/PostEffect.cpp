@@ -8,9 +8,15 @@ using namespace DirectX;
 
 const float PostEffect::clearColor[4] = { 0.f, 0.f, 0.f, 1.f };
 
+const wchar_t *PostEffect::vsPathDef = L"Resources/Shaders/PostEffectVS.hlsl";
+
 PostEffect::PostEffect()
-	: mosaicNum({ WinAPI::window_width, WinAPI::window_height }) {
-	timer.reset(new Time());
+	: mosaicNum({ WinAPI::window_width, WinAPI::window_height }),
+	nowPPSet(0u),
+	timer(new Time()),
+	dev(DX12Base::getInstance()->getDev()),
+	cmdList(DX12Base::getInstance()->getCmdList()) {
+	pipelineSet.emplace_back();
 	init();
 }
 
@@ -223,17 +229,24 @@ void PostEffect::createGraphicsPipelineState(const wchar_t *vsPath, const wchar_
 
 	// ルートシグネチャの生成
 	result = DX12Base::getInstance()->getDev()->CreateRootSignature(0,
-																		 rootSigBlob->GetBufferPointer(),
-																		 rootSigBlob->GetBufferSize(),
-																		 IID_PPV_ARGS(&pipelineSet.rootsignature));
+																	rootSigBlob->GetBufferPointer(),
+																	rootSigBlob->GetBufferSize(),
+																	IID_PPV_ARGS(&pipelineSet.back().rootsignature));
 	assert(SUCCEEDED(result));
 
 	// パイプラインにルートシグネチャをセット
-	gpipeline.pRootSignature = pipelineSet.rootsignature.Get();
+	gpipeline.pRootSignature = pipelineSet.back().rootsignature.Get();
 
 	result = DX12Base::getInstance()->getDev()->CreateGraphicsPipelineState(&gpipeline,
-																				 IID_PPV_ARGS(&pipelineSet.pipelinestate));
+																			IID_PPV_ARGS(&pipelineSet.back().pipelinestate));
 	assert(SUCCEEDED(result));
+}
+
+size_t PostEffect::addPipeLine(const wchar_t *psPath) {
+	pipelineSet.emplace_back();
+	createGraphicsPipelineState(vsPathDef, psPath);
+
+	return pipelineSet.size() - 1u;
 }
 
 void PostEffect::init() {
@@ -247,8 +260,6 @@ void PostEffect::init() {
 									 WinAPI::window_width, WinAPI::window_height,
 									 1, 0, 1, 0,
 									 D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-
-	auto dev = DX12Base::getInstance()->getDev();
 
 	// テクスチャバッファ設定
 	HRESULT result;
@@ -377,13 +388,10 @@ void PostEffect::draw(DX12Base *dxBase) {
 
 #pragma region 描画設定
 
-	auto cmdList = dxBase->getCmdList();
-	auto dev = dxBase->getDev();
-
 	// パイプラインステートの設定
-	cmdList->SetPipelineState(pipelineSet.pipelinestate.Get());
+	cmdList->SetPipelineState(pipelineSet[nowPPSet].pipelinestate.Get());
 	// ルートシグネチャの設定
-	cmdList->SetGraphicsRootSignature(pipelineSet.rootsignature.Get());
+	cmdList->SetGraphicsRootSignature(pipelineSet[nowPPSet].rootsignature.Get());
 	// プリミティブ形状を設定
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -426,8 +434,6 @@ void PostEffect::draw(DX12Base *dxBase) {
 
 
 void PostEffect::startDrawScene(DX12Base *dxBase) {
-	auto cmdList = dxBase->getInstance()->getCmdList();
-
 	// リソースバリアを変更(シェーダーリソース -> 描画可能)
 	for (UINT i = 0; i < renderTargetNum; i++) {
 		cmdList->ResourceBarrier(1,
@@ -472,7 +478,6 @@ void PostEffect::startDrawScene(DX12Base *dxBase) {
 }
 
 void PostEffect::endDrawScene(DX12Base *dxBase) {
-	auto cmdList = dxBase->getInstance()->getCmdList();
 	for (UINT i = 0; i < renderTargetNum; i++) {
 		cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texbuff[i].Get(),
 																		  D3D12_RESOURCE_STATE_RENDER_TARGET,

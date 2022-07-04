@@ -4,6 +4,7 @@
 #include "Time.h"
 
 #include <memory>
+#include <vector>
 
 class PostEffect {
 	PostEffect();
@@ -73,7 +74,8 @@ private:
 	ComPtr<ID3D12RootSignature> rootSignature;
 
 	// パイプラインとルートシグネチャのセット
-	PipelineSet pipelineSet;
+	std::vector<PipelineSet> pipelineSet;
+	UINT nowPPSet = 0u;
 
 	std::unique_ptr<Time> timer;
 
@@ -81,6 +83,12 @@ private:
 	DirectX::XMFLOAT2 mosaicNum;
 	float vignIntensity = 0.9f;
 	float alpha = 1.f;
+
+	ID3D12Device *dev;
+	ID3D12GraphicsCommandList *cmdList;
+
+private:
+	static const wchar_t *vsPathDef;
 
 private:
 	void initBuffer();
@@ -102,6 +110,25 @@ public:
 
 	inline void setAlpha(float alpha) { this->alpha = alpha; }
 	inline float getAlpha() const { return alpha; }
+
+	/// <summary>
+	/// グラフィックスパイプラインを追加
+	/// </summary>
+	/// <param name="psPath">ピクセルシェーダーファイルのパス</param>
+	/// <returns>識別番号</returns>
+	size_t addPipeLine(const wchar_t *psPath);
+
+	/// <summary>
+	/// グラフィックスパイプラインの切り替え
+	/// </summary>
+	/// <param name="GPPNum">識別番号</param>
+	inline void changePipeLine(UINT GPPNum) { nowPPSet = GPPNum; }
+
+	/// <summary>
+	/// 現在のグラフィックスパイプラインの識別番号を取得
+	/// </summary>
+	/// <returns>識別番号</returns>
+	inline const UINT getPipeLineNum() { return nowPPSet; }
 
 
 	void draw(DX12Base *dxCom);

@@ -60,10 +60,7 @@ float4 main(VSOutput input) : SV_TARGET
 	texColor1.r = tex1.Sample(smp, uv + float2(rgbUvNum, 0.f));
 
 	// tex0‚Ætex1‚Ì‰¡ŽÈ‚É‚È‚é‚æ‚¤‚É•`‰æ
-	float4 col = texColor0;
-	if (fmod(input.uv.y, 0.1f) < 0.05f) {
-		col = texColor1;
-	}
+	float4 col = lerp(texColor0, texColor1, step(0.05f, fmod(input.uv.y, 0.1f)));
 
 	float noiseNum = noise(input.uv, time);
 
