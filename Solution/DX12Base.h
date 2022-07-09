@@ -9,6 +9,8 @@
 
 #include <DirectXMath.h>
 
+#include <imgui.h>
+
 class DX12Base {
 	DX12Base(const DX12Base& dxBase) = delete;
 	DX12Base& operator=(const DX12Base& dxBase) = delete;
@@ -32,6 +34,8 @@ class DX12Base {
 	UINT64 fenceVal = 0;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer;
+
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> imguiHeap;
 
 	WinAPI* winapi = nullptr;
 
@@ -59,6 +63,12 @@ private:
 	void initRTV();
 	void initDepthBuffer();
 	void initFence();
+
+	/// <summary>
+	/// imgui初期化
+	/// </summary>
+	/// <returns>成否</returns>
+	bool InitImgui();
 
 	// 全画面クリア
 	void ClearRenderTarget(const DirectX::XMFLOAT3& clearColor);

@@ -55,9 +55,9 @@ float4 main(VSOutput input) : SV_TARGET
 	// rgb‚¸‚ç‚µ
 	float rgbUvNum = 0.005f * sin(time * 3.141592653589793f);
 	float4 texColor0 = tex0.Sample(smp, uv);
-	texColor0.r = tex0.Sample(smp, uv + float2(rgbUvNum, 0.f));
+	texColor0.r = tex0.Sample(smp, uv + float2(rgbUvNum, 0.f)).r;
 	float4 texColor1 = tex1.Sample(smp, uv);
-	texColor1.r = tex1.Sample(smp, uv + float2(rgbUvNum, 0.f));
+	texColor1.r = tex1.Sample(smp, uv + float2(rgbUvNum, 0.f)).r;
 
 	// tex0‚Ætex1‚Ì‰¡ŽÈ‚É‚È‚é‚æ‚¤‚É•`‰æ
 	float4 col = lerp(texColor0, texColor1, step(0.05f, fmod(input.uv.y, 0.1f)));

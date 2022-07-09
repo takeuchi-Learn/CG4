@@ -1,9 +1,11 @@
 ﻿#include "WinAPI.h"
 
+#include <imgui_impl_win32.h>
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 WinAPI::WinAPI() {
-	constexpr auto winTitleDef = L"DirectXGame";
+	constexpr wchar_t winTitleDef[] = L"DX12Game";
 
 	w.cbSize = sizeof(WNDCLASSEX);
 	w.lpfnWndProc = (WNDPROC)WindowProc; // ウィンドウプロシージャを設定
@@ -40,6 +42,10 @@ WinAPI::~WinAPI() {
 }
 
 LRESULT WinAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+		return 1;
+	}
+
 	// メッセージで分岐
 	switch (msg) {
 	case WM_DESTROY: // ウィンドウが破棄された

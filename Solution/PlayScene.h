@@ -123,6 +123,10 @@ private:
 	void changeEndScene();
 
 
+
+	void drawImGui();
+
+
 #pragma region 初期化関数
 
 	void cameraInit();

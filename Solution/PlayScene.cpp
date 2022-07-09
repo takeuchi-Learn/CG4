@@ -242,7 +242,7 @@ PlayScene::PlayScene()
 
 	input = Input::getInstance();
 
-	postEff2Num = PostEffect::getInstance()->addPipeLine(L"Resources/Shaders/PostEffectPS_2.hlsl");
+	postEff2Num = (UINT)PostEffect::getInstance()->addPipeLine(L"Resources/Shaders/PostEffectPS_2.hlsl");
 
 
 	cameraInit();
@@ -279,23 +279,6 @@ void PlayScene::updateSound() {
 		} else {
 			Sound::SoundPlayWave(soundBase.get(), soundData1.get(), XAUDIO2_LOOP_INFINITE);
 		}
-	}
-
-	// 音状態表示
-	{
-		std::string stateStr = "STOP []";
-		if (Sound::checkPlaySound(soundData1.get())) {
-			stateStr = "PLAY |>";
-		}
-		debugText->formatPrint(spriteBase.get(),
-							   0, DebugText::fontHeight * 2.f,
-							   1.f,
-							   XMFLOAT4(1, 1, 1, 1),
-							   "BGM_STATE : %s", stateStr.c_str());
-
-		debugText->Print(spriteBase.get(), "0 : Play/Stop BGM", 0, DebugText::fontHeight * 3.f);
-
-		debugText->Print(spriteBase.get(), "P : create particle(play SE)", 0, DebugText::fontHeight * 4.f);
 	}
 }
 
@@ -453,28 +436,12 @@ void PlayScene::update_play() {
 		if (input->hitKey(DIK_LSHIFT)) debugText->tabSize = 4U;
 	}
 
-	debugText->formatPrint(spriteBase.get(), 0, 0, 1.f,
-						   XMFLOAT4(1, 1, 1, 1), "FPS : %f", dxBase->getFPS());
-
-
-	debugText->formatPrint(spriteBase.get(),
-						   0, DebugText::fontHeight * 15.f,
-						   1.f,
-						   XMFLOAT4(1, 1, 1, 1),
-						   "Time : %.6f[s]",
-						   float(timer->getNowTime()) / float(Time::oneSec));
-
 
 	debugText->formatPrint(spriteBase.get(),
 						   DebugText::fontWidth * 2.f, DebugText::fontHeight * 17.f,
 						   1.f,
 						   XMFLOAT4(1, 1, 1, 1),
 						   "newLine\ntab(size %u)\tendString", debugText->tabSize);
-
-	debugText->Print(spriteBase.get(), "SPACE : end", 0, DebugText::fontHeight * 6.f, 1.f, XMFLOAT4(1, 0.5f, 0.5f, 1));
-
-	debugText->Print(spriteBase.get(), "WASD : move camera", 0, DebugText::fontHeight * 8.f);
-	debugText->Print(spriteBase.get(), "arrow : rotation camera", 0, DebugText::fontHeight * 9.f);
 
 #pragma endregion 情報表示
 }
@@ -585,6 +552,8 @@ void PlayScene::drawObj3d() {
 }
 
 void PlayScene::drawFrontSprite() {
+	drawImGui();
+
 	spriteBase->drawStart(dxBase->getCmdList());
 	// スプライト描画
 	for (UINT i = 0, len = (UINT)sprites.size(); i < len; ++i) {
@@ -593,6 +562,28 @@ void PlayScene::drawFrontSprite() {
 
 	// デバッグテキスト描画
 	debugText->DrawAll(dxBase, spriteBase.get());
+}
+
+void PlayScene::drawImGui() {
+	ImGui::Begin("ImGui's GUI");
+	//ImGui::SetWindowPos(ImVec2(20, 20));
+	//ImGui::SetWindowSize(ImVec2(300, 300));
+	ImGui::Text("x = %.1f, y = %.1f", ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+	ImGui::Text("FPS <- %.3f", dxBase->getFPS());
+	ImGui::Text(u8"時間 <- %.6f秒",
+				float(timer->getNowTime()) / float(Time::oneSec));
+	ImGui::Text(u8"BGM再生状態 <- %s",
+				Sound::checkPlaySound(soundData1.get())
+				? u8"再生|>"
+				: u8"停止[]");
+	ImGui::Text("");
+	ImGui::Text(u8"0 : BGM再生/停止");
+	ImGui::Text(u8"SPACE : 終了");
+	ImGui::Text(u8"WASD : カメラ移動");
+	ImGui::Text(u8"arrow : カメラ回転");
+	ImGui::Text(u8"P : ﾊﾟｰﾃｨｸﾙ生成(SE再生)");
+	ImGui::Text(u8"M : シェーダー変更");
+	ImGui::End();
 }
 
 void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos,
