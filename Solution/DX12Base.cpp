@@ -765,6 +765,7 @@ bool DX12Base::InitImgui() {
 	}
 
 	ImGuiIO &io = ImGui::GetIO();
+	io.IniFilename = NULL;	// iniファイルを生成しない
 	io.Fonts->AddFontFromFileTTF("Resources\\fonts\\ume-pgc4.ttf",
 								 12.f,
 								 nullptr,

@@ -565,7 +565,13 @@ void PlayScene::drawFrontSprite() {
 }
 
 void PlayScene::drawImGui() {
-	ImGui::Begin("ImGui's GUI");
+	if (!guiWinAlive) return;
+
+	ImGui::Begin("ImGui's GUI", &guiWinAlive,
+				 ImGuiWindowFlags_::ImGuiWindowFlags_NoResize			// リサイズ不可
+				 | ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar		// タイトルバー無し
+				 | ImGuiWindowFlags_::ImGuiWindowFlags_NoSavedSettings	// 設定を.iniに出力しない
+	);
 	//ImGui::SetWindowPos(ImVec2(20, 20));
 	//ImGui::SetWindowSize(ImVec2(300, 300));
 	ImGui::Text("x = %.1f, y = %.1f", ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
@@ -576,13 +582,19 @@ void PlayScene::drawImGui() {
 				Sound::checkPlaySound(soundData1.get())
 				? u8"再生|>"
 				: u8"停止[]");
-	ImGui::Text("");
+
+	ImGui::Separator();
+
 	ImGui::Text(u8"0 : BGM再生/停止");
 	ImGui::Text(u8"SPACE : 終了");
 	ImGui::Text(u8"WASD : カメラ移動");
 	ImGui::Text(u8"arrow : カメラ回転");
 	ImGui::Text(u8"P : ﾊﾟｰﾃｨｸﾙ生成(SE再生)");
 	ImGui::Text(u8"M : シェーダー変更");
+
+	ImGui::Separator();
+
+	ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"マゼンタ");
 	ImGui::End();
 }
 

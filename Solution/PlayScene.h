@@ -110,6 +110,8 @@ class PlayScene :
 
 	DX12Base *dxBase = nullptr;
 
+	bool guiWinAlive = true;
+
 private:
 	void createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum = 10U, const float startScale = 1.f);
 
