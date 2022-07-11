@@ -213,7 +213,7 @@ void Camera::update() {
 }
 
 
-XMFLOAT3 Camera::getLook() const {
+const XMFLOAT3 &Camera::getLook() const {
 	// 視線ベクトル
 	XMFLOAT3 look = target - eye;
 	// XMVECTORを経由して正規化
@@ -232,7 +232,7 @@ void Camera::rotation(const float targetlength, const float angleX, const float 
 	auto newTarget = eye;
 	newTarget.x += targetlength * sinf(angleY) + look.x * lookLen;
 	newTarget.y += targetlength * sinf(angleX) + look.y * lookLen;
-	newTarget.z += targetlength * cosf(angleY) + look.z * lookLen;
+	newTarget.z += targetlength * cosf(angleY) * cosf(angleX) + look.z * lookLen;
 
 	setTarget(newTarget);
 }

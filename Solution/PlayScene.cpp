@@ -199,7 +199,7 @@ void PlayScene::obj3dInit() {
 		obj3d.emplace_back(Object3d(DX12Base::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum));
 		obj3d[i].scale = { obj3dScale, obj3dScale, obj3dScale };
 		obj3d[i].position = { i * obj3dScale, 0, 0 };
-		obj3d[i].rotation.y = 180.f;
+		//obj3d[i].rotation.y = 180.f;
 	}
 
 	lightObj.reset(new Object3d(Object3d(DX12Base::getInstance()->getDev(), camera.get(), model.get(), obj3dTexNum)));
@@ -317,6 +317,8 @@ void PlayScene::updateMouse() {
 }
 
 void PlayScene::updateCamera() {
+	constexpr float PIDIV3 = XM_PI / 3.f;
+
 	// 毎秒1/4周
 	const float rotaVal = XM_PIDIV2 / DX12Base::getInstance()->getFPS();
 
@@ -329,13 +331,13 @@ void PlayScene::updateCamera() {
 	}
 
 	if (input->hitKey(DIK_UP)) {
-		if (angle.x + rotaVal < XM_PIDIV2) angle.x += rotaVal;
+		if (angle.x + rotaVal < PIDIV3) angle.x += rotaVal;
 	} else if (input->hitKey(DIK_DOWN)) {
-		if (angle.x - rotaVal > -XM_PIDIV2) angle.x -= rotaVal;
+		if (angle.x - rotaVal > -PIDIV3) angle.x -= rotaVal;
 	}
 
-	// angleラジアンだけY軸まわりに回転。半径は100
-	constexpr float camRange = 100.f;	// targetLength
+	// angleラジアンだけY軸まわりに回転。半径は25
+	constexpr float camRange = 25.f;	// targetLength
 	camera->rotation(camRange, angle.x, angle.y);
 
 
@@ -352,6 +354,15 @@ void PlayScene::updateCamera() {
 	} else if (input->hitKey(DIK_D)) {
 		camera->moveRight(moveSpeed);
 	}
+
+	XMFLOAT3 playerPos = camera->getTarget();
+	/*playerPos.x -= camRange / 2.f;
+	playerPos.y -= camRange / 2.f;*/
+
+	obj3d[0].position = playerPos;
+
+	obj3d[0].rotation.x = XMConvertToDegrees(-angle.x);
+	obj3d[0].rotation.y = XMConvertToDegrees(angle.y);
 }
 
 void PlayScene::updateLight() {

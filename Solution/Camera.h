@@ -96,7 +96,7 @@ public:
 
 	inline float getFogAngleYRad() { return fogAngleYRad; }
 
-	XMFLOAT3 getLook() const;
+	const XMFLOAT3 &getLook() const;
 
 	/// <summary>
 	/// カメラを回転
