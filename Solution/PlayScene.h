@@ -114,6 +114,7 @@ class PlayScene :
 
 private:
 	void createParticle(const DirectX::XMFLOAT3 &pos, const UINT particleNum = 10U, const float startScale = 1.f);
+	inline ImVec2 getWindowLBPos() { return ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y); }
 
 	// update_何とか関数を格納する
 	std::function<void()> update_proc;
