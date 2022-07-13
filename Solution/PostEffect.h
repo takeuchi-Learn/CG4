@@ -79,7 +79,7 @@ private:
 
 	std::unique_ptr<Time> timer;
 
-	float noiseIntensity = 0.f;
+	float noiseIntensity = 0.5f;
 	DirectX::XMFLOAT2 mosaicNum;
 	float vignIntensity = 0.9f;
 	float alpha = 1.f;
