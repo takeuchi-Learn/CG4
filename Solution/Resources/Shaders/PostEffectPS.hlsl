@@ -9,7 +9,7 @@ float fracNoise(float2 coord)
     return frac(sin(dot(coord, float2(13.f, 80.f)) + 0.f) * 44000.f);
 }
 
-float vignatte(float2 uv)
+float vignette(float2 uv)
 {
 	// UV’l‚Ì’†S‚©‚ç‚Ì‹——£(‘å‚«‚³)
     float len = distance(uv, 0.5f);
@@ -30,7 +30,7 @@ float4 main(VSOutput input) : SV_TARGET
 	// ŠÔ[s]
     float time = nowTime / oneSec;
 
-    float vignNum = vignatte(uv);
+    float vignNum = vignette(uv);
 
 	// ‘–¸ü‚Ì‚æ‚¤‚È‚à‚Ì
     float sSpeed = 8.f;
