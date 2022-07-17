@@ -22,7 +22,7 @@ TitleScene::TitleScene()
 void TitleScene::update() {
 	update_proc();
 	debugText->Print(spCom.get(), "TITLE", titleStrPos.x, titleStrPos.y, 10.f);
-	debugText->Print(spCom.get(), "Press SPACE...", 0, WinAPI::window_height / 2.f);
+	debugText->Print(spCom.get(), "Press SPACE...", titleStrPos.x, titleStrPos.y + WinAPI::window_height / 2.f);
 }
 
 void TitleScene::update_normal() {

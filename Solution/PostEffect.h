@@ -111,6 +111,9 @@ public:
 	inline void setAlpha(float alpha) { this->alpha = alpha; }
 	inline float getAlpha() const { return alpha; }
 
+	inline void setVignetteVal(float val) { vignIntensity = val; }
+	inline float getVignetteVal() { return vignIntensity; }
+
 	/// <summary>
 	/// グラフィックスパイプラインを追加
 	/// </summary>
