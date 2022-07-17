@@ -270,8 +270,8 @@ void PlayScene::init() {
 #pragma region 更新関数
 
 void PlayScene::updateSound() {
-	// 数字の0キーが押された瞬間音を再生しなおす
-	if (input->triggerKey(DIK_0)) {
+	// Bキーが押された瞬間音を再生しなおす
+	if (input->triggerKey(DIK_B)) {
 		//Sound::SoundStopWave(soundData1);
 
 		if (Sound::checkPlaySound(soundData1.get())) {
@@ -299,20 +299,15 @@ void PlayScene::updateMouse() {
 						 mousePos.x,
 						 mousePos.y + DebugText::fontHeight * 2, 0.75f);
 	}
-	if (input->hitMouseBotton(VK_LSHIFT)) {
+	/*if (input->hitMouseBotton(VK_LSHIFT)) {
 		debugText->Print(spriteBase.get(), "LSHIFT(WinAPI)", 0, 0, 2);
-	}
+	}*/
 
-	// Rを押すたびマウスカーソルの表示非表示を切り替え
-	if (input->triggerKey(DIK_R)) {
+	//Mを押すたびマウスカーソルの表示非表示を切り替え
+	if (input->triggerKey(DIK_M)) {
 		static bool mouseDispFlag = true;
 		mouseDispFlag = !mouseDispFlag;
 		input->changeDispMouseCursorFlag(mouseDispFlag);
-	}
-
-	// Mキーでマウスカーソル位置を0,0に移動
-	if (input->triggerKey(DIK_M)) {
-		input->setMousePos(0, 0);
 	}
 }
 
@@ -413,15 +408,11 @@ void PlayScene::update_play() {
 		changeEndScene();
 	}
 
-	// Rでタイマーをリセット
-	if (input->hitKey(DIK_R)) timer->reset();
+	// Rでタイマーをリセット、マウス位置を左上にする
+	if (input->hitKey(DIK_R)) {
+		timer->reset();
 
-	if (input->triggerKey(DIK_M)) {
-		UINT nextEffNum = 0u;
-		if (PostEffect::getInstance()->getPipeLineNum() == 0u) {
-			nextEffNum = postEff2Num;
-		}
-		PostEffect::getInstance()->changePipeLine(nextEffNum);
+		input->setMousePos(0, 0);
 	}
 
 
@@ -590,61 +581,122 @@ void PlayScene::drawImGui() {
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 
 	if (guiWinAlive) {
-		ImGui::Begin(u8"情報表示", &guiWinAlive, winFlags);
+		ImGui::Begin("情報表示", &guiWinAlive, winFlags);
 		//ImGui::SetWindowPos(ImVec2(20, 20));
 		//ImGui::SetWindowSize(ImVec2(300, 300));
 		ImGui::Text("x = %.1f, y = %.1f", ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 		ImGui::Text("FPS <- %.3f", dxBase->getFPS());
-		ImGui::Text(u8"時間 <- %.6f秒",
+		ImGui::Text("時間 <- %.6f秒",
 					float(timer->getNowTime()) / float(Time::oneSec));
-		ImGui::Text(u8"BGM再生状態 <- %s",
+		ImGui::Text("BGM再生状態 <- %s",
 					Sound::checkPlaySound(soundData1.get())
-					? u8"再生|>"
-					: u8"停止[]");
+					? "再生|>"
+					: "停止[]");
 		// 次のウインドウは今のウインドウのすぐ下
 		ImGui::SetNextWindowPos(getWindowLBPos());
 		ImGui::End();
 	}
 
-	ImGui::Begin(u8"操作説明", nullptr, winFlags);
+	ImGui::Begin("操作説明", nullptr, winFlags);
 	//ImGui::SetWindowPos(ImVec2(20, 200));
 
-	ImGui::Text(u8"0 : BGM再生/停止");
-	ImGui::Text(u8"SPACE : 終了");
-	ImGui::Text(u8"WASD : カメラ移動");
-	ImGui::Text(u8"arrow : カメラ回転");
-	ImGui::Text(u8"P : ﾊﾟｰﾃｨｸﾙ生成(SE再生)");
-	ImGui::Text(u8"M : シェーダー変更");
+	ImGui::Text("B : BGM再生/停止");
+	ImGui::Text("SPACE : 終了");
+	ImGui::Text("WASD : カメラ移動");
+	ImGui::Text("arrow : カメラ回転");
+	ImGui::Text("P : ﾊﾟｰﾃｨｸﾙ生成(SE再生)");
+	//ImGui::TextColored(ImVec4(1, 0.75f, 0.25f, 1), "M : シェーダー変更");
 	ImGui::SetNextWindowPos(getWindowLBPos());
 	ImGui::End();
 
-	ImGui::Begin(u8"てすと", nullptr, winFlags);
+	ImGui::Begin("入力", nullptr, winFlags);
+	ImGui::SetWindowSize(ImVec2(200, 200));
+	const UINT nowEffnum = PostEffect::getInstance()->getPipeLineNum();
+	constexpr UINT defEffNum = 0u;
+	{
+		int nextEffnum = nowEffnum;
+		ImGui::Text("シェーダー切り替え");
+		ImGui::RadioButton("主シェーダー", &nextEffnum, 0);
+		ImGui::RadioButton("ガウスぼかしシェーダー", &nextEffnum, postEff2Num);
+		if ((UINT)nextEffnum != nowEffnum) {
+			PostEffect::getInstance()->changePipeLine(nextEffnum);
+		}
+	}
+	if (nowEffnum == defEffNum) {
+		ImGui::Separator();
+		ImGui::Text("主シェーダー入力");
+		{
+			const float nowVIgnVal = PostEffect::getInstance()->getVignetteVal();
+			float vignVal = nowVIgnVal;
+			ImGui::SliderFloat("ビネッタ", &vignVal,
+							   0.f, 1.f,
+							   "%.3f", ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+			if (vignVal != nowVIgnVal) {
+				PostEffect::getInstance()->setVignetteVal(vignVal);
+			}
+		}
+		{
+			XMFLOAT2 mosaicNumTmp = mosaicNum;
+			bool mosaicNumDirty = false;
+			ImGui::SliderFloat("モザイクX", &mosaicNumTmp.x,
+							   10.f, WinAPI::window_width,
+							   "%.3f", ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+			if (mosaicNumTmp.x != mosaicNum.x) mosaicNumDirty = true;
+			ImGui::SliderFloat("モザイクY", &mosaicNumTmp.y,
+							   10.f, WinAPI::window_height,
+							   "%.3f", ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+			if (mosaicNumTmp.y != mosaicNum.y) mosaicNumDirty = true;
+			if (mosaicNumDirty) {
+				PostEffect::getInstance()->setMosaicNum(mosaicNumTmp);
+				mosaicNum = mosaicNumTmp;
+			}
+		}
+		{
+			bool noiseDirty = false;
+			float noiseTmp = noiseVal;
+			ImGui::SliderFloat("ノイズ", &noiseTmp,
+							   0.f, 1.f,
+							   "%.3f", ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+			if (noiseTmp != noiseVal) {
+				PostEffect::getInstance()->setNoiseIntensity(noiseTmp);
+				noiseVal = noiseTmp;
+			}
+		}
+	}
+	ImGui::SetNextWindowPos(getWindowLBPos());
+	ImGui::End();
+
+#pragma region ImGuiてすと
+	/*
+	ImGui::Begin("てすと", nullptr, winFlags);
 	//ImGui::SetWindowPos(ImVec2(20, 400));
 	ImGui::SetWindowSize(ImVec2(200, 300));
 	ImGui::Separator();
-	if (ImGui::CollapsingHeader(u8"にゅうりょくへっだぁ")) {
+	if (ImGui::CollapsingHeader("にゅうりょくへっだぁ")) {
 		static bool selected = true;
-		ImGui::Selectable(u8"選べる文字だよ！", &selected);
+		ImGui::Selectable("選べる文字だよ！", &selected);
 		static bool checked = true;
-		ImGui::Checkbox(u8"ちぇっくぼっくす", &checked);
+		ImGui::Checkbox("ちぇっくぼっくす", &checked);
 		ImGui::Separator();
-		ImGui::Text(u8"ラジオボタン");
+		ImGui::Text("ラジオボタン");
 		static int radioBotton = 0;
-		ImGui::RadioButton(u8"ラジオ0", &radioBotton, 0);
-		ImGui::RadioButton(u8"ラジオ1", &radioBotton, 1);
-		ImGui::RadioButton(u8"ラジオ2", &radioBotton, 2);
+		ImGui::RadioButton("ラジオ0", &radioBotton, 0);
+		ImGui::RadioButton("ラジオ1", &radioBotton, 1);
+		ImGui::RadioButton("ラジオ2", &radioBotton, 2);
 		ImGui::Separator();
 		static float fNum = 0.f;
-		ImGui::DragFloat(u8"どらっぐ", &fNum, 0.001f, -0.1f, 0.1f);
+		ImGui::DragFloat("どらっぐ", &fNum, 0.001f, -0.1f, 0.1f);
 		static float fNum2 = 0.f;
-		ImGui::SliderFloat(u8"すらいだぁ", &fNum2,
+		ImGui::SliderFloat("すらいだぁ", &fNum2,
 						   -0.1f, 0.1f, "%.5f",
 						   ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 	}
-	if (ImGui::CollapsingHeader(u8"そのたのへっだぁ")) {
-		ImGui::TextColored(ImVec4(1.f, 0.5f, 1.f, 1.f), u8"マゼンタ");
+	if (ImGui::CollapsingHeader("そのたのへっだぁ")) {
+		ImGui::TextColored(ImVec4(1.f, 0.5f, 1.f, 1.f), "マゼンタ");
 	}
 	ImGui::End();
+	*/
+#pragma endregion ImGuiてすと
 }
 
 void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos,
