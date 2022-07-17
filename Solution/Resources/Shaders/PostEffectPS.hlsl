@@ -57,10 +57,12 @@ float4 main(VSOutput input) : SV_TARGET
 
 	// rgbÇ∏ÇÁÇµ
     float rgbUvNum = 0.005f * sin(time * 3.141592653589793f);
-    float4 texColor0 = tex0.Sample(smp, uv);
+    float4 texColor0 = 0.f;
     texColor0.r = tex0.Sample(smp, uv + float2(rgbUvNum, 0.f)).r;
-    float4 texColor1 = tex1.Sample(smp, uv);
-    texColor1.r = tex1.Sample(smp, uv + float2(rgbUvNum, 0.f)).r;
+    texColor0.g = tex0.Sample(smp, uv + float2(rgbUvNum, rgbUvNum)).g;
+    texColor0.b = tex0.Sample(smp, uv + float2(0.f, rgbUvNum)).b;
+    
+    float4 texColor1 = 1.f - tex1.Sample(smp, uv);  // êFîΩì]
 
 
 	// tex0Ç∆tex1ÇÃâ°é»Ç…Ç»ÇÈÇÊÇ§Ç…ï`âÊ
