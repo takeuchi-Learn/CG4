@@ -26,6 +26,8 @@
 
 #include <functional>
 
+#include "PostEffect.h"
+
 class PlayScene :
 	public GameScene {
 
@@ -99,9 +101,8 @@ class PlayScene :
 
 	UINT postEff2Num = 0u;
 
-	DirectX::XMFLOAT2 mosaicNum{ WinAPI::window_width, WinAPI::window_height };
+	DirectX::XMFLOAT2 mosaicNum = PostEffect::getInstance()->getMosaicNum();
 	bool mosaicFlag = false;
-	float noiseVal = 0.f;
 
 	Input *input = nullptr;
 

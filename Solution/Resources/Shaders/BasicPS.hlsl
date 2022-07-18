@@ -24,6 +24,9 @@ PSOutput main(VSOutput input)
 	float4 shadeColor;
 	shadeColor.rgb = (ambient + diffuse + specular) * lightColor.rgb;
 	shadeColor.a = m_alpha;
+	
+	// 段階的にする(3段階)
+    shadeColor.rgb = floor(shadeColor.rgb * 3.f) / 3.f;
 
 	float4 texcolor = float4(tex.Sample(smp, input.uv));
 	output.target0 = shadeColor * texcolor;
