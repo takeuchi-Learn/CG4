@@ -66,7 +66,8 @@ float4 main(VSOutput input) : SV_TARGET
 
 
 	// tex0‚Ætex1‚Ì‰¡ŽÈ‚É‚È‚é‚æ‚¤‚É•`‰æ
-    float4 col = lerp(texColor0, texColor1, step(0.05f, fmod(input.uv.y, 0.1f)));
+    //float4 col = lerp(texColor0, texColor1, step(0.05f, fmod(input.uv.y, 0.1f)));
+    float4 col = texColor0;
 
     float noiseNum = noise(input.uv, time);
 

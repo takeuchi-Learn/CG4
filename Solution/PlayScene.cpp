@@ -483,12 +483,12 @@ void PlayScene::update_start() {
 	constexpr XMFLOAT2 mosNumMin{ 1.f, 1.f };
 	constexpr XMFLOAT2 mosNumMax{ WinAPI::window_width, WinAPI::window_height };
 	const float mosRaito = powf(drawAlpha, 5);
-	XMFLOAT2 mosNum = mosNumMax;
+	mosaicNum = mosNumMax;
 
-	mosNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
-	mosNum.y = mosNumMin.y + mosRaito * (mosNumMax.y - mosNumMin.y);
+	mosaicNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
+	mosaicNum.y = mosNumMin.y + mosRaito * (mosNumMax.y - mosNumMin.y);
 
-	PostEffect::getInstance()->setMosaicNum(mosNum);
+	PostEffect::getInstance()->setMosaicNum(mosaicNum);
 }
 
 // シーン終了時の演出用
@@ -509,11 +509,11 @@ void PlayScene::update_end() {
 
 	const float mosRaito = powf(1.f - raito, 5);
 
-	XMFLOAT2 mosNum = mosNumMax;
-	mosNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
-	mosNum.y = mosNumMin.y + mosRaito * (mosNumMax.y - mosNumMin.y);
+	mosaicNum = mosNumMax;
+	mosaicNum.x = mosNumMin.x + mosRaito * (mosNumMax.x - mosNumMin.x);
+	mosaicNum.y = mosNumMin.y + mosRaito * (mosNumMax.y - mosNumMin.y);
 
-	PostEffect::getInstance()->setMosaicNum(mosNum);
+	PostEffect::getInstance()->setMosaicNum(mosaicNum);
 }
 
 void PlayScene::changeEndScene() {
@@ -652,14 +652,13 @@ void PlayScene::drawImGui() {
 			}
 		}
 		{
-			bool noiseDirty = false;
-			float noiseTmp = noiseVal;
+			const float nowNoiseVal = PostEffect::getInstance()->getNoiseIntensity();
+			float noiseTmp = nowNoiseVal;
 			ImGui::SliderFloat("ノイズ", &noiseTmp,
 							   0.f, 1.f,
 							   "%.3f", ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-			if (noiseTmp != noiseVal) {
+			if (noiseTmp != nowNoiseVal) {
 				PostEffect::getInstance()->setNoiseIntensity(noiseTmp);
-				noiseVal = noiseTmp;
 			}
 		}
 	}
