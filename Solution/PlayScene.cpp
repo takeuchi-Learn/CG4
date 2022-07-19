@@ -236,7 +236,6 @@ void PlayScene::timerInit() {
 
 PlayScene::PlayScene()
 	: update_proc(std::bind(&PlayScene::update_start, this)) {
-	WinAPI::getInstance()->setWindowText("Press SPACE to change scene - now : Play (SE : OtoLogic)");
 
 	dxBase = DX12Base::getInstance();
 
@@ -584,7 +583,7 @@ void PlayScene::drawImGui() {
 		ImGui::Begin("情報表示", &guiWinAlive, winFlags);
 		//ImGui::SetWindowPos(ImVec2(20, 20));
 		//ImGui::SetWindowSize(ImVec2(300, 300));
-		ImGui::Text("x = %.1f, y = %.1f", ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+		ImGui::Text("効果音 : OtoLogic");
 		ImGui::Text("FPS <- %.3f", dxBase->getFPS());
 		ImGui::Text("時間 <- %.6f秒",
 					float(timer->getNowTime()) / float(Time::oneSec));
