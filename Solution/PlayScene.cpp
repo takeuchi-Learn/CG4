@@ -628,7 +628,7 @@ void PlayScene::drawImGui() {
 		{
 			const float nowVIgnVal = PostEffect::getInstance()->getVignetteVal();
 			float vignVal = nowVIgnVal;
-			ImGui::SliderFloat("ビネッタ", &vignVal,
+			ImGui::SliderFloat("ビネット", &vignVal,
 							   0.f, 1.f,
 							   "%.3f", ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 			if (vignVal != nowVIgnVal) {
