@@ -79,6 +79,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{86a5f2ac-cda4-4b54-abf6-e62b548c4b43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LevelLoader">
+      <UniqueIdentifier>{ba88c897-9004-4c5c-8f71-08a631f6d02d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="System.cpp">
@@ -174,6 +177,9 @@
     <ClCompile Include="SoundBase.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
+    <ClCompile Include="LevelLoader.cpp">
+      <Filter>LevelLoader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -265,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="SoundBase.h">
       <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoader.h">
+      <Filter>LevelLoader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -124,6 +124,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,6 +171,7 @@
     <ClCompile Include="FbxObj3d.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
@@ -211,6 +213,7 @@
     <ClInclude Include="FbxObj3d.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Looper.h" />
     <ClInclude Include="Material.h" />
