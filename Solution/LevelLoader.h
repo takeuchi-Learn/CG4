@@ -1,26 +1,27 @@
 ﻿#pragma once
 
-#include <string>
 #include <vector>
+#include <string>
 #include <memory>
 #include <DirectXMath.h>
 
-/// @brief レベルデータのローダー
+/// @brief レベルデータ(json)を読み込むクラス
 class LevelLoader {
 
 public:
-	/// @brief レベルデータ
+	/// @brief レベルデータの構造体
 	struct LevelData {
 
+		/// @brief レベルデータに含まれるオブジェクト
 		struct ObjectData {
 			// ファイル名
 			std::string fileName = "";
 			// 平行移動
-			DirectX::XMVECTOR trans;
+			DirectX::XMFLOAT3 trans;
 			// 回転角
-			DirectX::XMVECTOR rota;
+			DirectX::XMFLOAT3 rota;
 			// スケーリング
-			DirectX::XMVECTOR scale;
+			DirectX::XMFLOAT3 scale;
 		};
 
 		// オブジェクト配列
@@ -35,6 +36,6 @@ public:
 	/// @param fileName ファイル名(拡張子を含む)
 	/// @return 読み込んだデータ
 	static LevelLoader::LevelData* loadLevelFile(const std::string& fileDir,
-													  const std::string& fileName);
+												 const std::string& fileName);
 };
 

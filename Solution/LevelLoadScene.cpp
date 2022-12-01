@@ -18,9 +18,7 @@ LevelLoadScene::LevelLoadScene()
 	std::unique_ptr<LevelLoader::LevelData> levelData(LevelLoader::loadLevelFile("Resources/levels/", "level.json"));
 
 	if (levelData->camera) {
-		XMFLOAT3 pos{};
-		XMStoreFloat3(&pos, levelData->camera->trans);
-		camera->setEye(pos);
+		camera->setEye(levelData->camera->trans);
 	}
 
 	for (auto& i : levelData->objects) {
@@ -39,9 +37,9 @@ LevelLoadScene::LevelLoadScene()
 																	   model.get(),
 																	   0U));
 
-		XMStoreFloat3(&object->position, i.trans);
-		XMStoreFloat3(&object->rotation, i.rota);
-		XMStoreFloat3(&object->scale, i.scale);
+		object->position = i.trans;
+		object->rotation = i.rota;
+		object->scale = i.scale;
 	}
 
 	light->setLightPos(camera->getEye());
