@@ -180,6 +180,9 @@
     <ClCompile Include="LevelLoader.cpp">
       <Filter>LevelLoader</Filter>
     </ClCompile>
+    <ClCompile Include="LevelLoadScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -274,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="LevelLoader.h">
       <Filter>LevelLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelLoadScene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

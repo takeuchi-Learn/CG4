@@ -172,6 +172,7 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="LevelLoader.cpp" />
+    <ClCompile Include="LevelLoadScene.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Looper.cpp" />
     <ClCompile Include="main.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="LevelLoader.h" />
+    <ClInclude Include="LevelLoadScene.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Looper.h" />
     <ClInclude Include="Material.h" />

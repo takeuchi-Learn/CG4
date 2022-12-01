@@ -14,7 +14,7 @@ public:
 
 		struct ObjectData {
 			// ファイル名
-			std::string fileName;
+			std::string fileName = "";
 			// 平行移動
 			DirectX::XMVECTOR trans;
 			// 回転角
@@ -25,19 +25,16 @@ public:
 
 		// オブジェクト配列
 		std::vector<ObjectData> objects;
+		std::unique_ptr<ObjectData> camera;
 	};
-
-public:
-	// 既定の読み込みフォルダ
-	static const std::string defLoadDir;
-	// 拡張子
-	static const std::string extension;
 
 public:
 
 	/// @brief レベルデータのファイル読み込み
-	/// @param fileName ファイル名
+	/// @param fileDir ファイルのあるフォルダ
+	/// @param fileName ファイル名(拡張子を含む)
 	/// @return 読み込んだデータ
-	static std::unique_ptr<LevelData>&& loadLevelFile(const std::string& fileName);
+	static LevelLoader::LevelData* loadLevelFile(const std::string& fileDir,
+													  const std::string& fileName);
 };
 

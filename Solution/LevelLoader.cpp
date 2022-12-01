@@ -4,14 +4,10 @@
 #include <fstream>
 #include <cassert>
 
-const std::string LevelLoader::defLoadDir = "Resources/levels/";
-const std::string LevelLoader::extension = ".json";
-
-std::unique_ptr<LevelLoader::LevelData>&& LevelLoader::loadLevelFile(const std::string& fileName) {
-	const std::string fullpath = defLoadDir + fileName + extension;
-
+LevelLoader::LevelData* LevelLoader::loadLevelFile(const std::string& fileDir,
+												   const std::string& fileName) {
 	// ファイルを開く
-	std::ifstream jsonFile(fullpath);
+	std::ifstream jsonFile(fileDir + fileName);
 	assert(!jsonFile.fail());
 
 	// JSONデータ
@@ -30,7 +26,7 @@ std::unique_ptr<LevelLoader::LevelData>&& LevelLoader::loadLevelFile(const std::
 	assert(name == "scene");
 
 	// レベルデータを入れる場所
-	std::unique_ptr<LevelData> levelData = std::make_unique<LevelData>();
+	LevelData* levelData = new LevelData();
 
 	// "objects"の全オブジェクトを走査
 	for (nlohmann::json& i : jsonData["objects"]) {
@@ -65,15 +61,32 @@ std::unique_ptr<LevelLoader::LevelData>&& LevelLoader::loadLevelFile(const std::
 			objectData.scale.m128_f32[1] = (float)i["transform"]["scaling"][2];
 			objectData.scale.m128_f32[2] = (float)i["transform"]["scaling"][0];
 			objectData.scale.m128_f32[3] = 0.f;
+		} else if (type == "CAMERA") {
+			// 要素追加
+			auto& camera = levelData->camera;
+			camera.reset(new LevelData::ObjectData());
 
-			// todo コライダーのパラメータ読み込み
-		}
+			if (i.contains("file_name")) {
+				// ファイル名
+				camera->fileName = i["file_name"];
+			}
 
-		// todo オブジェクト走査を再帰関数にまとめ、再帰呼出で枝を走査する
-		if (i.contains("children")) {
-
+			// 平行移動
+			camera->trans.m128_f32[0] = (float)i["transform"]["translation"][1];
+			camera->trans.m128_f32[1] = (float)i["transform"]["translation"][2];
+			camera->trans.m128_f32[2] = -(float)i["transform"]["translation"][0];
+			camera->trans.m128_f32[3] = 1.f;
+			// 回転
+			camera->rota.m128_f32[0] = -(float)i["transform"]["rotation"][1];
+			camera->rota.m128_f32[1] = -(float)i["transform"]["rotation"][2];
+			camera->rota.m128_f32[2] = (float)i["transform"]["rotation"][0];
+			camera->rota.m128_f32[3] = 0.f;
+			// スケール
+			camera->scale.m128_f32[0] = (float)i["transform"]["scaling"][1];
+			camera->scale.m128_f32[1] = (float)i["transform"]["scaling"][2];
+			camera->scale.m128_f32[2] = (float)i["transform"]["scaling"][0];
 		}
 	}
 
-	return std::move(levelData);
+	return levelData;
 }
