@@ -4,7 +4,7 @@
 
 #include "WinAPI.h"
 
-#include "LevelLoadScene.h"
+#include "DDSLoadScene.h"
 
 TitleScene::TitleScene()
 	: titleStrPos(0.f, 0.f),
@@ -32,10 +32,10 @@ void TitleScene::update_normal() {
 }
 
 void TitleScene::update_end() {
-	titleStrPos.y += 20.f;
+	titleStrPos.y += 40.f;
 
 	if (titleStrPos.y > WinAPI::window_height) {
-		SceneManager::getInstange()->changeScene(new LevelLoadScene());
+		SceneManager::getInstange()->changeScene(new DDSLoadScene());
 	}
 }
 

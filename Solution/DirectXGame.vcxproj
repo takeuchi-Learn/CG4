@@ -164,6 +164,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionShape.cpp" />
+    <ClCompile Include="DDSLoadScene.cpp" />
     <ClCompile Include="DebugText.cpp" />
     <ClCompile Include="DX12Base.cpp" />
     <ClCompile Include="EndScene.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionShape.h" />
+    <ClInclude Include="DDSLoadScene.h" />
     <ClInclude Include="DebugText.h" />
     <ClInclude Include="DX12Base.h" />
     <ClInclude Include="EndScene.h" />
